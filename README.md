@@ -1,16 +1,19 @@
-# jellybook
+# JellyBook
 
-A new Flutter project.
+Hi, this is still in a very early, pre-alpha stage.
+I have been working hard to try to get the app out by this weekend in a working state but I unfortinately was unable to do so.
 
-## Getting Started
+I have decided to still release this early build in hope to recieve some attention and possible help.
 
-This project is a starting point for a Flutter application.
+## Todo
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ - Where do i begin, lol
+ - Add support for actual reading
+ - pdf, epub, etc... support
+ - Allow local caching of current files and still able to browse what books in collection when offline (proper offline support)
+ - Remember user support
+ - Multiple server support
+ - Settings page
+ - For the download completed screen I want to add a image or gif of a jellyfish reading a book (credit to thornbill on the Matrix server for that idea)
+ - I want to improve the UI on the main menu screne and have a progress bar on already read books
+ - Eat hot chip!
