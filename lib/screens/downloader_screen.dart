@@ -8,11 +8,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:archive/archive.dart';
+import 'dart:convert';
+import 'package:mime/mime.dart';
 
 class DownloadScreen extends StatefulWidget {
   final String title;
   final String comicId;
-  // final storage = new FlutterSecureStorage();
 
   DownloadScreen({
     required this.title,
@@ -43,6 +44,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
   String path = '';
   String platformVersion = 'Unknown';
   bool downloading = false;
+  String comicFolder = 'Error';
 
   @override
   void initState() {
@@ -65,8 +67,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
       id = await storage.read(key: 'ServerId') ?? '';
       String client = await storage.read(key: 'client') ?? '';
       token = await storage.read(key: 'AccessToken') ?? '';
-      // token = prefs.getString('token') ?? '';
       fileName = await fileNameFromTitle(title);
+      String path = await prefs.getString(title) ?? 'Error';
       String dirLocation =
           await getApplicationDocumentsDirectory().then((value) => value.path);
       Map<String, String> headers = {
@@ -75,18 +77,22 @@ class _DownloadScreenState extends State<DownloadScreen> {
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'en-US,en;q=0.5',
         'Connection': 'keep-alive',
-        // 'Host': url,
         'Upgrade-Insecure-Requests': '1',
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
       };
       url = url + '/Items/' + comicId + '/Download?api_key=' + token;
-      // before downloading, check if a folder exists
+      var files = await Directory(dirLocation).list().toList();
+      debugPrint(files.toString());
       String fileName3 = await fileNameFromTitle(title);
-      if (FileUtils.testfile(dirLocation + '/' + fileName3, 'directory') ==
-          true) {
-        // if it does, then pop up a dialog box telling the user that the comic is already downloaded and then pop
-        // the screen
+      debugPrint(dirLocation + '/' + fileName3);
+      // check if the folder exists
+      bool folderExists = false;
+      if (path != 'Error') {
+        folderExists = true;
+      }
+      debugPrint(folderExists.toString());
+      if (folderExists == true) {
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -105,46 +111,63 @@ class _DownloadScreenState extends State<DownloadScreen> {
             );
           },
         );
-      }
-      try {
-        FileUtils.mkdir([dirLocation]);
-        debugPrint('Directory created');
-        await dio.download(url, dirLocation + '/' + fileName,
-            options: Options(
-              headers: headers,
-            ), onReceiveProgress: (receivedBytes, totalBytes) {
-          setState(() {
-            downloading = true;
-            progress = (receivedBytes / totalBytes * 100);
+      } else {
+        debugPrint('Folder does not exist');
+        try {
+          FileUtils.mkdir([dirLocation]);
+          debugPrint('Directory created');
+          await dio.download(url, dirLocation + '/' + fileName + '.zip',
+              options: Options(
+                headers: headers,
+              ), onReceiveProgress: (receivedBytes, totalBytes) {
+            setState(() {
+              downloading = true;
+              progress = (receivedBytes / totalBytes * 100);
+            });
           });
-        });
-      } catch (e) {
-        print(e);
-      }
-
-      // create folder for the comic if it doesn't exist
-      String fileName2 = await fileNameFromTitle(title);
-      String comicFolder = dirLocation + '/' + fileName2;
-      FileUtils.mkdir([comicFolder]);
-      debugPrint('Comic folder created');
-      // if the file is a cbr or cbz, extract it to the comic folder
-      if (fileName2.endsWith('.cbr') || fileName2.endsWith('.cbz')) {
-        debugPrint('Extracting file');
-        // read the file
-        File file = File(dirLocation + '/' + fileName2);
-        List<int> bytes = file.readAsBytesSync();
-        // decode the RAR archive
-        Archive archive = ZipDecoder().decodeBytes(bytes);
-        // extract the contents of the RAR archive
-        for (ArchiveFile archiveFile in archive) {
-          String data = archiveFile.content as String;
-          // write the file
-          File(comicFolder + '/' + archiveFile.name)
-            ..createSync(recursive: true)
-            ..writeAsStringSync(data);
+          debugPrint(files.toString());
+        } catch (e) {
+          debugPrint(e.toString());
         }
-        // delete the cbr or cbz file
-        file.deleteSync();
+
+        String fileName2 = await fileNameFromTitle(title);
+        FileUtils.mkdir([dirLocation + '/']);
+        debugPrint('Comic folder created');
+        debugPrint(dirLocation + '/' + fileName2);
+        final fileType = lookupMimeType(dirLocation + '/' + fileName2 + '.zip');
+        if (fileType == 'application/zip' ||
+            fileType == 'application/x-zip-compressed' ||
+            fileType == 'application/zip; charset=binary') {
+          var bytes =
+              File(dirLocation + '/' + fileName + '.zip').readAsBytesSync();
+          // get list of all files in dirLocation prior to unzipping
+          var addedFolder = await Directory(dirLocation).list().toList();
+          var archive = ZipDecoder().decodeBytes(bytes);
+          for (var file in archive) {
+            var filename = file.name;
+            if (file.isFile) {
+              var data = file.content as List<int>;
+              File(dirLocation + '/' + filename)
+                ..createSync(recursive: true)
+                ..writeAsBytesSync(data);
+            } else {
+              FileUtils.mkdir([dirLocation + '/']);
+            }
+          }
+          var changedFolder = await Directory(dirLocation).list().toList();
+          for (var file in changedFolder) {
+            if (addedFolder.contains(file) == false) {
+              comicFolder = file.path;
+            }
+          }
+          debugPrint("Difference: " + comicFolder);
+          debugPrint('Unzipped');
+          File(dirLocation + '/' + fileName + '.zip').deleteSync();
+
+          debugPrint('Zip file extracted');
+        } else {
+          debugPrint('Error');
+        }
       }
 
       setState(() {
@@ -154,13 +177,16 @@ class _DownloadScreenState extends State<DownloadScreen> {
         Navigator.pop(context);
       });
     } else {
-      print('Permission not granted');
+      debugPrint('Permission not granted');
     }
+    var prefs = await SharedPreferences.getInstance();
+    debugPrint("title: " + title);
+    debugPrint("comicFolder: " + comicFolder);
+    prefs.setString(title, comicFolder);
   }
 
   Future<String> getFilePath(String fileName) async {
     final directory = await getExternalStorageDirectory();
-    // final directory = await getApplicationDocumentsDirectory();
     final path = directory!.path;
     return path;
   }
@@ -175,7 +201,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
     fileName = fileName.replaceAll('<', '_');
     fileName = fileName.replaceAll('>', '_');
     fileName = fileName.replaceAll('|', '_');
-    // remove quotes
+    fileName = fileName.replaceAll('!', '_');
+    fileName = fileName.replaceAll(',', '_');
     fileName = fileName.replaceAll('\'', '');
     fileName = fileName.replaceAll('’', '');
     fileName = fileName.replaceAll('‘', '');
@@ -191,12 +218,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Downloading file: ' + title),
-        // have a x button to cancel the download
         actions: [
           IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
-              // ask for confirmation before cancelling the download
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -233,7 +258,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // check if the folder exists, if it doesnt then create it
             if (downloading == true)
               Column(
                 children: [
@@ -256,17 +280,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   ),
                 ],
               ),
-            // if file exists, give a dialog saying that and then close the dialog
             if (downloading == false)
               Column(
                 children: [
-                  // big icon to show that that is in the top third of the screen
                   Icon(
                     Icons.check_circle,
                     size: 200,
                     color: Colors.green,
                   ),
-
                   SizedBox(
                     height: 180,
                   ),
@@ -284,7 +305,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       Navigator.pop(context);
                     },
                   ),
-                  // close the dialog after 3 seconds
                 ],
               ),
           ],

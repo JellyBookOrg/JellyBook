@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:like_button/like_button.dart';
-// import 'package:jellybook/providers/downloader.dart';
 import 'package:jellybook/screens/downloader_screen.dart';
 import 'package:jellybook/screens/reading_screen.dart';
 
@@ -45,13 +43,11 @@ class InfoScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // create the part that contains the image and the title, year, star, and action buttons
             Row(
               children: [
                 const SizedBox(
                   width: 5,
                 ),
-                // create the image
                 Expanded(
                   flex: 2,
                   child: Padding(
@@ -79,7 +75,6 @@ class InfoScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                // create the title, year, star, and action buttons
                 Expanded(
                   flex: 3,
                   child: Column(
@@ -96,7 +91,6 @@ class InfoScreen extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      // create the year, star, and action buttons
                       const SizedBox(
                         height: 5,
                       ),
@@ -152,23 +146,11 @@ class InfoScreen extends StatelessWidget {
                                   ),
                                 ),
                               );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text("This feature is not available yet",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          )),
-                                  backgroundColor: Colors.black,
-                                ),
-                              );
                             },
                             child: const Icon(Icons.play_arrow),
                           ),
-                          // icon button for download (dont use ElevatedButton)
                           IconButton(
                             onPressed: () {
-                              // use slide animation to go to the download screen
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(

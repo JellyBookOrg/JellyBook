@@ -10,18 +10,17 @@ import 'package:archive/archive_io.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:jellybook/screens/downloader_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String title;
   final String comicId;
-  // final storage = new FlutterSecureStorage();
 
   ReadingScreen({
     required this.title,
     required this.comicId,
   });
 
-  // create a stateful widget
   _ReadingScreenState createState() => _ReadingScreenState(
         title: title,
         comicId: comicId,
@@ -31,54 +30,86 @@ class ReadingScreen extends StatefulWidget {
 class _ReadingScreenState extends State<ReadingScreen> {
   final String title;
   final String comicId;
+  List<String> chapters = [];
+  String folderName = '';
+  String path = '';
+  int pageNums = 0;
+  int pageNum = 0;
+  double progress = 0.0;
 
   _ReadingScreenState({
     required this.title,
     required this.comicId,
   });
 
-  // first we need to check if the file exists
-  // if it does (and is a cbz file) then we need to extract it
-  Future<void> checkFile() async {
-    // check if we have permission to read the file
-    PermissionStatus permission = await Permission.storage.status;
-    // get location of file
-    String dirLocation = await getExternalStorageDirectory().toString();
-    if (permission == PermissionStatus.granted) {
-      // check if the file exists
-      var title2 = await fileNameFromTitle(title);
-      if (FileUtils.testfile(dirLocation + '/' + title2 + '.cbz', 'exists') ==
-          true) {
-        // extract the file
-        extractFile();
-      } else {
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                DownloadScreen(
-              title: title,
-              comicId: comicId,
-            ),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              var begin = const Offset(1.0, 0.0);
-              var end = Offset.zero;
-              var curve = Curves.ease;
-
-              var tween =
-                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-          ),
-        );
+  Future<void> getChapters() async {
+    Directory comicsFolder = await getApplicationDocumentsDirectory();
+    var prefs = await SharedPreferences.getInstance();
+    folderName = prefs.getString(title) ?? "";
+    print("folder name: $folderName");
+    path = folderName;
+    List<FileSystemEntity> files = Directory(path).listSync();
+    print(files);
+    if (files[0].path.contains(".")) {
+      for (var file in files) {
+        String chapterName = file.path.split("/").last;
+        chapters.add(chapterName);
+      }
+    } else {
+      for (var file in files) {
+        String chapterName = file.path.split("/").last;
+        chapters.add(chapterName);
       }
     }
+    print("Chapters:");
+    print(chapters);
+  }
+
+  Future<void> checkDownloaded() async {
+    var prefs = await SharedPreferences.getInstance();
+    folderName = prefs.getString(title) ?? "";
+    if (folderName == "") {
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 500),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              DownloadScreen(
+            title: title,
+            comicId: comicId,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            var begin = const Offset(1.0, 0.0);
+            var end = Offset.zero;
+            var curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  Future<void> saveProgress(int page) async {
+    var prefs = await SharedPreferences.getInstance();
+    double progress = page / pageNums;
+    prefs.setDouble(comicId + "_progress", progress);
+    prefs.setInt(comicId + "_pageNum", page);
+    print("saved progress");
+    print("page num: $page");
+  }
+
+  Future<void> getProgress() async {
+    var prefs = await SharedPreferences.getInstance();
+    pageNum = await prefs.getInt(comicId + "_pageNum") ?? 0;
+    progress = await prefs.getDouble(comicId + "_progress") ?? 0.0;
+    print("page returned: $pageNum");
   }
 
   Future<String> fileNameFromTitle(String title) async {
@@ -91,7 +122,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
     fileName = fileName.replaceAll('<', '_');
     fileName = fileName.replaceAll('>', '_');
     fileName = fileName.replaceAll('|', '_');
-    // remove quotes
+    fileName = fileName.replaceAll('!', '_');
+    fileName = fileName.replaceAll(',', '_');
     fileName = fileName.replaceAll('\'', '');
     fileName = fileName.replaceAll('’', '');
     fileName = fileName.replaceAll('‘', '');
@@ -102,65 +134,109 @@ class _ReadingScreenState extends State<ReadingScreen> {
     return fileName;
   }
 
-  Future<void> extractFile() async {
-    // get location of file
-    String dirLocation = await getExternalStorageDirectory().toString();
-    // get the file
-    var title2 = await fileNameFromTitle(title);
-    var file = File(dirLocation + '/' + title2 + '.cbz');
-    // read the file
-    var bytes = file.readAsBytesSync();
-    // decode the file
-    var archive = ZipDecoder().decodeBytes(bytes);
-    // extract the file
-    for (var file in archive) {
-      var filename = file.name;
-      if (file.isFile) {
-        var data = file.content as List<int>;
-        File(dirLocation + '/' + title2 + '/' + filename)
-          ..createSync(recursive: true)
-          ..writeAsBytesSync(data);
-      } else {
-        Directory(dirLocation + '/' + title2 + '/' + filename)
-          ..create(recursive: true);
+  List<String> pages = [];
+  Future<void> createPageList() async {
+    print("folder name: $folderName");
+    List<FileSystemEntity> files = Directory(path).listSync();
+    print(files);
+    bool isFolder = false;
+    for (var file in files) {
+      if (await Directory(file.path).exists()) {
+        isFolder = true;
+      }
+    }
+
+    if (!isFolder) {
+      for (var file in files) {
+        String chapterName = file.path.split("/").last;
+        pages.add(chapterName);
+      }
+    } else {
+      List<String> pageFiles = [];
+      for (var file in files) {
+        String chapterName = file.path.split("/").last;
+        pageFiles = Directory(path + '/' + chapterName)
+            .listSync()
+            .map((e) => e.path.split("/").last)
+            .toList();
+        pageFiles.sort();
+        for (var page in pageFiles) {
+          pages.add(chapterName + '/' + page);
+          pageNums++;
+        }
       }
     }
   }
 
-  // create a list of pages/images
-  List<Widget> pages = [];
-  Future<void> createPageList() async {
-    // get location of file
-    String dirLocation = await getExternalStorageDirectory().toString();
-    // get the file
-    var title2 = await fileNameFromTitle(title);
-    // get the directory
-    var dir = Directory(dirLocation + '/' + title2);
-    // get the list of files
-    var files = dir.listSync();
-    // sort the files
-    files.sort((a, b) => a.path.compareTo(b.path));
-    // add the files to the list
-    for (var file in files) {
-      pages.add(
-        Image.file(
-          // convert filesystementity to file
-          File(file.path),
-          fit: BoxFit.contain,
-        ),
-      );
-    }
+  void initState() {
+    super.initState();
+    checkDownloaded();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Center(
-        child: Text('Reading Screen'),
-      ),
+    return FutureBuilder(
+      future: getChapters(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(title),
+            ),
+            body: FutureBuilder(
+              future: getProgress(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return FutureBuilder(
+                    future: createPageList(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: PageView.builder(
+                                itemCount: pages.length,
+                                controller: PageController(
+                                  initialPage: pageNum,
+                                ),
+                                itemBuilder: (context, index) {
+                                  return InteractiveViewer(
+                                    child: Image.file(
+                                      File(path + '/' + pages[index]),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  );
+                                },
+                                onPageChanged: (index) {
+                                  saveProgress(index);
+                                  progress = index / pageNums;
+                                  // getProgress();
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    },
+                  );
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            ),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }

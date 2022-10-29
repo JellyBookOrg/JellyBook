@@ -53,6 +53,7 @@ dependencies:
   permission_handler: ^10.2.0
   file_utils: ^1.0.1
   turn_page_transition: ^0.2.0
+  mime: ^1.0.2
 
 dev_dependencies:
   flutter_test:
