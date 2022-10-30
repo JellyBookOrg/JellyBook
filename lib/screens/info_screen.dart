@@ -17,6 +17,7 @@ class InfoScreen extends StatelessWidget {
   final String year;
   final double stars;
   final String comicId;
+  final String path;
 
   InfoScreen(
       {required this.title,
@@ -26,6 +27,7 @@ class InfoScreen extends StatelessWidget {
       required this.url,
       required this.comicId,
       required this.stars,
+      required this.path,
       required this.year});
 
   @override
@@ -161,6 +163,7 @@ class InfoScreen extends StatelessWidget {
                                       DownloadScreen(
                                     title: title,
                                     comicId: comicId,
+                                    path: path,
                                   ),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {

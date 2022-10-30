@@ -7,6 +7,7 @@ I have decided to still release this early build in hope to recieve some attenti
 
 ## Currenty supported formats:
 - `.cbz` files
+- `.cbr` files (initial support)
 
 ## Todo
 
@@ -20,4 +21,8 @@ I have decided to still release this early build in hope to recieve some attenti
  - For the download completed screen I want to add a image or gif of a jellyfish reading a book (credit to thornbill on the Matrix server for that idea)
  - I want to improve the UI on the main menu screne and have a progress bar on already read books
  - Eat hot chip!
- - Add .cbr file support (RAR is propietary and therefore issues come up with licensing for a decoder)
+
+## Contact Me
+ - Discord: `kmp3e#9430`
+ - Matrix: `@kmp3e:matrix.org`
+ - Feel free to submit a issue on GitHub

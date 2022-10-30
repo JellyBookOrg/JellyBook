@@ -10,30 +10,36 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:archive/archive.dart';
 import 'dart:convert';
 import 'package:mime/mime.dart';
+import 'package:unrar_file/unrar_file.dart';
 
 class DownloadScreen extends StatefulWidget {
   final String title;
   final String comicId;
+  final String path;
 
   DownloadScreen({
     required this.title,
     required this.comicId,
+    required this.path,
   });
 
   @override
   _DownloadScreenState createState() => _DownloadScreenState(
         title: title,
         comicId: comicId,
+        filePath: path,
       );
 }
 
 class _DownloadScreenState extends State<DownloadScreen> {
   final String title;
   final String comicId;
+  final String filePath;
 
   _DownloadScreenState({
     required this.comicId,
     required this.title,
+    required this.filePath,
   });
   String url = '';
   String imageUrl = '';
@@ -115,8 +121,16 @@ class _DownloadScreenState extends State<DownloadScreen> {
         debugPrint('Folder does not exist');
         try {
           FileUtils.mkdir([dirLocation]);
+          // set the location of the folder
+          var dir = dirLocation + '/' + fileName;
+          if (filePath.contains('.cbz')) {
+            dir += '.zip';
+          } else if (filePath.contains('.cbr')) {
+            dir += '.rar';
+          }
+          // dir += filePath.substring(filePath.lastIndexOf('.'));
           debugPrint('Directory created');
-          await dio.download(url, dirLocation + '/' + fileName + '.zip',
+          await dio.download(url, dir,
               options: Options(
                 headers: headers,
               ), onReceiveProgress: (receivedBytes, totalBytes) {
@@ -135,36 +149,39 @@ class _DownloadScreenState extends State<DownloadScreen> {
         debugPrint('Comic folder created');
         debugPrint(dirLocation + '/' + fileName2);
         final fileType = lookupMimeType(dirLocation + '/' + fileName2 + '.zip');
-        if (fileType == 'application/zip' ||
-            fileType == 'application/x-zip-compressed' ||
-            fileType == 'application/zip; charset=binary') {
+        if (filePath.contains('.cbz')) {
           var bytes =
               File(dirLocation + '/' + fileName + '.zip').readAsBytesSync();
-          // get list of all files in dirLocation prior to unzipping
-          var addedFolder = await Directory(dirLocation).list().toList();
+          FileUtils.mkdir([dirLocation + '/' + fileName2]);
+          comicFolder = dirLocation + '/' + fileName2;
           var archive = ZipDecoder().decodeBytes(bytes);
           for (var file in archive) {
             var filename = file.name;
             if (file.isFile) {
               var data = file.content as List<int>;
-              File(dirLocation + '/' + filename)
+              File(dirLocation + '/' + fileName2 + '/' + filename)
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(data);
             } else {
-              FileUtils.mkdir([dirLocation + '/']);
+              FileUtils.mkdir([dirLocation + '/' + fileName2 + '/' + filename]);
             }
           }
-          var changedFolder = await Directory(dirLocation).list().toList();
-          for (var file in changedFolder) {
-            if (addedFolder.contains(file) == false) {
-              comicFolder = file.path;
-            }
-          }
-          debugPrint("Difference: " + comicFolder);
           debugPrint('Unzipped');
           File(dirLocation + '/' + fileName + '.zip').deleteSync();
 
           debugPrint('Zip file extracted');
+        } else if (filePath.contains('.cbr')) {
+          FileUtils.mkdir([dirLocation + '/' + fileName2]);
+          comicFolder = dirLocation + '/' + fileName2;
+          try {
+            await UnrarFile.extract_rar(dirLocation + '/' + fileName + '.rar',
+                dirLocation + '/' + fileName2 + '/');
+            debugPrint('Rar file extracted');
+            debugPrint('Unzipped');
+            File(dirLocation + '/' + fileName + '.rar').deleteSync();
+          } catch (e) {
+            debugPrint("Extraction failed " + e.toString());
+          }
         } else {
           debugPrint('Error');
         }

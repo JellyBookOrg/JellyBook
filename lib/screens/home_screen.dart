@@ -72,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             year:
                                 snapshot.data![index]['releaseDate'] ?? "null",
                             stars: snapshot.data![index]['rating'] ?? -1,
+                            path: snapshot.data![index]['path'] ?? "null",
                             comicId: snapshot.data![index]['id'] ?? "null",
                           ),
                           transitionsBuilder:
