@@ -24,6 +24,12 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordVisible = false;
   }
 
+  // FocusNodes
+  FocusNode _focusNode1 = FocusNode();
+  FocusNode _focusNode2 = FocusNode();
+  FocusNode _focusNode3 = FocusNode();
+  FocusNode _focusNode4 = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,40 +48,44 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(
                 height: 50,
               ),
-              Container(
-                width: 300,
+              // make it work on android TV
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
                 child: TextFormField(
                   controller: _url,
+                  focusNode: _focusNode1,
                   decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
                     labelText: "Server Address",
+                    border: OutlineInputBorder(),
                   ),
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 5,
               ),
-              Container(
-                width: 300,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
                 child: TextFormField(
                   controller: _username,
+                  focusNode: _focusNode2,
                   decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
                     labelText: "Username",
+                    border: OutlineInputBorder(),
                   ),
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 5,
               ),
-              Container(
-                width: 300,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
                 child: TextFormField(
                   controller: _password,
+                  focusNode: _focusNode3,
                   obscureText: !_passwordVisible,
                   decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
                     labelText: "Password",
+                    border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _passwordVisible
@@ -92,12 +102,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 15,
               ),
               Container(
-                width: 300,
+                // width dynamically sized of the button
+                width: MediaQuery.of(context).size.width - 50,
                 height: 50,
                 child: ElevatedButton(
+                  focusNode: _focusNode1,
                   onPressed: () async {
                     setState(() {
                       _loading = true;
