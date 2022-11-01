@@ -183,25 +183,30 @@ class _HomeScreenState extends State<HomeScreen> {
         */
 
 Future<List<Map<String, dynamic>>> getServerCategories() async {
+  debugPrint("getting server categories");
   final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('token');
-  final url = prefs.getString('server');
-  final userId = prefs.getString('UserId');
-  final client = prefs.getString('client');
-  final device = prefs.getString('device');
-  final deviceId = prefs.getString('deviceId');
-  final version = prefs.getString('version');
+  final token = prefs.getString('accessToken') ?? "";
+  final url = prefs.getString('server') ?? "";
+  final userId = prefs.getString('UserId') ?? "";
+  final client = prefs.getString('client') ?? "JellyBook";
+  final device = prefs.getString('device') ?? "";
+  final deviceId = prefs.getString('deviceId') ?? "";
+  final version = prefs.getString('version') ?? "1.0.2";
+  debugPrint("got prefs");
+  Map<String, String> headers =
+      getHeaders(url, client, device, deviceId, version, token);
   final response = await Http.get(
-    Uri.parse('$url/Users/$userId/Views'),
-    headers: {
-      'Accept': 'application/json',
-      'Accept-Language': 'en-US,en;q=0.5',
-      'Accept-Encoding': 'gzip, deflate',
-      'X-Emby-Authorization':
-          'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
-      'Connection': 'keep-alive',
-    },
+    Uri.parse(url + "/Users/" + userId + "/Views"),
+    headers: headers,
   );
+
+  // final response = await Http.get(
+  //   Uri.parse('$url/Users/$userId/Views'),
+  //   headers: headers,
+  // );
+  debugPrint("got response");
+  debugPrint(response.statusCode.toString());
+  debugPrint(response.body);
   final data = await json.decode(response.body);
   bool hasComics = true;
   if (hasComics) {
@@ -229,7 +234,7 @@ Future<List<Map<String, dynamic>>> getServerCategories() async {
 Future<List<Map<String, dynamic>>> getComics(
     String comicsId, String etag) async {
   final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('token');
+  final token = prefs.getString('accessToken');
   final url = prefs.getString('server');
   final userId = prefs.getString('UserId');
   final client = prefs.getString('client');
@@ -284,4 +289,37 @@ Future<List<Map<String, dynamic>>> getComics(
     }
   }
   return comics;
+}
+
+Map<String, String> getHeaders(String url, String client, String device,
+    String deviceId, String version, String token) {
+  debugPrint("getting headers");
+  debugPrint(url);
+  debugPrint(client);
+  debugPrint(device);
+  debugPrint(deviceId);
+  debugPrint(version);
+  debugPrint(token);
+  if (url.contains("https://")) {
+    return {
+      'Host': url.replaceAll("https://", ""),
+      'Accept': 'application/json',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Accept-Encoding': 'gzip, deflate',
+      'X-Emby-Authorization':
+          'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
+      'Connection': 'keep-alive',
+      'Sec-Fetch-Dest': 'empty',
+      'Sec-Fetch-Mode': 'cors',
+      'Sec-Fetch-Site': 'same-origin',
+    };
+  }
+  return {
+    'Accept': 'application/json',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate',
+    'X-Emby-Authorization':
+        'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
+    'Connection': 'keep-alive',
+  };
 }

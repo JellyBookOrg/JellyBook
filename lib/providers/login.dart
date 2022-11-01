@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -26,6 +27,7 @@ class Login {
   // make a static version of the above class
   static Future<String> loginStatic(String url, String username,
       [String password = ""]) async {
+    debugPrint("LoginStatic called");
     final storage = FlutterSecureStorage();
     String _url = "$url/Users/authenticatebyname";
     const _client = "jellybook";
@@ -33,26 +35,33 @@ class Login {
     const _deviceId = "Unknown Device id";
     const _version = "0.0.2";
 
-    // first check to see if url doesnt contains http or https and if not send notification and return
     if ((!url.contains("http://") || !url.contains("https://")) == false) {
+      debugPrint("URL does not contain http:// or https://");
       return "Plase add http:// or https:// to the url";
     }
 
-    final Map<String, String> headers = {
-      "Accept": "application/json",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Accept-Encoding": "gzip, deflate",
-      "X-Emby-Authorization":
-          "MediaBrowser Client=\"$_client\", Device=\"$_device\", DeviceId=\"$_deviceId\", Version=\"$_version\"",
-      "Content-Type": "application/json",
-      "Origin": url,
-      "Connection": "keep-alive",
-    };
+    // make a request with different headers depending on if http or https
+
+    final Map<String, String> headers =
+        getHeaders(url, _client, _device, _deviceId, _version);
+    debugPrint("Headers: $headers");
+
+    // final Map<String, String> headers = {
+    //   "Accept": "application/json",
+    //   "Accept-Language": "en-US,en;q=0.5",
+    //   "Accept-Encoding": "gzip, deflate",
+    //   "X-Emby-Authorization":
+    //       "MediaBrowser Client=\"$_client\", Device=\"$_device\", DeviceId=\"$_deviceId\", Version=\"$_version\"",
+    //   "Content-Type": "application/json",
+    //   "Origin": url,
+    //   "Connection": "keep-alive",
+    // };
     final Map<String, String> body = {
       "Username": username,
       "Pw": password,
     };
 
+    debugPrint("Attempting to login to $url");
     var response = await Dio().post(
       _url,
       data: body,
@@ -60,6 +69,8 @@ class Login {
         headers: headers,
       ),
     );
+    debugPrint("Response: ${response.statusCode}");
+    debugPrint("Response: ${response.data}");
 
     // print response data as json
     // JsonEncoder encoder = new JsonEncoder.withIndent('  ');
@@ -74,12 +85,14 @@ class Login {
       prefs.setString("UserId", response.data["SessionInfo"]["UserId"]);
 
       // now for the stuff that is not needed for all sessions
+      debugPrint("saving data part 2");
       prefs.setString("client", _client);
       prefs.setString("device", _device);
       prefs.setString("deviceId", _deviceId);
       prefs.setString("version", _version);
 
       // now save the username and password to the secure storage
+      debugPrint("saving data part 3");
       await storage.write(key: "server", value: url);
       await storage.write(key: "username", value: username);
       await storage.write(key: "password", value: password);
@@ -92,6 +105,7 @@ class Login {
       await storage.write(key: "device", value: _device);
       await storage.write(key: "deviceId", value: _deviceId);
       await storage.write(key: "version", value: _version);
+      debugPrint("saved data");
       return "true";
     } else {
       if (response.statusCode == 401) {
@@ -106,4 +120,35 @@ class Login {
       }
     }
   }
+}
+
+// getHeaders returns the headers depending on if the url is http or https
+Map<String, String> getHeaders(
+    String url, String client, String device, String deviceId, String version) {
+  if (url.contains("https://")) {
+    return {
+      "Accept": "application/json",
+      "Accept-Language": "en-US,en;q=0.5",
+      "Accept-Encoding": "gzip, deflate",
+      "Content-Type": "application/json",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "same-origin",
+      "Origin": url,
+      "Connection": "keep-alive",
+      "TE": "Trailers",
+      "X-Emby-Authorization":
+          "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
+    };
+  }
+  return {
+    "Accept": "application/json",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate",
+    "X-Emby-Authorization":
+        "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
+    "Content-Type": "application/json",
+    "Origin": url,
+    "Connection": "keep-alive",
+  };
 }

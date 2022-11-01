@@ -22,6 +22,9 @@ I have decided to still release this early build in hope to recieve some attenti
  - I want to improve the UI on the main menu screne and have a progress bar on already read books
  - Eat hot chip!
 
+## Known Issues
+ - You cannot use a Self Signed SSL Cert with it. You may only use HTTP or a Trusted SSL Cert.
+
 ## Contact Me
  - Discord: `kmp3e#9430`
  - Matrix: `@kmp3e:matrix.org`
