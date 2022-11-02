@@ -11,6 +11,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:jellybook/screens/info_screen.dart';
 import 'package:jellybook/providers/fetchBooks.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
+import 'package:turn_page_transition/turn_page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -59,6 +60,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () {
                       Navigator.push(
                         context,
+                        // TurnPageRoute(
+                        //   turningPoint: 0.5,
+                        //   transitionDuration: Duration(milliseconds: 500),
+                        //   builder: (context) => InfoScreen(
+                        //     title: snapshot.data![index]['name'] ?? "null",
+                        //     imageUrl:
+                        //         (snapshot.data![index]['imagePath'] ?? "null"),
+                        //     description:
+                        //         snapshot.data![index]['description'] ?? "null",
+                        //     tags: snapshot.data![index]['tags'] ?? ["null"],
+                        //     url: snapshot.data![index]['url'] ?? "null",
+                        //     year:
+                        //         snapshot.data![index]['releaseDate'] ?? "null",
+                        //     stars: snapshot.data![index]['rating'] ?? -1,
+                        //     path: snapshot.data![index]['path'] ?? "null",
+                        //     comicId: snapshot.data![index]['id'] ?? "null",
+                        //   ),
+                        // ),
                         PageRouteBuilder(
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
