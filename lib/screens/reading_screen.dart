@@ -4,14 +4,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:jellybook/screens/downloader_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-// import 'package:file_utils/file_utils.dart';
-// import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:jellybook/providers/fileNameFromTitle.dart';
+import 'package:file_utils/file_utils.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 // import 'package:archive/archive.dart';
 // import 'package:archive/archive_io.dart';
 // import 'package:turn_page_transition/turn_page_transition.dart';
-// import 'package:path_provider/path_provider.dart';
-// import 'package:jellybook/providers/fileNameFromTitle.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String title;
@@ -46,11 +46,22 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   Future<void> getChapters() async {
     final prefs = await SharedPreferences.getInstance();
-    // Directory comicsFolder = await getApplicationDocumentsDirectory();
-    // folderName = prefs.getString(title) ?? "";
-    comicFolder = prefs.getString(title) ?? "";
-    print("folder name: $folderName");
-    path = folderName;
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+    var filePath = await getApplicationDocumentsDirectory();
+    String title2 = await fileNameFromTitle(title);
+    // check if the directory exists
+    if (await Directory(filePath.path + '/' + title2).exists()) {
+      comicFolder = filePath.path + '/' + title2;
+    } else {
+      comicFolder = 'Error';
+    }
+    // comicFolder = prefs.getString(title) ?? "";
+    print('Comic Folder: ' + comicFolder);
+    // print("folder name: $folderName");
+    path = comicFolder;
     List<FileSystemEntity> files = Directory(path).listSync();
     print(files);
     // what we want to do is recursively go through the folder and get all the last directories that dont contain any other directories

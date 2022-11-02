@@ -1,7 +1,6 @@
 // the goal of this file is to create a screen that displays information about the selected book/comic
 
 import 'package:flutter/material.dart';
-import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:like_button/like_button.dart';
 import 'package:jellybook/screens/downloader_screen.dart';
