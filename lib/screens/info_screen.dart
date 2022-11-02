@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:like_button/like_button.dart';
 import 'package:jellybook/screens/downloader_screen.dart';
 import 'package:jellybook/screens/reading_screen.dart';
+import 'package:jellybook/providers/fixRichText.dart';
 
 class InfoScreen extends StatelessWidget {
   final String title;
@@ -265,58 +266,5 @@ class InfoScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String fixRichText(String text) {
-    return text
-        .replaceAll("<br>", "\n\t\t\t")
-        .replaceAll("<i>", "")
-        .replaceAll("</i>", "")
-        .replaceAll("<b>", "")
-        .replaceAll("</b>", "")
-        .replaceAll("<p>", "")
-        .replaceAll("</p>", "")
-        .replaceAll("<u>", "")
-        .replaceAll("</u>", "")
-        .replaceAll("<strong>", "")
-        .replaceAll("</strong>", "")
-        .replaceAll("<em>", "")
-        .replaceAll("</em>", "")
-        .replaceAll("<a>", "")
-        .replaceAll("</a>", "")
-        .replaceAll("<ul>", "")
-        .replaceAll("</ul>", "")
-        .replaceAll("<li>", "")
-        .replaceAll("</li>", "")
-        .replaceAll("<ol>", "")
-        .replaceAll("</ol>", "")
-        .replaceAll("<div>", "")
-        .replaceAll("</div>", "")
-        .replaceAll("<span>", "")
-        .replaceAll("</span>", "")
-        .replaceAll("<h1>", "")
-        .replaceAll("</h1>", "")
-        .replaceAll("<h2>", "")
-        .replaceAll("</h2>", "")
-        .replaceAll("<h3>", "")
-        .replaceAll("</h3>", "")
-        .replaceAll("<h4>", "")
-        .replaceAll("</h4>", "")
-        .replaceAll("<h5>", "")
-        .replaceAll("</h5>", "")
-        .replaceAll("<h6>", "")
-        .replaceAll("</h6>", "")
-        .replaceAll("<hr>", "")
-        .replaceAll("</hr>", "")
-        .replaceAll("<blockquote>", "")
-        .replaceAll("</blockquote>", "")
-        .replaceAll("<pre>", "")
-        .replaceAll("</pre>", "")
-        .replaceAll("<code>", "")
-        .replaceAll("</code>", "")
-        .replaceAll("<sup>", "")
-        .replaceAll("</sup>", "")
-        .replaceAll("<sub>", "")
-        .replaceAll("</sub>", "");
   }
 }

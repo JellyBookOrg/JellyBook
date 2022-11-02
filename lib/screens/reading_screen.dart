@@ -11,6 +11,8 @@ import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:jellybook/screens/downloader_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jellybook/providers/getChapters.dart';
+import 'package:jellybook/providers/progress.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String title;
@@ -43,109 +45,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
     required this.comicId,
   });
 
-  Future<void> getChapters() async {
-    final prefs = await SharedPreferences.getInstance();
-    // Directory comicsFolder = await getApplicationDocumentsDirectory();
-    // folderName = prefs.getString(title) ?? "";
-    comicFolder = prefs.getString(title) ?? "";
-    print("folder name: $folderName");
-    path = folderName;
-    List<FileSystemEntity> files = Directory(path).listSync();
-    print(files);
-    // what we want to do is recursively go through the folder and get all the last directories that dont contain any other directories
-    // then we want to add them to the chapters list
-    // max depth of 3
-    // the way we will do the checking is by checkign to see if the file is ends with a jpg, jpeg, png...
-    var formats = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff'];
-    for (var file in files) {
-      if (file.path.endsWith(formats[0]) ||
-          file.path.endsWith(formats[1]) ||
-          file.path.endsWith(formats[2]) ||
-          file.path.endsWith(formats[3]) ||
-          file.path.endsWith(formats[4]) ||
-          file.path.endsWith(formats[5]) ||
-          file.path.endsWith(formats[6])) {
-        print("file: $file");
-        if (!chapters.contains(file.parent.path)) {
-          chapters.add(file.parent.path);
-        }
-      } else {
-        print("file: $file");
-        List<FileSystemEntity> files2 = Directory(file.path).listSync();
-        for (var file2 in files2) {
-          if (file2.path.endsWith(formats[0]) ||
-              file2.path.endsWith(formats[1]) ||
-              file2.path.endsWith(formats[2]) ||
-              file2.path.endsWith(formats[3]) ||
-              file2.path.endsWith(formats[4]) ||
-              file2.path.endsWith(formats[5]) ||
-              file2.path.endsWith(formats[6])) {
-            print("file2: $file2");
-            if (!chapters.contains(file2.parent.path)) {
-              chapters.add(file2.parent.path);
-            }
-          } else {
-            print("file2: $file2");
-            List<FileSystemEntity> files3 = Directory(file2.path).listSync();
-            for (var file3 in files3) {
-              if (file3.path.endsWith(formats[0]) ||
-                  file3.path.endsWith(formats[1]) ||
-                  file3.path.endsWith(formats[2]) ||
-                  file3.path.endsWith(formats[3]) ||
-                  file3.path.endsWith(formats[4]) ||
-                  file3.path.endsWith(formats[5]) ||
-                  file3.path.endsWith(formats[6])) {
-                print("file3: $file3");
-                if (!chapters.contains(file3.parent.path)) {
-                  chapters.add(file3.parent.path);
-                }
-              } else {
-                print("file3: $file3");
-                List<FileSystemEntity> files4 =
-                    Directory(file3.path).listSync();
-                for (var file4 in files4) {
-                  if (file4.path.endsWith(formats[0]) ||
-                      file4.path.endsWith(formats[1]) ||
-                      file4.path.endsWith(formats[2]) ||
-                      file4.path.endsWith(formats[3]) ||
-                      file4.path.endsWith(formats[4]) ||
-                      file4.path.endsWith(formats[5]) ||
-                      file4.path.endsWith(formats[6])) {
-                    print("file4: $file4");
-                    if (!chapters.contains(file4.parent.path)) {
-                      chapters.add(file4.parent.path);
-                    }
-                  } else {
-                    print("file4: $file4");
-                    List<FileSystemEntity> files5 =
-                        Directory(file4.path).listSync();
-                    for (var file5 in files5) {
-                      if (file5.path.endsWith(formats[0]) ||
-                          file5.path.endsWith(formats[1]) ||
-                          file5.path.endsWith(formats[2]) ||
-                          file5.path.endsWith(formats[3]) ||
-                          file5.path.endsWith(formats[4]) ||
-                          file5.path.endsWith(formats[5]) ||
-                          file5.path.endsWith(formats[6])) {
-                        print("file5: $file5");
-                        if (!chapters.contains(file5.parent.path)) {
-                          chapters.add(file5.parent.path + "/");
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    print("Chapters:");
-    print(chapters);
-  }
-
   Future<void> checkDownloaded() async {
     var prefs = await SharedPreferences.getInstance();
     folderName = prefs.getString(title) ?? "";
@@ -177,44 +76,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
         ),
       );
     }
-  }
-
-  Future<void> saveProgress(int page) async {
-    var prefs = await SharedPreferences.getInstance();
-    double progress = page / pageNums;
-    prefs.setDouble(comicId + "_progress", progress);
-    prefs.setInt(comicId + "_pageNum", page);
-    print("saved progress");
-    print("page num: $page");
-  }
-
-  Future<void> getProgress() async {
-    var prefs = await SharedPreferences.getInstance();
-    pageNum = await prefs.getInt(comicId + "_pageNum") ?? 0;
-    progress = await prefs.getDouble(comicId + "_progress") ?? 0.0;
-    print("page returned: $pageNum");
-  }
-
-  Future<String> fileNameFromTitle(String title) async {
-    String fileName = title.replaceAll(' ', '_');
-    fileName = fileName.replaceAll('/', '_');
-    fileName = fileName.replaceAll(':', '_');
-    fileName = fileName.replaceAll('?', '_');
-    fileName = fileName.replaceAll('*', '_');
-    fileName = fileName.replaceAll('"', '_');
-    fileName = fileName.replaceAll('<', '_');
-    fileName = fileName.replaceAll('>', '_');
-    fileName = fileName.replaceAll('|', '_');
-    fileName = fileName.replaceAll('!', '_');
-    fileName = fileName.replaceAll(',', '_');
-    fileName = fileName.replaceAll('\'', '');
-    fileName = fileName.replaceAll('’', '');
-    fileName = fileName.replaceAll('‘', '');
-    fileName = fileName.replaceAll('“', '');
-    fileName = fileName.replaceAll('”', '');
-    fileName = fileName.replaceAll('"', '');
-    fileName = fileName.replaceAll(RegExp(r'[^\x00-\x7F]+'), '');
-    return fileName;
   }
 
   List<String> pages = [];
@@ -251,7 +112,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getChapters(),
+      // getChapters requires folderName to be set
+      future: getChapters(folderName),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
@@ -259,7 +121,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
               title: Text(title),
             ),
             body: FutureBuilder(
-              future: getProgress(),
+              future: getProgress(comicId),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return FutureBuilder(
@@ -284,7 +146,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                   );
                                 },
                                 onPageChanged: (index) {
-                                  saveProgress(index);
+                                  saveProgress(index, comicId);
                                   progress = index / pageNums;
                                   // getProgress();
                                 },

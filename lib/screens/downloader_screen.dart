@@ -11,6 +11,7 @@ import 'package:archive/archive.dart';
 import 'dart:convert';
 import 'package:mime/mime.dart';
 import 'package:unrar_file/unrar_file.dart';
+import 'package:jellybook/providers/fileNameFromTitle.dart';
 
 class DownloadScreen extends StatefulWidget {
   final String title;
@@ -206,28 +207,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
     final directory = await getExternalStorageDirectory();
     final path = directory!.path;
     return path;
-  }
-
-  Future<String> fileNameFromTitle(String title) async {
-    String fileName = title.replaceAll(' ', '_');
-    fileName = fileName.replaceAll('/', '_');
-    fileName = fileName.replaceAll(':', '_');
-    fileName = fileName.replaceAll('?', '_');
-    fileName = fileName.replaceAll('*', '_');
-    fileName = fileName.replaceAll('"', '_');
-    fileName = fileName.replaceAll('<', '_');
-    fileName = fileName.replaceAll('>', '_');
-    fileName = fileName.replaceAll('|', '_');
-    fileName = fileName.replaceAll('!', '_');
-    fileName = fileName.replaceAll(',', '_');
-    fileName = fileName.replaceAll('\'', '');
-    fileName = fileName.replaceAll('’', '');
-    fileName = fileName.replaceAll('‘', '');
-    fileName = fileName.replaceAll('“', '');
-    fileName = fileName.replaceAll('”', '');
-    fileName = fileName.replaceAll('"', '');
-    fileName = fileName.replaceAll(RegExp(r'[^\x00-\x7F]+'), '');
-    return fileName;
   }
 
   @override
