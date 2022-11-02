@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:flutter_star/flutter_star.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:like_button/like_button.dart';
 import 'package:jellybook/screens/downloader_screen.dart';
 import 'package:jellybook/screens/reading_screen.dart';
@@ -231,9 +230,13 @@ class InfoScreen extends StatelessWidget {
                     fontSize: 14,
                     color: Colors.grey,
                     fontStyle: FontStyle.italic,
+                    height: 1.5,
                   ),
                 ),
               ),
+            ),
+            const SizedBox(
+              height: 10,
             ),
             Container(
               height: 50,

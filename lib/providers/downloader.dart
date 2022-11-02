@@ -22,9 +22,8 @@ Future<bool> checkDownloaded(String title) async {
   }
   var filePath = await getApplicationDocumentsDirectory();
   String title2 = await fileNameFromTitle(title);
-  // check if the file exists in the directory
-  var file = File(filePath.path + "/$title2");
-  if (await file.exists()) {
+  // check if the directory exists
+  if (await Directory(filePath.path + '/' + title2).exists()) {
     return true;
   } else {
     return false;

@@ -8,10 +8,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:archive/archive.dart';
-import 'dart:convert';
-import 'package:mime/mime.dart';
 import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
+import 'package:jellybook/providers/downloader.dart';
 
 class DownloadScreen extends StatefulWidget {
   final String title;
@@ -67,7 +66,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
       await Permission.storage.request();
       checkPermission1 = await Permission.storage.request().isGranted;
     }
-    if (checkPermission1 == true) {
+
+    // check if the directory exists
+    bool checkDown = await checkDownloaded(title);
+    if (checkPermission1 == true && checkDown == false) {
       final prefs = await SharedPreferences.getInstance();
       url = await storage.read(key: 'server') ?? '';
       imageUrl = await storage.read(key: 'imageUrl') ?? '';
@@ -76,6 +78,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       token = await storage.read(key: 'AccessToken') ?? '';
       fileName = await fileNameFromTitle(title);
       String path = await prefs.getString(title) ?? 'Error';
+      String fileName3 = await fileNameFromTitle(title);
       String dirLocation =
           await getApplicationDocumentsDirectory().then((value) => value.path);
       Map<String, String> headers = {
@@ -91,101 +94,81 @@ class _DownloadScreenState extends State<DownloadScreen> {
       url = url + '/Items/' + comicId + '/Download?api_key=' + token;
       var files = await Directory(dirLocation).list().toList();
       debugPrint(files.toString());
-      String fileName3 = await fileNameFromTitle(title);
+      String dir = dirLocation + '/' + fileName;
       debugPrint(dirLocation + '/' + fileName3);
-      // check if the folder exists
-      bool folderExists = false;
-      if (path != 'Error') {
-        folderExists = true;
-      }
-      debugPrint(folderExists.toString());
-      if (folderExists == true) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Comic Already Downloaded'),
-              content: Text('The comic is already downloaded'),
-              actions: [
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        debugPrint('Folder does not exist');
-        try {
-          FileUtils.mkdir([dirLocation]);
-          // set the location of the folder
-          var dir = dirLocation + '/' + fileName;
-          if (filePath.contains('.cbz')) {
-            dir += '.zip';
-          } else if (filePath.contains('.cbr')) {
-            dir += '.rar';
-          }
-          // dir += filePath.substring(filePath.lastIndexOf('.'));
-          debugPrint('Directory created');
-          await dio.download(url, dir,
-              options: Options(
-                headers: headers,
-              ), onReceiveProgress: (receivedBytes, totalBytes) {
-            setState(() {
-              downloading = true;
-              progress = (receivedBytes / totalBytes * 100);
-            });
-          });
-          debugPrint(files.toString());
-        } catch (e) {
-          debugPrint(e.toString());
-        }
-
-        String fileName2 = await fileNameFromTitle(title);
-        FileUtils.mkdir([dirLocation + '/']);
-        debugPrint('Comic folder created');
-        debugPrint(dirLocation + '/' + fileName2);
-        final fileType = lookupMimeType(dirLocation + '/' + fileName2 + '.zip');
+      debugPrint('Folder does not exist');
+      try {
+        FileUtils.mkdir([dirLocation]);
+        // set the location of the folder
+        dir = dirLocation + '/' + fileName;
         if (filePath.contains('.cbz')) {
-          var bytes =
-              File(dirLocation + '/' + fileName + '.zip').readAsBytesSync();
-          FileUtils.mkdir([dirLocation + '/' + fileName2]);
-          comicFolder = dirLocation + '/' + fileName2;
-          var archive = ZipDecoder().decodeBytes(bytes);
-          for (var file in archive) {
-            var filename = file.name;
-            if (file.isFile) {
-              var data = file.content as List<int>;
-              File(dirLocation + '/' + fileName2 + '/' + filename)
-                ..createSync(recursive: true)
-                ..writeAsBytesSync(data);
-            } else {
-              FileUtils.mkdir([dirLocation + '/' + fileName2 + '/' + filename]);
-            }
-          }
-          debugPrint('Unzipped');
-          File(dirLocation + '/' + fileName + '.zip').deleteSync();
-
-          debugPrint('Zip file extracted');
+          dir += '.zip';
         } else if (filePath.contains('.cbr')) {
-          FileUtils.mkdir([dirLocation + '/' + fileName2]);
-          comicFolder = dirLocation + '/' + fileName2;
-          try {
-            await UnrarFile.extract_rar(dirLocation + '/' + fileName + '.rar',
-                dirLocation + '/' + fileName2 + '/');
-            debugPrint('Rar file extracted');
-            debugPrint('Unzipped');
-            File(dirLocation + '/' + fileName + '.rar').deleteSync();
-          } catch (e) {
-            debugPrint("Extraction failed " + e.toString());
-          }
-        } else {
-          debugPrint('Error');
+          dir += '.rar';
         }
+        debugPrint('Directory created');
+        debugPrint("Attempting to download file");
+        await dio.download(url, dir,
+            options: Options(
+              headers: headers,
+            ), onReceiveProgress: (receivedBytes, totalBytes) {
+          setState(() {
+            downloading = true;
+            progress = (receivedBytes / totalBytes * 100);
+          });
+        });
+        debugPrint(files.toString());
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+
+      String fileName2 = await fileNameFromTitle(title);
+      FileUtils.mkdir([dirLocation + '/']);
+      debugPrint('Comic folder created');
+      debugPrint(dirLocation + '/' + fileName2);
+
+      // check if the file is a zip or rar
+      // final fileType = lookupMimeType(dirLocation + '/' + fileName2 + '.zip');
+      if (dir.contains('.zip')) {
+        // if (filePath.contains('.zip')) {
+        var bytes =
+            File(dirLocation + '/' + fileName2 + '.zip').readAsBytesSync();
+        // make directory to extract to
+        FileUtils.mkdir([dirLocation + '/' + fileName2]);
+        comicFolder = dirLocation + '/' + fileName2;
+
+        // extract the zip file
+        var archive = ZipDecoder().decodeBytes(bytes);
+        for (var file in archive) {
+          var filename = file.name;
+          if (file.isFile) {
+            var data = file.content as List<int>;
+            File(dirLocation + '/' + fileName2 + '/' + filename)
+              ..createSync(recursive: true)
+              ..writeAsBytesSync(data);
+          } else {
+            FileUtils.mkdir([dirLocation + '/' + fileName2 + '/' + filename]);
+          }
+        }
+        debugPrint('Unzipped');
+        File(dirLocation + '/' + fileName + '.zip').deleteSync();
+
+        debugPrint('Zip file extracted');
+      } else if (dir.contains('.rar')) {
+        // } else if (filePath.contains('.rar')) {
+        FileUtils.mkdir([dirLocation + '/' + fileName2]);
+        comicFolder = dirLocation + '/' + fileName2;
+        try {
+          await UnrarFile.extract_rar(dirLocation + '/' + fileName + '.rar',
+              dirLocation + '/' + fileName2 + '/');
+          debugPrint('Rar file extracted');
+          debugPrint('Unzipped');
+          File(dirLocation + '/' + fileName + '.rar').deleteSync();
+        } catch (e) {
+          debugPrint("Extraction failed " + e.toString());
+        }
+      } else {
+        debugPrint('Error');
       }
 
       setState(() {
@@ -194,8 +177,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
         path = dirLocation + '/' + fileName;
         Navigator.pop(context);
       });
-    } else {
-      debugPrint('Permission not granted');
     }
     var prefs = await SharedPreferences.getInstance();
     debugPrint("title: " + title);
@@ -209,102 +190,76 @@ class _DownloadScreenState extends State<DownloadScreen> {
     return path;
   }
 
+  // now we will build the UI
+  // if the file is downloading then show a circular progress indicator
+  // otherwise we will show a screen saying the file is already downloaded
+  // There shouldn't be a download button
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Downloading file: ' + title),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Cancel download'),
-                    content:
-                        Text('Are you sure you want to cancel the download?'),
-                    actions: [
-                      TextButton(
-                        child: Text('Confirm'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Cancel'),
-                        onPressed: () {
-                          progress = 0.0;
-                          downloading = false;
-                          FileUtils.rm([path]);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-        ],
+        title: Text(title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (downloading == true)
-              Column(
+        child: downloading
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Downloading file...',
-                    style: TextStyle(fontSize: 20),
+                  // make circular progress indicator and make it take up 7/8 of the screen horizontally
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: MediaQuery.of(context).size.width * 0.7,
+                    child: CircularProgressIndicator(
+                      value: progress / 100,
+                      backgroundColor: Colors.grey,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    ),
                   ),
                   SizedBox(
                     height: 20,
                   ),
-                  CircularProgressIndicator(
-                    value: progress / 100,
-                  ),
+                  if (progress < 100)
+                    Text(
+                      'Downloading File: ' + progress.toStringAsFixed(2) + '%',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if (progress == 100)
+                    Text(
+                      'Extracting Content',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    progress.toStringAsFixed(0) + '%',
-                    style: TextStyle(fontSize: 20),
+                    height: MediaQuery.of(context).size.height * 0.4,
                   ),
                 ],
-              ),
-            if (downloading == false)
-              Column(
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text(
+                    'File Downloaded',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  // Giant icon with check mark
                   Icon(
                     Icons.check_circle,
-                    size: 200,
+                    size: 100,
                     color: Colors.green,
-                  ),
-                  SizedBox(
-                    height: 180,
-                  ),
-                  Text(
-                    'Book Already Downloaded',
-                    style: TextStyle(fontSize: 30),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  TextButton(
-                    child: Text('Close', style: TextStyle(fontSize: 20)),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
                   ),
                 ],
               ),
-          ],
-        ),
       ),
     );
   }
