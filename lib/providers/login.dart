@@ -62,6 +62,21 @@ class Login {
     };
 
     debugPrint("Attempting to login to $url");
+    if (!_url.contains("http")) {
+      _url = "http://$_url";
+    }
+    // check if the last character is a /
+    if (_url.endsWith("/")) {
+      _url = _url.substring(0, _url.length - 1);
+    }
+    // check if url is valid using regex (allow other languages and emojis)
+    final RegExp urlTest = RegExp(
+        r"^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$");
+    if (!urlTest.hasMatch(_url)) {
+      debugPrint("URL is not valid");
+      return "URL is not valid";
+    }
+
     var response = await Dio().post(
       _url,
       data: body,

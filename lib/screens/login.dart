@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _password = TextEditingController();
   bool _passwordVisible = false;
   bool _loading = false;
+  String _error = '';
 
   @override
   void initState() {
@@ -25,10 +26,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // FocusNodes
-  FocusNode _focusNode1 = FocusNode();
-  FocusNode _focusNode2 = FocusNode();
-  FocusNode _focusNode3 = FocusNode();
-  FocusNode _focusNode4 = FocusNode();
+  final FocusNode _focusNode1 = FocusNode();
+  final FocusNode _focusNode2 = FocusNode();
+  final FocusNode _focusNode3 = FocusNode();
+  final FocusNode _focusNode4 = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: MediaQuery.of(context).size.width - 50,
                 height: 50,
                 child: ElevatedButton(
-                  focusNode: _focusNode1,
+                  focusNode: _focusNode4,
                   onPressed: () async {
                     setState(() {
                       _loading = true;
@@ -131,20 +132,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       } else {
                         setState(() {
+                          _error = value;
                           _loading = false;
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                            value,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          backgroundColor: Colors.grey[900],
-                        ));
                       }
                     });
                   },
@@ -152,6 +142,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                         fontSize: 20,
                       )),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              // if (_error != '')
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
+                child: Text(
+                  _error,
+                  style: const TextStyle(
+                    color: Colors.red,
+                  ),
                 ),
               ),
             ],

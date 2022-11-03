@@ -35,11 +35,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
   final String title;
   final String comicId;
   final String filePath;
+  bool forceDownload = false;
 
   _DownloadScreenState({
     required this.comicId,
     required this.title,
     required this.filePath,
+    this.forceDownload = false,
   });
   String url = '';
   String imageUrl = '';
@@ -55,10 +57,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
   @override
   void initState() {
     super.initState();
-    downloadFile();
+    downloadFile(forceDownload);
   }
 
-  Future<void> downloadFile() async {
+  Future<void> downloadFile(bool forceDown) async {
     final storage = new FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
     Dio dio = Dio();
@@ -80,7 +82,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
     // check if the directory exists
     // bool checkDown = await checkDownloaded(title);
     if (checkPermission1 == true) {
-      if (checkDirectory == true) {
+      if (checkDirectory == true && forceDown == false) {
         return;
       }
       url = await storage.read(key: 'server') ?? '';
@@ -209,8 +211,41 @@ class _DownloadScreenState extends State<DownloadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        // dont include the back button if the file is downloading
         automaticallyImplyLeading: !downloading,
+        // if the file is downloaded, have a button to force download
+        actions: [
+          if (!downloading)
+            IconButton(
+              // redownload the file
+              icon: Icon(Icons.download),
+              onPressed: () {
+                // ask user to confirm
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Redownload?'),
+                    content:
+                        Text('Are you sure you want to redownload this file?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          downloadFile(true);
+                        },
+                        child: Text('Redownload'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            )
+        ],
       ),
       body: Center(
         child: downloading

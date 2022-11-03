@@ -9,6 +9,7 @@ Future<String> fileNameFromTitle(String title) async {
   fileName = fileName.replaceAll('"', '_');
   fileName = fileName.replaceAll('<', '_');
   fileName = fileName.replaceAll('>', '_');
+  fileName = fileName.replaceAll('-', '_');
   fileName = fileName.replaceAll('|', '_');
   fileName = fileName.replaceAll('!', '_');
   fileName = fileName.replaceAll(',', '_');
