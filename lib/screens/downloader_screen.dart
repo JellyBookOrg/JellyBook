@@ -209,6 +209,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        // dont include the back button if the file is downloading
+        automaticallyImplyLeading: !downloading,
       ),
       body: Center(
         child: downloading
