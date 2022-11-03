@@ -12,6 +12,7 @@ import 'package:jellybook/screens/info_screen.dart';
 import 'package:jellybook/providers/fetchBooks.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
+import 'package:jellybook/screens/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -45,6 +46,35 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {},
         ),
         title: Text('Home'),
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.settings),
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         PageRouteBuilder(
+        //           transitionDuration: Duration(milliseconds: 500),
+        //           pageBuilder: (context, animation, secondaryAnimation) =>
+        //               SettingsScreen(),
+        //           transitionsBuilder:
+        //               (context, animation, secondaryAnimation, child) {
+        //             var begin = Offset(1.0, 0.0);
+        //             var end = Offset.zero;
+        //             var curve = Curves.ease;
+        //
+        //             var tween = Tween(begin: begin, end: end)
+        //                 .chain(CurveTween(curve: curve));
+        //
+        //             return SlideTransition(
+        //               position: animation.drive(tween),
+        //               child: child,
+        //             );
+        //           },
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ],
       ),
       body: FutureBuilder(
         future: getServerCategories(),

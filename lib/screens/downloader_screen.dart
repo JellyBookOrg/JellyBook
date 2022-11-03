@@ -60,6 +60,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
   Future<void> downloadFile() async {
     final storage = new FlutterSecureStorage();
+    final prefs = await SharedPreferences.getInstance();
     Dio dio = Dio();
     bool checkPermission1 = await Permission.storage.request().isGranted;
     if (checkPermission1 == false) {
@@ -68,16 +69,26 @@ class _DownloadScreenState extends State<DownloadScreen> {
     }
 
     // check if the directory exists
-    bool checkDown = await checkDownloaded(title);
-    if (checkPermission1 == true && checkDown == false) {
-      final prefs = await SharedPreferences.getInstance();
+    String title2 = await fileNameFromTitle(title);
+    var filePathTest = await getApplicationDocumentsDirectory();
+    String path = await prefs.getString(title) ?? 'Error';
+    bool checkDirectory =
+        await Directory(filePathTest.path + '/' + title2).exists();
+    debugPrint("directory: $filePath/$title2");
+    debugPrint("checkDirectory: $checkDirectory");
+
+    // check if the directory exists
+    // bool checkDown = await checkDownloaded(title);
+    if (checkPermission1 == true) {
+      if (checkDirectory == true) {
+        return;
+      }
       url = await storage.read(key: 'server') ?? '';
       imageUrl = await storage.read(key: 'imageUrl') ?? '';
       id = await storage.read(key: 'ServerId') ?? '';
       String client = await storage.read(key: 'client') ?? '';
       token = await storage.read(key: 'AccessToken') ?? '';
       fileName = await fileNameFromTitle(title);
-      String path = await prefs.getString(title) ?? 'Error';
       String fileName3 = await fileNameFromTitle(title);
       String dirLocation =
           await getApplicationDocumentsDirectory().then((value) => value.path);
@@ -127,15 +138,15 @@ class _DownloadScreenState extends State<DownloadScreen> {
       debugPrint('Comic folder created');
       debugPrint(dirLocation + '/' + fileName2);
 
+      // make directory to extract to
+      FileUtils.mkdir([dirLocation + '/' + fileName2]);
+      comicFolder = dirLocation + '/' + fileName2;
       // check if the file is a zip or rar
       // final fileType = lookupMimeType(dirLocation + '/' + fileName2 + '.zip');
       if (dir.contains('.zip')) {
         // if (filePath.contains('.zip')) {
         var bytes =
             File(dirLocation + '/' + fileName2 + '.zip').readAsBytesSync();
-        // make directory to extract to
-        FileUtils.mkdir([dirLocation + '/' + fileName2]);
-        comicFolder = dirLocation + '/' + fileName2;
 
         // extract the zip file
         var archive = ZipDecoder().decodeBytes(bytes);
@@ -155,9 +166,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
         debugPrint('Zip file extracted');
       } else if (dir.contains('.rar')) {
-        // } else if (filePath.contains('.rar')) {
-        FileUtils.mkdir([dirLocation + '/' + fileName2]);
-        comicFolder = dirLocation + '/' + fileName2;
         try {
           await UnrarFile.extract_rar(dirLocation + '/' + fileName + '.rar',
               dirLocation + '/' + fileName2 + '/');
@@ -172,14 +180,15 @@ class _DownloadScreenState extends State<DownloadScreen> {
       }
 
       setState(() {
-        downloading = false;
+        downloading = true;
         progress = 0.0;
         path = dirLocation + '/' + fileName;
         Navigator.pop(context);
       });
     }
-    var prefs = await SharedPreferences.getInstance();
+    // var prefs = await SharedPreferences.getInstance();
     debugPrint("title: " + title);
+    // debugPrint("path: " + filePath);
     debugPrint("comicFolder: " + comicFolder);
     prefs.setString(title, comicFolder);
   }
@@ -241,6 +250,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ],
               )
             : Column(
+                // if downloading == false then say the file is already downloaded but if true tell the user its checking
+
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(

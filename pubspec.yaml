@@ -55,6 +55,8 @@ dependencies:
   turn_page_transition: ^0.2.0
   mime: ^1.0.2
   unrar_file: ^1.1.0
+  flutter_settings_screens: ^0.3.3-null-safety+2
+  url_launcher: ^6.1.6
 
 dev_dependencies:
   flutter_test:

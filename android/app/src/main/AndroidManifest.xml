@@ -1,9 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jellybook">
    <application
-        android:label="jellybook"
+        android:label="JellyBook"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+           android:icon="@mipmap/ic_launcher">
+        <!-- android:usesCleartextTraffic="true"> -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
