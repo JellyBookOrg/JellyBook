@@ -3,9 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:like_button/like_button.dart';
-import 'package:jellybook/screens/downloader_screen.dart';
-import 'package:jellybook/screens/reading_screen.dart';
+import 'package:jellybook/screens/downloaderScreen.dart';
+import 'package:jellybook/screens/readingScreen.dart';
 import 'package:jellybook/providers/fixRichText.dart';
+import 'package:jellybook/providers/deleteComic.dart';
 
 class InfoScreen extends StatelessWidget {
   final String title;
@@ -40,6 +41,14 @@ class InfoScreen extends StatelessWidget {
           },
         ),
         title: Text(title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              deleteComic(comicId, context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

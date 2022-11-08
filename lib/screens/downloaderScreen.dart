@@ -25,9 +25,7 @@ class DownloadScreen extends StatefulWidget {
 
   @override
   _DownloadScreenState createState() => _DownloadScreenState(
-        // title: title,
         comicId: comicId,
-        // filePath: path,
       );
 }
 

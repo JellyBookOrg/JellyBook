@@ -65,7 +65,7 @@ class Login {
     }
     // check if url is valid using regex (allow other languages and emojis)
     final RegExp urlTest = RegExp(
-        r"^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$");
+        r"^(http|https)://[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$");
     if (!urlTest.hasMatch(_url)) {
       debugPrint("URL is not valid");
       return "URL is not valid";

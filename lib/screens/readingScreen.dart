@@ -2,7 +2,7 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:jellybook/screens/downloader_screen.dart';
+import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:hive/hive.dart';

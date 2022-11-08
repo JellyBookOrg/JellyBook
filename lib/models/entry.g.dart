@@ -27,13 +27,17 @@ class EntryAdapter extends TypeAdapter<Entry> {
       url: fields[7] as String,
       tags: (fields[8] as List).cast<dynamic>(),
       rating: fields[9] as double,
+      progress: fields[10] as double,
+      pageNum: fields[11] as int,
+      folderPath: fields[12] as String,
+      type: fields[13] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Entry obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -53,7 +57,15 @@ class EntryAdapter extends TypeAdapter<Entry> {
       ..writeByte(8)
       ..write(obj.tags)
       ..writeByte(9)
-      ..write(obj.rating);
+      ..write(obj.rating)
+      ..writeByte(10)
+      ..write(obj.progress)
+      ..writeByte(11)
+      ..write(obj.pageNum)
+      ..writeByte(12)
+      ..write(obj.folderPath)
+      ..writeByte(13)
+      ..write(obj.type);
   }
 
   @override

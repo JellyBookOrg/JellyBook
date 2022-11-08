@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as Http;
 import 'dart:convert';
-import 'package:jellybook/providers/utilities.dart';
 
 // database imports
 import 'package:jellybook/models/entry.dart';
@@ -50,9 +49,6 @@ Future<List<Map<String, dynamic>>> getComics(
   });
 
   debugPrint("Now saving comics to database");
-
-  // get the path to the database (this is a function in utilities.dart)
-  String path = await getPath();
 
   // get entries from the database
   try {
@@ -100,6 +96,8 @@ Future<List<Map<String, dynamic>>> getComics(
     // save the key-value pair to the database
     // add the key-pair to the database
     try {
+      List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
+      List<String> comicFileTypes = ['cbz', 'cbr'];
       Entry entry = Entry(
         id: responseData['Items'][i]['Id'] ?? 0,
         title: responseData['Items'][i]['Name'] ?? "",
@@ -120,29 +118,32 @@ Future<List<Map<String, dynamic>>> getComics(
         // tags: comics[i]['tags'],
         // rating: comics[i]['rating'],
         progress: 0.0,
+
+        type: comicFileTypes.contains(
+                responseData['Items'][i]['Path'].split('.').last.toLowerCase())
+            ? 'comic'
+            : 'book',
       );
 
-      debugPrint("entry created");
-      debugPrint(entry.toString());
-
       // add the entry to the database (already initialized)
-      var box = Hive.box<Entry>('bookShelf');
+      // var box = Hive.box<Entry>('bookShelf');
       // add the entry to the database (with the name being the id)
       // check that the entry doesn't already exist
-      if (box.get(entry.id) == null) {
-        box.put(entry.id, entry);
+      bool exists = false;
+      box.values.forEach((element) {
+        if (element.id == entry.id) {
+          exists = true;
+        }
+      });
+      if (!exists) {
+        box.add(entry);
         debugPrint("book added");
       } else {
         debugPrint("book already exists");
       }
-      // box.add(entry);
-
-      debugPrint("book added");
     } catch (e) {
       debugPrint(e.toString());
     }
-
-    // debugPrint("book added");
   }
 
   return comics;

@@ -4,10 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as Http;
 import 'package:dio/dio.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:jellybook/screens/info_screen.dart';
+import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/providers/fetchBooks.dart';
-import 'package:jellybook/screens/settings_screen.dart';
+import 'package:jellybook/screens/settingsScreen.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
 import 'package:jellybook/screens/databaseViewer.dart';
 
@@ -171,35 +170,33 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: TextStyle(
                                 fontSize: MediaQuery.of(context).size.width /
                                     4 *
-                                    0.115,
+                                    0.12,
                                 fontWeight: FontWeight.bold,
                               )),
+                        ),
+                        const SizedBox(
+                          height: 5,
                         ),
                         if (snapshot.data![index]['releaseDate'] != "null")
                           Text(snapshot.data![index]['releaseDate'],
                               style: TextStyle(
                                   fontSize: MediaQuery.of(context).size.width /
                                       4 *
-                                      0.11,
+                                      0.12,
                                   // set color to a very light grey
                                   color: Colors.grey)),
                         // check if screen is > 600
                         if (MediaQuery.of(context).size.width > 600)
                           Flexible(
                             child: SingleChildScrollView(
-                              child: Html(
-                                data: snapshot.data![index]['description'],
-                                style: {
-                                  "body": Style(
-                                    fontSize: FontSize(
-                                      MediaQuery.of(context).size.width /
-                                          2 *
-                                          0.03,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                },
-                              ),
+                              child: Text(snapshot.data![index]['description'],
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width /
+                                            2 *
+                                            0.03,
+                                  )),
                             ),
                           ),
                         // add a icon button to the card

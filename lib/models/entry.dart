@@ -38,11 +38,19 @@ class Entry extends HiveObject {
   late double rating;
 
   // the progress of the book/comic
+  @HiveField(10)
   late double progress = 0.0;
+
+  @HiveField(11)
   late int pageNum = 0;
 
   // folder path
+  @HiveField(12)
   late String folderPath = '';
+
+  // type
+  @HiveField(13)
+  late String type = 'comic';
 
   Entry({
     required this.id,
@@ -58,22 +66,11 @@ class Entry extends HiveObject {
     this.progress = 0.0,
     this.pageNum = 0,
     this.folderPath = '',
+    this.type = 'comic',
   });
 
-  void _requireInitialized() {
-    // await Hive.initFlutter();
-    Hive.openBox('bookShelf');
-  }
+  // void _requireInitialized() {
+  //   Hive.openBox('bookShelf');
+  // }
 
-  Future<void> save() async {
-    _requireInitialized();
-    final box = await Hive.openBox<Entry>('bookShelf');
-    await box.put(id, this);
-  }
-
-  Future<void> delete() async {
-    _requireInitialized();
-    final box = await Hive.openBox<Entry>('bookShelf');
-    await box.delete(id);
-  }
 }

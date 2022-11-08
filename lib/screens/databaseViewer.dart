@@ -154,6 +154,10 @@ class EntryViewer extends StatelessWidget {
                   Text('File Path', textAlign: TextAlign.center),
                   Text(entry.path),
                 ]),
+                TableRow(children: [
+                  Text('File Type', textAlign: TextAlign.center),
+                  Text(entry.type),
+                ]),
               ],
               // end of table
             ),

@@ -3,7 +3,6 @@
 // import 'package:objectbox/objectbox.dart';
 import 'package:jellybook/models/entry.dart';
 // import 'package:jellybook/providers/saveEntry.dart';
-import 'package:jellybook/providers/utilities.dart';
 // import 'package:jellybook/objectbox.g.dart';
 import 'package:jellybook/providers/fetchBooks.dart';
 import 'package:hive/hive.dart';
@@ -12,13 +11,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 Future<List<Map<String, dynamic>>> listBooks(
     String comicsId, String etag) async {
   // get the path to the database (this is a function in utilities.dart)
-  String path = await getPath();
 
   // open the database
-  var box = await Hive.openBox('bookShelf', path: path);
+  var box = Hive.box<Entry>('bookShelf');
 
   // get the box that stores the entries
-  var entries = box.get('entries') as List<Entry>;
+  var entries = box.values.toList();
 
   // create a list of maps to store the entries
   List<Map<String, dynamic>> books = [];
