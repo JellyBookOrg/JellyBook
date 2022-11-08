@@ -6,9 +6,6 @@ import 'dart:convert';
 import 'package:jellybook/providers/fetchBooks.dart';
 import 'package:flutter/foundation.dart';
 
-// database imports
-import 'package:jellybook/models/entry.dart';
-
 Future<List<Map<String, dynamic>>> getServerCategories() async {
   debugPrint("getting server categories");
   final prefs = await SharedPreferences.getInstance();
@@ -18,7 +15,7 @@ Future<List<Map<String, dynamic>>> getServerCategories() async {
   final client = prefs.getString('client') ?? "JellyBook";
   final device = prefs.getString('device') ?? "";
   final deviceId = prefs.getString('deviceId') ?? "";
-  final version = prefs.getString('version') ?? "1.0.5";
+  final version = prefs.getString('version') ?? "1.0.6";
   debugPrint("got prefs");
   Map<String, String> headers =
       getHeaders(url, client, device, deviceId, version, token);

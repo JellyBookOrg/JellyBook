@@ -39,6 +39,10 @@ class Entry extends HiveObject {
 
   // the progress of the book/comic
   late double progress = 0.0;
+  late int pageNum = 0;
+
+  // folder path
+  late String folderPath = '';
 
   Entry({
     required this.id,
@@ -52,6 +56,8 @@ class Entry extends HiveObject {
     required this.tags,
     required this.rating,
     this.progress = 0.0,
+    this.pageNum = 0,
+    this.folderPath = '',
   });
 
   void _requireInitialized() {

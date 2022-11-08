@@ -10,43 +10,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:archive/archive.dart';
 import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
-import 'package:jellybook/providers/downloader.dart';
 
 // import the database
 import 'package:jellybook/models/entry.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:jellybook/providers/utilities.dart';
 
 class DownloadScreen extends StatefulWidget {
-  final String title;
   final String comicId;
-  final String path;
 
   DownloadScreen({
-    required this.title,
     required this.comicId,
-    required this.path,
   });
 
   @override
   _DownloadScreenState createState() => _DownloadScreenState(
-        title: title,
+        // title: title,
         comicId: comicId,
-        filePath: path,
+        // filePath: path,
       );
 }
 
 class _DownloadScreenState extends State<DownloadScreen> {
-  final String title;
   final String comicId;
-  final String filePath;
   bool forceDownload = false;
 
   _DownloadScreenState({
     required this.comicId,
-    required this.title,
-    required this.filePath,
     this.forceDownload = false,
   });
   String url = '';
@@ -67,17 +57,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> downloadFile(bool forceDown) async {
-    // get the path to the database (this is a function in utilities.dart)
-    String databasePath = await getPath();
-
     // open the database
-    await Hive.initFlutter(databasePath);
-
-    // get the box that stores the entries
-    var box = await Hive.openBox('bookShelf', path: databasePath);
+    var box = Hive.box<Entry>('bookShelf');
 
     // get the entry that matches the comicId
-    var entry = box.get(comicId);
+    var entries = box.values.where((element) => element.id == comicId).toList();
+    var entry = entries[0];
 
     final storage = new FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
@@ -88,33 +73,23 @@ class _DownloadScreenState extends State<DownloadScreen> {
       checkPermission1 = await Permission.storage.request().isGranted;
     }
 
-    // check if the directory exists
-    String title2 = await fileNameFromTitle(entry.title);
-    String path = await getApplicationDocumentsDirectory()
-        .then((value) => value.path + '/' + title2);
-    bool checkDirectory = await Directory(path).exists();
-
-    debugPrint("directory: $path");
-    debugPrint("checkDirectory: $checkDirectory");
-
-    if (checkDirectory == false) {
+    if (entry.folderPath != '') {
       await Directory(path).create(recursive: true);
     }
     if (checkPermission1 == true) {
-      if (checkDirectory == true && forceDown == false) {
+      if (entry.folderPath != '' && forceDown == false) {
         return;
       }
       // get the data from the database
 
-      url = entry.url ?? '';
-      imageUrl = entry.imagePath ?? '';
+      url = entry.url;
+      imageUrl = entry.imagePath;
       id = entry.id.toString();
 
       // get stuff from the secure storage
       String client = await storage.read(key: 'client') ?? '';
       token = await storage.read(key: 'AccessToken') ?? '';
-      fileName = await fileNameFromTitle(title);
-      String fileName3 = await fileNameFromTitle(title);
+      fileName = await fileNameFromTitle(entry.title);
       String dirLocation =
           await getApplicationDocumentsDirectory().then((value) => value.path);
       Map<String, String> headers = {
@@ -131,15 +106,15 @@ class _DownloadScreenState extends State<DownloadScreen> {
       var files = await Directory(dirLocation).list().toList();
       debugPrint(files.toString());
       String dir = dirLocation + '/' + fileName;
-      debugPrint(dirLocation + '/' + fileName3);
+      debugPrint(dir);
       debugPrint('Folder does not exist');
       try {
         FileUtils.mkdir([dirLocation]);
         // set the location of the folder
         dir = dirLocation + '/' + fileName;
-        if (filePath.contains('.cbz')) {
+        if (entry.path.contains('cbz')) {
           dir += '.zip';
-        } else if (filePath.contains('.cbr')) {
+        } else if (entry.path.contains('.cbr')) {
           dir += '.rar';
         }
         debugPrint('Directory created');
@@ -158,7 +133,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         debugPrint(e.toString());
       }
 
-      String fileName2 = await fileNameFromTitle(title);
+      String fileName2 = await fileNameFromTitle(entry.title);
       FileUtils.mkdir([dirLocation + '/']);
       debugPrint('Comic folder created');
       debugPrint(dirLocation + '/' + fileName2);
@@ -189,6 +164,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
         debugPrint('Unzipped');
         File(dirLocation + '/' + fileName + '.zip').deleteSync();
 
+        // change entry to downloaded
+        entry.downloaded = true;
+
+        // save the location of the comic
+        entry.folderPath = dirLocation + '/' + fileName2;
+
         debugPrint('Zip file extracted');
       } else if (dir.contains('.rar')) {
         try {
@@ -197,6 +178,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
           debugPrint('Rar file extracted');
           debugPrint('Unzipped');
           File(dirLocation + '/' + fileName + '.rar').deleteSync();
+          // change entry to downloaded
+          entry.downloaded = true;
+
+          // save the location of the comic
+          entry.folderPath = dirLocation + '/' + fileName2;
         } catch (e) {
           debugPrint("Extraction failed " + e.toString());
         }
@@ -212,10 +198,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
       });
     }
     // var prefs = await SharedPreferences.getInstance();
-    debugPrint("title: " + title);
+    debugPrint("title: " + entry.title);
     // debugPrint("path: " + filePath);
     debugPrint("comicFolder: " + comicFolder);
-    prefs.setString(title, comicFolder);
+    // prefs.setString(title, comicFolder);
   }
 
   // now we will build the UI
@@ -227,7 +213,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text('Downloading'),
         automaticallyImplyLeading: !downloading,
         // if the file is downloaded, have a button to force download
         actions: [
@@ -269,7 +255,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // make circular progress indicator and make it take up 7/8 of the screen horizontally
                   Container(
                     width: MediaQuery.of(context).size.width * 0.7,
                     height: MediaQuery.of(context).size.width * 0.7,
@@ -304,8 +289,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ],
               )
             : Column(
-                // if downloading == false then say the file is already downloaded but if true tell the user its checking
-
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(

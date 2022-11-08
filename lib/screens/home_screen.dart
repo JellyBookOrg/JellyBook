@@ -2,24 +2,14 @@
 // can see all their comics and manage them
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as Http;
 import 'package:dio/dio.dart';
-import 'dart:convert';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:jellybook/screens/info_screen.dart';
 import 'package:jellybook/providers/fetchBooks.dart';
-import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:jellybook/screens/settings_screen.dart';
-import 'package:jellybook/providers/fetchBooks.dart';
-import 'package:jellybook/providers/listBooks.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
-
-// database imports
-import 'package:jellybook/models/entry.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:jellybook/screens/databaseViewer.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -53,6 +43,20 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {},
         ),
         title: Text('Home'),
+        actions: [
+          IconButton(
+            // debug button
+            icon: Icon(Icons.bug_report),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DatabaseViewer(),
+                ),
+              );
+            },
+          ),
+        ],
         // actions: [
         //   IconButton(
         //     icon: Icon(Icons.settings),
@@ -97,24 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        // TurnPageRoute(
-                        //   turningPoint: 0.5,
-                        //   transitionDuration: Duration(milliseconds: 500),
-                        //   builder: (context) => InfoScreen(
-                        //     title: snapshot.data![index]['name'] ?? "null",
-                        //     imageUrl:
-                        //         (snapshot.data![index]['imagePath'] ?? "null"),
-                        //     description:
-                        //         snapshot.data![index]['description'] ?? "null",
-                        //     tags: snapshot.data![index]['tags'] ?? ["null"],
-                        //     url: snapshot.data![index]['url'] ?? "null",
-                        //     year:
-                        //         snapshot.data![index]['releaseDate'] ?? "null",
-                        //     stars: snapshot.data![index]['rating'] ?? -1,
-                        //     path: snapshot.data![index]['path'] ?? "null",
-                        //     comicId: snapshot.data![index]['id'] ?? "null",
-                        //   ),
-                        // ),
                         PageRouteBuilder(
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>

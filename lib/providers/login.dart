@@ -8,7 +8,6 @@ import 'package:dio/adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import 'package:jellybook/providers/utilities.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -35,10 +34,10 @@ class Login {
     debugPrint("LoginStatic called");
     final storage = FlutterSecureStorage();
     String _url = "$url/Users/authenticatebyname";
-    const _client = "jellybook";
+    const _client = "JellyBook";
     const _device = "Unknown Device";
     const _deviceId = "Unknown Device id";
-    const _version = "1.0.5";
+    const _version = "1.0.6";
 
     if ((!url.contains("http://") || !url.contains("https://")) == false) {
       debugPrint("URL does not contain http:// or https://");
@@ -51,16 +50,6 @@ class Login {
         getHeaders(url, _client, _device, _deviceId, _version);
     debugPrint("Headers: $headers");
 
-    // final Map<String, String> headers = {
-    //   "Accept": "application/json",
-    //   "Accept-Language": "en-US,en;q=0.5",
-    //   "Accept-Encoding": "gzip, deflate",
-    //   "X-Emby-Authorization":
-    //       "MediaBrowser Client=\"$_client\", Device=\"$_device\", DeviceId=\"$_deviceId\", Version=\"$_version\"",
-    //   "Content-Type": "application/json",
-    //   "Origin": url,
-    //   "Connection": "keep-alive",
-    // };
     final Map<String, String> body = {
       "Username": username,
       "Pw": password,
@@ -92,10 +81,6 @@ class Login {
     debugPrint("Response: ${response.statusCode}");
     debugPrint("Response: ${response.data}");
 
-    // print response data as json
-    // JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    // String prettyprint = encoder.convert(response.data);
-    // debugPrint(prettyprint);
     if (response.statusCode == 200) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       debugPrint("saving data to cache");

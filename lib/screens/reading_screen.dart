@@ -3,15 +3,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:jellybook/screens/downloader_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
-import 'package:file_utils/file_utils.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:archive/archive.dart';
-// import 'package:archive/archive_io.dart';
-// import 'package:turn_page_transition/turn_page_transition.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:jellybook/models/entry.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String title;
@@ -45,25 +41,53 @@ class _ReadingScreenState extends State<ReadingScreen> {
   });
 
   Future<void> getChapters() async {
-    final prefs = await SharedPreferences.getInstance();
     var status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
     }
-    var filePath = await getApplicationDocumentsDirectory();
-    String title2 = await fileNameFromTitle(title);
-    // check if the directory exists
-    if (await Directory(filePath.path + '/' + title2).exists()) {
-      comicFolder = filePath.path + '/' + title2;
-    } else {
-      comicFolder = 'Error';
+    // get the file path from the database
+    var box = Hive.box<Entry>('bookShelf');
+
+    if (box.isNotEmpty) {
+      for (var i = 0; i < box.length; i++) {
+        if (box.getAt(i)!.id == comicId) {
+          path = box.getAt(i)!.path;
+          pageNum = box.getAt(i)!.pageNum;
+          progress = box.getAt(i)!.progress;
+          break;
+        }
+      }
     }
-    // comicFolder = prefs.getString(title) ?? "";
-    print('Comic Folder: ' + comicFolder);
-    // print("folder name: $folderName");
-    path = comicFolder;
-    List<FileSystemEntity> files = Directory(path).listSync();
-    print(files);
+
+    // get list of all entries
+    var entries = Hive.box<Entry>('bookShelf').values.toList();
+    debugPrint('entries: $entries');
+
+    // find the entry with the same comicId
+    var entry = entries.firstWhere((element) => element.id == comicId);
+
+    // get the box that stores the entries
+    // var entries = box.get('entries') as List<Entry>;
+
+    // get the entry
+
+    // print the entry
+    debugPrint(entry.toString());
+
+    // check if the entry is downloaded
+    if (entry.downloaded) {
+      // get the file path
+      path = entry.folderPath;
+      progress = entry.progress;
+    }
+
+    debugPrint(path);
+
+    // get a list of all the files in the folder
+    var files = Directory(path).listSync();
+
+    // List<FileSystemEntity> files = Directory(path).listSync();
+    debugPrint(files.toString());
     // what we want to do is recursively go through the folder and get all the last directories that dont contain any other directories
     // then we want to add them to the chapters list
     // max depth of 3
@@ -154,24 +178,31 @@ class _ReadingScreenState extends State<ReadingScreen> {
       }
     }
 
-    print("Chapters:");
-    print(chapters);
+    debugPrint("Chapters:");
+    debugPrint(chapters.toString());
   }
 
   Future<void> checkDownloaded() async {
-    var prefs = await SharedPreferences.getInstance();
-    folderName = prefs.getString(title) ?? "";
-    var filePath = prefs.getString("path") ?? "Error";
-    if (folderName == "") {
+    // get it from the database
+    var db = Hive.box<Entry>('bookShelf');
+
+    // get the box that stores the entries
+    var entries = db.get('entries') as List<Entry>;
+
+    // get the entry
+    var entry = entries.firstWhere((element) => element.id == comicId);
+
+    folderName = entry.folderPath;
+    var downloaded = entry.downloaded;
+
+    if (downloaded == false) {
       Navigator.push(
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 500),
           pageBuilder: (context, animation, secondaryAnimation) =>
               DownloadScreen(
-            title: title,
             comicId: comicId,
-            path: filePath,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             var begin = const Offset(1.0, 0.0);
@@ -192,24 +223,50 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   Future<void> saveProgress(int page) async {
-    var prefs = await SharedPreferences.getInstance();
-    double progress = page / pageNums;
-    prefs.setDouble(comicId + "_progress", progress);
-    prefs.setInt(comicId + "_pageNum", page);
-    print("saved progress");
-    print("page num: $page");
+    var db = Hive.box<Entry>('bookShelf');
+
+    // get the box that stores the entries
+    var entries = db.values.toList();
+
+    // get the entry
+    var entry = entries.firstWhere((element) => element.id == comicId);
+
+    // update the entry
+    entry.pageNum = page;
+
+    // update the progress
+    entry.progress = (page / pages.length) * 100;
+
+    // delete the old entry and add the new one
+    entries.remove(entry);
+    entries.add(entry);
+
+    debugPrint("saved progress");
+    debugPrint("page num: ${entry.pageNum}");
   }
 
   Future<void> getProgress() async {
-    var prefs = await SharedPreferences.getInstance();
-    pageNum = await prefs.getInt(comicId + "_pageNum") ?? 0;
-    progress = await prefs.getDouble(comicId + "_progress") ?? 0.0;
-    print("page returned: $pageNum");
+    var db = Hive.box<Entry>('bookShelf');
+
+    // get the box that stores the entries
+    var entries = db.get('entries') as List<Entry>;
+
+    // get the entry
+    var entry = entries.firstWhere((element) => element.id == comicId);
+
+    // get the progress
+    var progress = entry.progress;
+
+    // get the page number
+    var pageNum = entry.pageNum;
+
+    debugPrint("progress: $progress");
+    debugPrint("page num: $pageNum");
   }
 
   List<String> pages = [];
   Future<void> createPageList() async {
-    print("chapters: $chapters");
+    debugPrint("chapters: $chapters");
     var formats = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"];
     List<String> pageFiles = [];
     for (var chapter in chapters) {

@@ -160,9 +160,9 @@ class InfoScreen extends StatelessWidget {
                                   pageBuilder: (context, animation,
                                           secondaryAnimation) =>
                                       DownloadScreen(
-                                    title: title,
+                                    // title: title,
                                     comicId: comicId,
-                                    path: path,
+                                    // path: path,
                                   ),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {

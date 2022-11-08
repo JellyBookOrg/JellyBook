@@ -6,7 +6,6 @@ import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/providers/utilities.dart';
 // import 'package:jellybook/objectbox.g.dart';
 import 'package:jellybook/providers/fetchBooks.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

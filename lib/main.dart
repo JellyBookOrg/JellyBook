@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jellybook/screens/login.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jellybook/models/entry.dart';
 

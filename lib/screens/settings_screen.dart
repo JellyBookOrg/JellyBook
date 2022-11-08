@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -19,6 +18,7 @@ class SettingsScreen extends StatefulWidget {
    */
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  @override
   void initState() {
     super.initState();
     Settings.init();
@@ -28,40 +28,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings', style: TextStyle(fontSize: 20)),
+        title: const Text('Settings', style: TextStyle(fontSize: 20)),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             // should be comprised of widgets
             themeSettings(),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             languageSettings(),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             pageTransitionSettings(),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             experimentalFeaturesSettings(),
-            SizedBox(
+            const SizedBox(
               height: 300,
             ),
             aboutSettings(),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
           ],
@@ -75,7 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         settingKey: 'theme',
         title: 'Theme',
         selected: Settings.getValue<String>('theme') ?? 'System',
-        leading: Icon(Icons.color_lens),
+        leading: const Icon(Icons.color_lens),
         values: <String, String>{
           'System': 'System',
           'Light': 'Light',
@@ -136,7 +136,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           children: [
             Text(
-              'Version 1.0.5',
+              'Version 1.0.6',
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(
