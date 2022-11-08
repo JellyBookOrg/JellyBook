@@ -14,45 +14,49 @@ import 'package:file_utils/file_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+// database imports
+import 'package:jellybook/models/entry.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 // first we need to check if its already downloaded
-Future<bool> checkDownloaded(String title) async {
-  var status = await Permission.storage.status;
-  if (!status.isGranted) {
-    await Permission.storage.request();
-  }
-  var filePath = await getApplicationDocumentsDirectory();
-  String title2 = await fileNameFromTitle(title);
-  // check if the directory exists
-  if (await Directory(filePath.path + '/' + title2).exists()) {
+Future<bool> checkDownloaded(String id) async {
+  // get the path to the database
+  String path = await _getPath();
+
+  // open the hive database
+  var box = await Hive.openBox('bookShelf', path: path);
+
+  // get the box that stores the entries
+  var entries = box.get('entries') as List<Entry>;
+
+  // get the entry
+  var entry = entries.firstWhere((element) => element.id == int.parse(id));
+
+  // check if the entry is downloaded
+  if (entry.downloaded) {
+    // close the database
+    await box.close();
+
+    // return true
     return true;
   } else {
+    // close the database
+    await box.close();
+
+    // return false
     return false;
   }
 }
 
-// this function will create a list of all the pages in the book/comic
-Future<List<String>> createPageList(List<String> chapters) async {
-  List<String> pages = [];
-  print("chapters: $chapters");
-  var formats = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"];
-  List<String> pageFiles = [];
-  for (var chapter in chapters) {
-    List<FileSystemEntity> files = Directory(chapter).listSync();
-    for (var file in files) {
-      if (file.path.endsWith(formats[0]) ||
-          file.path.endsWith(formats[1]) ||
-          file.path.endsWith(formats[2]) ||
-          file.path.endsWith(formats[3]) ||
-          file.path.endsWith(formats[4]) ||
-          file.path.endsWith(formats[5]) ||
-          file.path.endsWith(formats[6])) {
-        pageFiles.add(file.path);
-      }
-    }
-  }
-  pageFiles.sort();
-  for (var page in pageFiles) {
-    pages.add(page);
-  }
-  return pages;
+// get the path to the database
+Future<String> _getPath() async {
+  // get the path to the documents directory
+  Directory documentsDirectory = await getApplicationDocumentsDirectory();
+
+  // get the path to the database
+  String path = documentsDirectory.path + "/jellybook.db";
+
+  // return the path
+  return path;
 }

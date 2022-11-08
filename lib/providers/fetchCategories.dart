@@ -6,6 +6,9 @@ import 'dart:convert';
 import 'package:jellybook/providers/fetchBooks.dart';
 import 'package:flutter/foundation.dart';
 
+// database imports
+import 'package:jellybook/models/entry.dart';
+
 Future<List<Map<String, dynamic>>> getServerCategories() async {
   debugPrint("getting server categories");
   final prefs = await SharedPreferences.getInstance();

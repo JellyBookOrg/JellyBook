@@ -12,6 +12,12 @@ import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:jellybook/providers/downloader.dart';
 
+// import the database
+import 'package:jellybook/models/entry.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:jellybook/providers/utilities.dart';
+
 class DownloadScreen extends StatefulWidget {
   final String title;
   final String comicId;
@@ -61,6 +67,18 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> downloadFile(bool forceDown) async {
+    // get the path to the database (this is a function in utilities.dart)
+    String databasePath = await getPath();
+
+    // open the database
+    await Hive.initFlutter(databasePath);
+
+    // get the box that stores the entries
+    var box = await Hive.openBox('bookShelf', path: databasePath);
+
+    // get the entry that matches the comicId
+    var entry = box.get(comicId);
+
     final storage = new FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
     Dio dio = Dio();
@@ -71,23 +89,28 @@ class _DownloadScreenState extends State<DownloadScreen> {
     }
 
     // check if the directory exists
-    String title2 = await fileNameFromTitle(title);
-    var filePathTest = await getApplicationDocumentsDirectory();
-    String path = await prefs.getString(title) ?? 'Error';
-    bool checkDirectory =
-        await Directory(filePathTest.path + '/' + title2).exists();
-    debugPrint("directory: $filePath/$title2");
+    String title2 = await fileNameFromTitle(entry.title);
+    String path = await getApplicationDocumentsDirectory()
+        .then((value) => value.path + '/' + title2);
+    bool checkDirectory = await Directory(path).exists();
+
+    debugPrint("directory: $path");
     debugPrint("checkDirectory: $checkDirectory");
 
-    // check if the directory exists
-    // bool checkDown = await checkDownloaded(title);
+    if (checkDirectory == false) {
+      await Directory(path).create(recursive: true);
+    }
     if (checkPermission1 == true) {
       if (checkDirectory == true && forceDown == false) {
         return;
       }
-      url = await storage.read(key: 'server') ?? '';
-      imageUrl = await storage.read(key: 'imageUrl') ?? '';
-      id = await storage.read(key: 'ServerId') ?? '';
+      // get the data from the database
+
+      url = entry.url ?? '';
+      imageUrl = entry.imagePath ?? '';
+      id = entry.id.toString();
+
+      // get stuff from the secure storage
       String client = await storage.read(key: 'client') ?? '';
       token = await storage.read(key: 'AccessToken') ?? '';
       fileName = await fileNameFromTitle(title);
@@ -193,12 +216,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
     // debugPrint("path: " + filePath);
     debugPrint("comicFolder: " + comicFolder);
     prefs.setString(title, comicFolder);
-  }
-
-  Future<String> getFilePath(String fileName) async {
-    final directory = await getExternalStorageDirectory();
-    final path = directory!.path;
-    return path;
   }
 
   // now we will build the UI

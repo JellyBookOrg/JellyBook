@@ -8,6 +8,11 @@ import 'package:dio/adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import 'package:jellybook/providers/utilities.dart';
+import 'package:jellybook/models/entry.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 class Login {
   final String url;
   final String username;
@@ -121,6 +126,7 @@ class Login {
       await storage.write(key: "deviceId", value: _deviceId);
       await storage.write(key: "version", value: _version);
       debugPrint("saved data");
+
       return "true";
     } else {
       if (response.statusCode == 401) {

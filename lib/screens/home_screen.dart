@@ -10,9 +10,16 @@ import 'dart:convert';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:jellybook/screens/info_screen.dart';
 import 'package:jellybook/providers/fetchBooks.dart';
-import 'package:jellybook/providers/fetchCategories.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import 'package:jellybook/screens/settings_screen.dart';
+import 'package:jellybook/providers/fetchBooks.dart';
+import 'package:jellybook/providers/listBooks.dart';
+import 'package:jellybook/providers/fetchCategories.dart';
+
+// database imports
+import 'package:jellybook/models/entry.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
