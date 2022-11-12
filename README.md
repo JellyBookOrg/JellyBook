@@ -1,29 +1,32 @@
 # JellyBook
 
 Hi, this is still in a very early, pre-alpha stage.
-I have been working hard to try to get the app out by this weekend in a working state but I unfortinately was unable to do so.
-
-I have decided to still release this early build in hope to recieve some attention and possible help.
+It has been maturing stedily since then but still not in a state im the happiest with.
+As time goes on I will add more support and more features
 
 ## Currenty supported formats:
 - `.cbz` files
-- `.cbr` files (initial support)
+- `.cbr` files
+- `.pdf` files (very basic support)
 
 ## Todo
 
- - Where do i begin, lol
- - Add support for actual reading
- - pdf, epub, etc... support
+ - epub, audiobooks, etc... support
+ - Have a more universal experience between the rest of the formats and pdfs (pdf work a bit differently)
  - Allow local caching of current files and still able to browse what books in collection when offline (proper offline support)
  - Remember user support
  - Multiple server support
  - Settings page
  - For the download completed screen I want to add a image or gif of a jellyfish reading a book (credit to thornbill on the Matrix server for that idea)
- - I want to improve the UI on the main menu screne and have a progress bar on already read books
- - Eat hot chip!
+ - UI Overhall in several areas of the app (will keep current for those who want it)
+        - Part of the current issue is that it looks like a Android app made in Flutter which although it is made in Flutter, I want it to have a more cross platform feel to it
+ - Add progress bar
+ - background download
+ - Publish to several stores
 
 ## Known Issues
  - You cannot use a Self Signed SSL Cert with it. You may only use HTTP or a Trusted SSL Cert.
+ - Due to the re-working of several components, you may need to reset the apps data after upgrading so that it still functions as intended
 
 ## Contact Me
  - Discord: `kmp3e#9430`
