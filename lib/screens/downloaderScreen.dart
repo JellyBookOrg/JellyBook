@@ -55,7 +55,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> downloadFile(bool forceDown) async {
-    // open the database
     var box = Hive.box<Entry>('bookShelf');
 
     // get the entry that matches the comicId
@@ -79,7 +78,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
       if (entry.folderPath != '' && forceDown == false) {
         return;
       }
-      // get the data from the database
 
       url = entry.url;
       imageUrl = entry.imagePath;
@@ -141,13 +139,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
       debugPrint('Comic folder created');
       debugPrint(dirLocation + '/' + fileName2);
 
-      // make directory to extract to
       FileUtils.mkdir([dirLocation + '/' + fileName2]);
       comicFolder = dirLocation + '/' + fileName2;
-      // check if the file is a zip or rar
-      // final fileType = lookupMimeType(dirLocation + '/' + fileName2 + '.zip');
       if (dir.contains('.zip')) {
-        // if (filePath.contains('.zip')) {
         var bytes =
             File(dirLocation + '/' + fileName2 + '.zip').readAsBytesSync();
 
@@ -167,10 +161,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         debugPrint('Unzipped');
         File(dirLocation + '/' + fileName + '.zip').deleteSync();
 
-        // change entry to downloaded
         entry.downloaded = true;
 
-        // save the location of the comic
         entry.folderPath = dirLocation + '/' + fileName2;
 
         debugPrint('Zip file extracted');
@@ -181,36 +173,24 @@ class _DownloadScreenState extends State<DownloadScreen> {
           debugPrint('Rar file extracted');
           debugPrint('Unzipped');
           File(dirLocation + '/' + fileName + '.rar').deleteSync();
-          // change entry to downloaded
           entry.downloaded = true;
         } catch (e) {
           debugPrint("Extraction failed " + e.toString());
         }
       } else if (entry.path.contains('.pdf')) {
         debugPrint('PDF file');
-        // change entry to downloaded
 
         try {
           var file = File(dirLocation + '/' + fileName + '.pdf');
-          // make folder
           FileUtils.mkdir([dirLocation + '/' + fileName2]);
-          // move the file to the folder
           file.renameSync(
               dirLocation + '/' + fileName2 + '/' + fileName + '.pdf');
-          // get the index of the entry
-          // save the location of the comic
           entry.folderPath = dirLocation + '/' + fileName2;
           entry.filePath =
               dirLocation + '/' + fileName2 + '/' + fileName + '.pdf';
           debugPrint('PDF file moved');
           entry.downloaded = true;
-          // int index = box.values.toList().indexOf(entry);
-          // update the entry
-          // box.putAt(index, entry);
-
-          // save the location of the comic
           entry.folderPath = dirLocation + '/' + fileName2;
-          // entry.downloaded = true;
         } catch (e) {
           debugPrint(e.toString());
         }
@@ -228,9 +208,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         Navigator.pop(context);
       });
     }
-    // var prefs = await SharedPreferences.getInstance();
     debugPrint("title: " + entry.title);
-    // debugPrint("path: " + filePath);
     debugPrint("comicFolder: " + comicFolder);
     // prefs.setString(title, comicFolder);
   }
@@ -250,10 +228,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         actions: [
           if (!downloading)
             IconButton(
-              // redownload the file
               icon: Icon(Icons.download),
               onPressed: () {
-                // ask user to confirm
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(

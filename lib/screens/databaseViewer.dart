@@ -10,12 +10,10 @@ class DatabaseViewer extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Database Viewer'),
-        // button to delete all entries
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              // confirm deletion
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -53,8 +51,6 @@ class DatabaseViewer extends StatelessWidget {
               child: Text('No entries'),
             );
           } else {
-            // return a scrollable list of the entries where each entry is a row can be tapped to view the entry
-            // make scrollable
             return Scrollbar(
               child: ListView.builder(
                 itemCount: box.values.length,
@@ -170,8 +166,6 @@ class EntryViewer extends StatelessWidget {
 }
 
 Future<void> deleteAllEntries(BuildContext context) async {
-  // delete all entries
   final box = Hive.box<Entry>('bookShelf');
   await box.clear();
-  // refresh the database viewer
 }

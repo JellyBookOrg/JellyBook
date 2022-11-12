@@ -44,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Home'),
         actions: [
           IconButton(
-            // debug button
             icon: Icon(Icons.bug_report),
             onPressed: () {
               Navigator.push(
