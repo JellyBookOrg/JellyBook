@@ -48,8 +48,11 @@ class Entry extends HiveObject {
   @HiveField(12)
   late String folderPath = '';
 
-  // type
   @HiveField(13)
+  late String filePath = '';
+
+  // type
+  @HiveField(14)
   late String type = 'comic';
 
   Entry({
@@ -66,6 +69,7 @@ class Entry extends HiveObject {
     this.progress = 0.0,
     this.pageNum = 0,
     this.folderPath = '',
+    this.filePath = '',
     this.type = 'comic',
   });
 

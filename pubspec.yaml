@@ -54,6 +54,9 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   http: ^0.13.5
+  flutter_pdfview: ^1.2.5
+  open_filex: ^4.3.1
+  # flutter_cached_pdfview: ^0.4.1
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +85,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/Logo.png
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

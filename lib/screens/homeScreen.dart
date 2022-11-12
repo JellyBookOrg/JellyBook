@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // ],
       ),
       body: FutureBuilder(
-        future: getServerCategories(),
+        future: getServerCategories(context),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return GridView.builder(

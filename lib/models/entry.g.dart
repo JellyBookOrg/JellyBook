@@ -30,14 +30,15 @@ class EntryAdapter extends TypeAdapter<Entry> {
       progress: fields[10] as double,
       pageNum: fields[11] as int,
       folderPath: fields[12] as String,
-      type: fields[13] as String,
+      filePath: fields[13] as String,
+      type: fields[14] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Entry obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -65,6 +66,8 @@ class EntryAdapter extends TypeAdapter<Entry> {
       ..writeByte(12)
       ..write(obj.folderPath)
       ..writeByte(13)
+      ..write(obj.filePath)
+      ..writeByte(14)
       ..write(obj.type);
   }
 

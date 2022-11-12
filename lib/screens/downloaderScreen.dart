@@ -62,16 +62,17 @@ class _DownloadScreenState extends State<DownloadScreen> {
     var entries = box.values.where((element) => element.id == comicId).toList();
     var entry = entries[0];
 
-    final storage = new FlutterSecureStorage();
+    final storage = FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
     Dio dio = Dio();
     bool checkPermission1 = await Permission.storage.request().isGranted;
     if (checkPermission1 == false) {
-      await Permission.storage.request();
       checkPermission1 = await Permission.storage.request().isGranted;
     }
 
     if (entry.folderPath != '') {
+      // set the path to the comic folder
+      path = entry.folderPath;
       await Directory(path).create(recursive: true);
     }
     if (checkPermission1 == true) {
@@ -114,7 +115,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
           dir += '.zip';
         } else if (entry.path.contains('.cbr')) {
           dir += '.rar';
+        } else if (entry.path.contains('.pdf')) {
+          dir += '.pdf';
         }
+        // set the comic file
+        entry.filePath = dir;
         debugPrint('Directory created');
         debugPrint("Attempting to download file");
         await dio.download(url, dir,
@@ -178,12 +183,40 @@ class _DownloadScreenState extends State<DownloadScreen> {
           File(dirLocation + '/' + fileName + '.rar').deleteSync();
           // change entry to downloaded
           entry.downloaded = true;
-
-          // save the location of the comic
-          entry.folderPath = dirLocation + '/' + fileName2;
         } catch (e) {
           debugPrint("Extraction failed " + e.toString());
         }
+      } else if (entry.path.contains('.pdf')) {
+        debugPrint('PDF file');
+        // change entry to downloaded
+
+        try {
+          var file = File(dirLocation + '/' + fileName + '.pdf');
+          // make folder
+          FileUtils.mkdir([dirLocation + '/' + fileName2]);
+          // move the file to the folder
+          file.renameSync(
+              dirLocation + '/' + fileName2 + '/' + fileName + '.pdf');
+          // get the index of the entry
+          // save the location of the comic
+          entry.folderPath = dirLocation + '/' + fileName2;
+          entry.filePath =
+              dirLocation + '/' + fileName2 + '/' + fileName + '.pdf';
+          debugPrint('PDF file moved');
+          entry.downloaded = true;
+          // int index = box.values.toList().indexOf(entry);
+          // update the entry
+          // box.putAt(index, entry);
+
+          // save the location of the comic
+          entry.folderPath = dirLocation + '/' + fileName2;
+          // entry.downloaded = true;
+        } catch (e) {
+          debugPrint(e.toString());
+        }
+
+        debugPrint('PDF file extracted to folder');
+        debugPrint('(Not really extracted)');
       } else {
         debugPrint('Error');
       }

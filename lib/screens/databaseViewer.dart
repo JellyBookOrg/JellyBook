@@ -103,59 +103,60 @@ class EntryViewer extends StatelessWidget {
                   color: Colors.white, style: BorderStyle.solid, width: 1),
               children: [
                 TableRow(children: [
-                  Text('Title', textAlign: TextAlign.center),
+                  Text('entry.title', textAlign: TextAlign.center),
                   Text(entry.title),
                 ]),
                 TableRow(children: [
-                  Text('ID', textAlign: TextAlign.center),
+                  Text('entry.id', textAlign: TextAlign.center),
                   Text(entry.id),
                 ]),
                 TableRow(children: [
-                  Text('Description', textAlign: TextAlign.center),
+                  Text('entry.description', textAlign: TextAlign.center),
                   Text(entry.description),
                 ]),
                 TableRow(children: [
-                  Text('Image', textAlign: TextAlign.center),
+                  Text('entry.imagePath', textAlign: TextAlign.center),
                   Text(entry.imagePath),
                 ]),
                 TableRow(children: [
-                  Text('Release Date', textAlign: TextAlign.center),
+                  Text('entry.releaseDate', textAlign: TextAlign.center),
                   Text(entry.releaseDate),
                 ]),
                 TableRow(children: [
-                  Text('Downloaded', textAlign: TextAlign.center),
+                  Text('entry.downloaded', textAlign: TextAlign.center),
                   Text(entry.downloaded.toString()),
                 ]),
                 TableRow(children: [
-                  Text('URL', textAlign: TextAlign.center),
+                  Text('entry.url', textAlign: TextAlign.center),
                   Text(entry.url),
                 ]),
                 TableRow(children: [
-                  Text('Tags', textAlign: TextAlign.center),
+                  Text('entry.tags.toString()', textAlign: TextAlign.center),
                   Text(entry.tags.toString()),
                 ]),
                 TableRow(children: [
-                  Text('Rating', textAlign: TextAlign.center),
+                  Text('entry.rating.toString()', textAlign: TextAlign.center),
                   Text(entry.rating.toString()),
                 ]),
                 TableRow(children: [
-                  Text('Progress', textAlign: TextAlign.center),
+                  Text('entry.progress.toString()%',
+                      textAlign: TextAlign.center),
                   Text(entry.progress.toString() + "%"),
                 ]),
                 TableRow(children: [
-                  Text('PageNumber', textAlign: TextAlign.center),
+                  Text('entry.pageNum.toString()', textAlign: TextAlign.center),
                   Text(entry.pageNum.toString()),
                 ]),
                 TableRow(children: [
-                  Text('Folder Path', textAlign: TextAlign.center),
+                  Text('entry.folderpath', textAlign: TextAlign.center),
                   Text(entry.folderPath),
                 ]),
                 TableRow(children: [
-                  Text('File Path', textAlign: TextAlign.center),
+                  Text('entry.path', textAlign: TextAlign.center),
                   Text(entry.path),
                 ]),
                 TableRow(children: [
-                  Text('File Type', textAlign: TextAlign.center),
+                  Text('entry.type', textAlign: TextAlign.center),
                   Text(entry.type),
                 ]),
               ],

@@ -22,7 +22,7 @@ Future<void> deleteComic(String id, context) async {
           TextButton(
             child: Text("Delete"),
             onPressed: () {
-              delete = true;
+              confirmedDelete(id, context);
               Navigator.of(context).pop();
             },
           ),
@@ -30,32 +30,33 @@ Future<void> deleteComic(String id, context) async {
       );
     },
   );
+}
 
-  if (delete == true) {
-    final box = Hive.box<Entry>('bookShelf');
-    // if download is true, delete the file
-    Entry entry = box.get(id)!;
-    if (entry.downloaded == true) {
-      debugPrint("Deleting file");
-      debugPrint(entry.folderPath);
-      final List<String> path = [entry.folderPath];
-      debugPrint(path.toString());
-      FileUtils.rmdir(path);
+Future<void> confirmedDelete(String id, context) async {
+  final box = Hive.box<Entry>('bookShelf');
+  // if download is true, delete the file
+  var entries = box.values.where((element) => element.id == id).toList();
+  var entry = entries[0];
+  if (entry.downloaded == true) {
+    debugPrint("Deleting file");
+    debugPrint(entry.folderPath);
+    final List<String> path = [entry.folderPath];
+    debugPrint(path.toString());
+    FileUtils.rmdir(path);
 
-      entry.downloaded = false;
-      entry.folderPath = "";
-      entry.pageNum = 0;
-      entry.progress = 0;
-      debugPrint("Deleted comic: " + entry.title);
-      debugPrint("Deleted comic path: " + entry.folderPath);
-      entry.save();
-    } else {
-      debugPrint("Comic not downloaded");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Comic not downloaded"),
-        ),
-      );
-    }
+    debugPrint("Deleted comic: " + entry.title);
+    debugPrint("Deleted comic path: " + entry.folderPath);
+    entry.downloaded = false;
+    entry.folderPath = "";
+    entry.pageNum = 0;
+    entry.progress = 0;
+    entry.save();
+  } else {
+    debugPrint("Comic not downloaded");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Comic not downloaded"),
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 // The purpose of this file is to allow the user to read the book/comic they have downloaded
+// The new version will have seperate methods for doing so for different file types
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -8,6 +9,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jellybook/models/entry.dart';
+
+// reading screens
+import 'package:jellybook/screens/readingScreens/pdfReader.dart';
+import 'package:jellybook/screens/readingScreens/cbrCbzReader.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String title;
@@ -24,9 +29,11 @@ class ReadingScreen extends StatefulWidget {
       );
 }
 
+// make class not need to have a build method
 class _ReadingScreenState extends State<ReadingScreen> {
   final String title;
   final String comicId;
+
   List<String> chapters = [];
   String folderName = '';
   String path = '';
@@ -34,332 +41,238 @@ class _ReadingScreenState extends State<ReadingScreen> {
   int pageNums = 0;
   int pageNum = 0;
   double progress = 0.0;
+  String fileType = '';
+  var box = Hive.box<Entry>('bookShelf');
 
   _ReadingScreenState({
     required this.title,
     required this.comicId,
   });
 
-  Future<void> getChapters() async {
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
-    // get the file path from the database
-    var box = Hive.box<Entry>('bookShelf');
-
-    if (box.isNotEmpty) {
-      for (var i = 0; i < box.length; i++) {
-        if (box.getAt(i)!.id == comicId) {
-          path = box.getAt(i)!.path;
-          pageNum = box.getAt(i)!.pageNum;
-          progress = box.getAt(i)!.progress;
-          break;
-        }
-      }
-    }
-
-    // get list of all entries
-    var entries = Hive.box<Entry>('bookShelf').values.toList();
-    debugPrint('entries: $entries');
-
-    // find the entry with the same comicId
-    var entry = entries.firstWhere((element) => element.id == comicId);
-
-    // get the box that stores the entries
-    // var entries = box.get('entries') as List<Entry>;
-
-    // get the entry
-
-    // print the entry
-    debugPrint(entry.toString());
-
-    // check if the entry is downloaded
-    if (entry.downloaded) {
-      // get the file path
-      path = entry.folderPath;
-      progress = entry.progress;
-    }
-
-    debugPrint(path);
-
-    // get a list of all the files in the folder
-    var files = Directory(path).listSync();
-
-    // List<FileSystemEntity> files = Directory(path).listSync();
-    debugPrint(files.toString());
-    // what we want to do is recursively go through the folder and get all the last directories that dont contain any other directories
-    // then we want to add them to the chapters list
-    // max depth of 3
-    // the way we will do the checking is by checkign to see if the file is ends with a jpg, jpeg, png...
-    var formats = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff'];
-    for (var file in files) {
-      if (file.path.endsWith(formats[0]) ||
-          file.path.endsWith(formats[1]) ||
-          file.path.endsWith(formats[2]) ||
-          file.path.endsWith(formats[3]) ||
-          file.path.endsWith(formats[4]) ||
-          file.path.endsWith(formats[5]) ||
-          file.path.endsWith(formats[6])) {
-        print("file: $file");
-        if (!chapters.contains(file.parent.path)) {
-          chapters.add(file.parent.path);
-        }
-      } else {
-        print("file: $file");
-        List<FileSystemEntity> files2 = Directory(file.path).listSync();
-        for (var file2 in files2) {
-          if (file2.path.endsWith(formats[0]) ||
-              file2.path.endsWith(formats[1]) ||
-              file2.path.endsWith(formats[2]) ||
-              file2.path.endsWith(formats[3]) ||
-              file2.path.endsWith(formats[4]) ||
-              file2.path.endsWith(formats[5]) ||
-              file2.path.endsWith(formats[6])) {
-            print("file2: $file2");
-            if (!chapters.contains(file2.parent.path)) {
-              chapters.add(file2.parent.path);
-            }
-          } else {
-            print("file2: $file2");
-            List<FileSystemEntity> files3 = Directory(file2.path).listSync();
-            for (var file3 in files3) {
-              if (file3.path.endsWith(formats[0]) ||
-                  file3.path.endsWith(formats[1]) ||
-                  file3.path.endsWith(formats[2]) ||
-                  file3.path.endsWith(formats[3]) ||
-                  file3.path.endsWith(formats[4]) ||
-                  file3.path.endsWith(formats[5]) ||
-                  file3.path.endsWith(formats[6])) {
-                print("file3: $file3");
-                if (!chapters.contains(file3.parent.path)) {
-                  chapters.add(file3.parent.path);
-                }
-              } else {
-                print("file3: $file3");
-                List<FileSystemEntity> files4 =
-                    Directory(file3.path).listSync();
-                for (var file4 in files4) {
-                  if (file4.path.endsWith(formats[0]) ||
-                      file4.path.endsWith(formats[1]) ||
-                      file4.path.endsWith(formats[2]) ||
-                      file4.path.endsWith(formats[3]) ||
-                      file4.path.endsWith(formats[4]) ||
-                      file4.path.endsWith(formats[5]) ||
-                      file4.path.endsWith(formats[6])) {
-                    print("file4: $file4");
-                    if (!chapters.contains(file4.parent.path)) {
-                      chapters.add(file4.parent.path);
-                    }
-                  } else {
-                    print("file4: $file4");
-                    List<FileSystemEntity> files5 =
-                        Directory(file4.path).listSync();
-                    for (var file5 in files5) {
-                      if (file5.path.endsWith(formats[0]) ||
-                          file5.path.endsWith(formats[1]) ||
-                          file5.path.endsWith(formats[2]) ||
-                          file5.path.endsWith(formats[3]) ||
-                          file5.path.endsWith(formats[4]) ||
-                          file5.path.endsWith(formats[5]) ||
-                          file5.path.endsWith(formats[6])) {
-                        print("file5: $file5");
-                        if (!chapters.contains(file5.parent.path)) {
-                          chapters.add(file5.parent.path + "/");
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    debugPrint("Chapters:");
-    debugPrint(chapters.toString());
+  // first, we want to see if the user has given us permission to access their files
+  // if they have, we want to check if the comic has been downloaded
+  // if it has, we want to get the file extension to determine how to read it
+  // if it hasn't, we want to tell the user to download it first
+  @override
+  void initState() {
+    super.initState();
+    checkPermission(comicId);
+    readComic(comicId);
   }
 
-  Future<void> checkDownloaded() async {
-    // get it from the database
-    var db = Hive.box<Entry>('bookShelf');
-
-    // get the box that stores the entries
-    var entries = db.get('entries') as List<Entry>;
-
-    // get the entry
-    var entry = entries.firstWhere((element) => element.id == comicId);
-
-    folderName = entry.folderPath;
-    var downloaded = entry.downloaded;
-
-    if (downloaded == false) {
-      Navigator.push(
-        context,
-        PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              DownloadScreen(
-            comicId: comicId,
-          ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var begin = const Offset(1.0, 0.0);
-            var end = Offset.zero;
-            var curve = Curves.ease;
-
-            var tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            );
-          },
+  void checkPermission(String comicId) async {
+    if (await Permission.storage.request().isGranted) {
+      // if the user has given us permission, we want to check if the comic has been downloaded
+      checkDownloaded();
+      // if it is, find the file extension and read it
+      try {
+        // get the entry
+        var entries =
+            box.values.where((element) => element.id == comicId).toList();
+        var entry = entries[0];
+        debugPrint("entry is not null");
+        debugPrint("entry: $entry");
+      } catch (e) {
+        debugPrint("error: $e");
+      }
+    } else {
+      // if the user hasn't given us permission, we want to tell them to do so
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Permission Required'),
+          content: const Text(
+              'JellyBook needs permission to access your files to read your comics'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         ),
       );
     }
   }
 
-  Future<void> saveProgress(int page) async {
-    var db = Hive.box<Entry>('bookShelf');
+  Future<void> checkDownloaded() async {
+    // get it from the database
 
-    // get the box that stores the entries
-    var entries = db.values.toList();
+    debugPrint("comicId: $comicId");
 
-    // get the entry
-    var entry = entries.firstWhere((element) => element.id == comicId);
-
-    // update the entry
-    entry.pageNum = page;
-
-    // update the progress
-    entry.progress = (page / pages.length) * 100;
-
-    // delete the old entry and add the new one
-    entries.remove(entry);
-    entries.add(entry);
-
-    debugPrint("saved progress");
-    debugPrint("page num: ${entry.pageNum}");
-  }
-
-  Future<void> getProgress() async {
-    var db = Hive.box<Entry>('bookShelf');
-
-    // get the box that stores the entries
-    var entries = db.get('entries') as List<Entry>;
+    var entries = box.values.where((element) => element.id == comicId).toList();
+    var entry = entries[0];
+    debugPrint("entry: $entry");
+    debugPrint("entry.path: ${entry.path}");
+    debugPrint("entry.title: ${entry.title}");
+    debugPrint("entry.id: ${entry.id}");
 
     // get the entry
-    var entry = entries.firstWhere((element) => element.id == comicId);
+    var downloaded = entry.downloaded;
 
-    // get the progress
-    var progress = entry.progress;
-
-    // get the page number
-    var pageNum = entry.pageNum;
-
-    debugPrint("progress: $progress");
-    debugPrint("page num: $pageNum");
+    if (downloaded == false) {
+      // if the comic hasn't been downloaded, we want to tell the user to download it first
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Download Required'),
+          content: const Text(
+              'JellyBook needs to download the comic before you can read it'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    }
+    //   Navigator.push(
+    //     context,
+    //     PageRouteBuilder(
+    //       transitionDuration: const Duration(milliseconds: 500),
+    //       pageBuilder: (context, animation, secondaryAnimation) =>
+    //           DownloadScreen(
+    //         comicId: comicId,
+    //       ),
+    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+    //         var begin = const Offset(1.0, 0.0);
+    //         var end = Offset.zero;
+    //         var curve = Curves.ease;
+    //
+    //         var tween =
+    //             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+    //
+    //         return SlideTransition(
+    //           position: animation.drive(tween),
+    //           child: child,
+    //         );
+    //       },
+    //     ),
+    //   );
+    // }
   }
 
-  List<String> pages = [];
-  Future<void> createPageList() async {
-    debugPrint("chapters: $chapters");
-    var formats = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"];
-    List<String> pageFiles = [];
-    for (var chapter in chapters) {
-      List<FileSystemEntity> files = Directory(chapter).listSync();
-      for (var file in files) {
-        if (file.path.endsWith(formats[0]) ||
-            file.path.endsWith(formats[1]) ||
-            file.path.endsWith(formats[2]) ||
-            file.path.endsWith(formats[3]) ||
-            file.path.endsWith(formats[4]) ||
-            file.path.endsWith(formats[5]) ||
-            file.path.endsWith(formats[6])) {
-          pageFiles.add(file.path);
-        }
-      }
+  // check file extension
+  Future<String> checkFileExtension(String id) async {
+    // get it from the database
+
+    // get the entry
+    var entries = box.values.where((element) => element.id == comicId).toList();
+    var entry = entries[0];
+
+    // get the file extension
+    String fileExtension = '';
+    try {
+      fileExtension = entry.path.split('.').last;
+      debugPrint("fileExtension: $fileExtension");
+    } catch (e) {
+      debugPrint("error: $e");
     }
-    pageFiles.sort();
-    for (var page in pageFiles) {
-      pages.add(page);
-      pageNums++;
-    }
+
+    return fileExtension;
   }
 
-  void initState() {
-    super.initState();
-    checkDownloaded();
+  // choose how to read the file
+  Future<void> readComic(String id) async {
+    // get the file extension
+    var fileExtension = await checkFileExtension(id);
+
+    // use a switch statement to determine how to read the file
+    switch (fileExtension) {
+      case 'pdf':
+        Navigator.push(
+          context,
+          // for the route, have no transition
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 0),
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                PdfReader(comicId: comicId, title: title),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              var begin = const Offset(1.0, 0.0);
+              var end = Offset.zero;
+              var curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+          ),
+        );
+        debugPrint("Filetype: $fileExtension");
+        debugPrint('unimplemented');
+        // read the pdf
+        break;
+
+      case 'cbz':
+      case 'cbr':
+        Navigator.push(
+          context,
+          // for the route, have no transition
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 0),
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                CbrCbzReader(
+              comicId: comicId,
+              title: title,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              var begin = const Offset(1.0, 0.0);
+              var end = Offset.zero;
+              var curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+          ),
+        );
+        break;
+      default:
+        // if the file extension is not supported, tell the user
+        debugPrint('File extension not supported');
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('File Type Not Supported'),
+            content: const Text(
+                'JellyBook does not support this file type. Please download a different file'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getChapters(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(title),
-            ),
-            body: FutureBuilder(
-              future: getProgress(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return FutureBuilder(
-                    future: createPageList(),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return Column(
-                          children: [
-                            Expanded(
-                              child: PageView.builder(
-                                itemCount: pages.length,
-                                controller: PageController(
-                                  initialPage: pageNum,
-                                ),
-                                itemBuilder: (context, index) {
-                                  return InteractiveViewer(
-                                    child: Image.file(
-                                      File(pages[index]),
-                                      // File(path + '/' + pages[index]),
-                                      fit: BoxFit.contain,
-                                    ),
-                                  );
-                                },
-                                onPageChanged: (index) {
-                                  saveProgress(index);
-                                  progress = index / pageNums;
-                                  // getProgress();
-                                },
-                              ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    },
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: const Center(
+        child: Text("Please wait while we load your comic/book",
+            style: TextStyle(fontSize: 20)),
+      ),
     );
   }
 }
