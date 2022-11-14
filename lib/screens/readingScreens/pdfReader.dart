@@ -79,20 +79,34 @@ class _PdfReaderState extends State<PdfReader> {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: Center(
-        // have a container for the pdf
         child: Container(
           child: PDFView(
             defaultPage: page,
             filePath: path,
             autoSpacing: true,
             enableSwipe: true,
-            pageSnap: true,
+            // pageSnap: true,
+            pageFling: true,
             swipeHorizontal: true,
             nightMode: false,
             onError: (error) {
               debugPrint(error.toString());
+              // print out files in the folder
+              debugPrint('files in folder:');
+              Directory(path.substring(0, path.lastIndexOf('/')))
+                  .listSync()
+                  .forEach((element) {
+                debugPrint(element.path);
+              });
             },
             onPageError: (page, error) {
               debugPrint('$page: ${error.toString()}');

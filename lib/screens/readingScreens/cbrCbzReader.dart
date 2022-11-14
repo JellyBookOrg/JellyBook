@@ -27,9 +27,9 @@ class CbrCbzReader extends StatefulWidget {
 class _CbrCbzReaderState extends State<CbrCbzReader> {
   late String title;
   late String comicId;
-  late int pageNum;
-  late int pageNums;
-  late double progress;
+  int pageNum = 0;
+  int pageNums = 0;
+  double progress = 0.0;
   late String path;
   late List<String> chapters = [];
   late List<String> pages = [];
@@ -64,43 +64,11 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
     super.initState();
     title = widget.title;
     comicId = widget.comicId;
-    pageNum = Hive.box('bookShelf').get(comicId).pageNum;
-    progress = Hive.box('bookShelf').get(comicId).progress;
-  }
-
-  Future<void> checkDownloaded() async {
-    // get it from the database
-    var db = Hive.box<Entry>('bookShelf');
-
-    // get the entry
-    var entry = db.get(comicId);
-
-    var downloaded = entry!.downloaded;
-
-    if (downloaded == false) {
-      Navigator.push(
-        context,
-        PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              DownloadScreen(
-            comicId: comicId,
-          ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var begin = const Offset(1.0, 0.0);
-            var end = Offset.zero;
-            var curve = Curves.ease;
-
-            var tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            );
-          },
-        ),
-      );
+    var box = Hive.box<Entry>('bookShelf');
+    var entry = box.get(comicId);
+    if (entry != null) {
+      progress = entry.progress;
+      pageNum = entry.pageNum;
     }
   }
 
@@ -128,44 +96,34 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   }
 
   Future<void> getChapters() async {
+    debugPrint("getting chapters");
     var status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
     }
+
     // get the file path from the database
-    var box = Hive.box<Entry>('bookShelf');
-
-    if (box.isNotEmpty) {
-      // get the entry that matches the id
-      var entry = box.get(comicId);
-      path = entry!.path;
-      pageNum = entry.pageNum;
-      progress = entry.progress;
-      debugPrint("path: $path");
-      debugPrint("page num: $pageNum");
-      debugPrint("progress: $progress");
-    }
-
-    // get list of all entries
-    var entries = Hive.box<Entry>('bookShelf').values.toList();
-    debugPrint('entries: $entries');
-
-    // find the entry with the same comicId
-    var entry = entries.firstWhere((element) => element.id == comicId);
+    var db = Hive.box<Entry>('bookShelf');
 
     // get the box that stores the entries
-    // var entries = box.get('entries') as List<Entry>;
+    var entries = db.values.toList();
 
     // get the entry
+    var entry = entries.firstWhere((element) => element.id == comicId);
 
     // print the entry
-    debugPrint(entry.toString());
-
+    debugPrint("title: ${entry.title}");
+    debugPrint("path: ${entry.path}");
+    debugPrint("page num: ${entry.pageNum}");
+    debugPrint("progress: ${entry.progress}");
+    debugPrint("id: ${entry.id}");
+    debugPrint("downloaded: ${entry.downloaded}");
     // check if the entry is downloaded
     if (entry.downloaded) {
       // get the file path
       path = entry.folderPath;
       progress = entry.progress;
+      pageNum = entry.pageNum;
     }
 
     debugPrint(path);
@@ -188,12 +146,12 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
           file.path.endsWith(formats[4]) ||
           file.path.endsWith(formats[5]) ||
           file.path.endsWith(formats[6])) {
-        debugPrint("file: $file");
+        // debugPrint("file: $file");
         if (!chapters.contains(file.parent.path)) {
           chapters.add(file.parent.path);
         }
       } else {
-        debugPrint("file: $file");
+        // debugPrint("file: $file");
         List<FileSystemEntity> files2 = Directory(file.path).listSync();
         for (var file2 in files2) {
           if (file2.path.endsWith(formats[0]) ||
@@ -203,12 +161,12 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
               file2.path.endsWith(formats[4]) ||
               file2.path.endsWith(formats[5]) ||
               file2.path.endsWith(formats[6])) {
-            debugPrint("file2: $file2");
+            // debugPrint("file2: $file2");
             if (!chapters.contains(file2.parent.path)) {
               chapters.add(file2.parent.path);
             }
           } else {
-            debugPrint("file2: $file2");
+            // debugPrint("file2: $file2");
             List<FileSystemEntity> files3 = Directory(file2.path).listSync();
             for (var file3 in files3) {
               if (file3.path.endsWith(formats[0]) ||
@@ -218,12 +176,12 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
                   file3.path.endsWith(formats[4]) ||
                   file3.path.endsWith(formats[5]) ||
                   file3.path.endsWith(formats[6])) {
-                debugPrint("file3: $file3");
+                // debugPrint("file3: $file3");
                 if (!chapters.contains(file3.parent.path)) {
                   chapters.add(file3.parent.path);
                 }
               } else {
-                debugPrint("file3: $file3");
+                // debugPrint("file3: $file3");
                 List<FileSystemEntity> files4 =
                     Directory(file3.path).listSync();
                 for (var file4 in files4) {
@@ -234,12 +192,12 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
                       file4.path.endsWith(formats[4]) ||
                       file4.path.endsWith(formats[5]) ||
                       file4.path.endsWith(formats[6])) {
-                    debugPrint("file4: $file4");
+                    // debugPrint("file4: $file4");
                     if (!chapters.contains(file4.parent.path)) {
                       chapters.add(file4.parent.path);
                     }
                   } else {
-                    debugPrint("file4: $file4");
+                    // debugPrint("file4: $file4");
                     List<FileSystemEntity> files5 =
                         Directory(file4.path).listSync();
                     for (var file5 in files5) {
@@ -250,7 +208,7 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
                           file5.path.endsWith(formats[4]) ||
                           file5.path.endsWith(formats[5]) ||
                           file5.path.endsWith(formats[6])) {
-                        debugPrint("file5: $file5");
+                        // debugPrint("file5: $file5");
                         if (!chapters.contains(file5.parent.path)) {
                           chapters.add(file5.parent.path + "/");
                         }
@@ -278,6 +236,13 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
           return Scaffold(
             appBar: AppBar(
               title: Text(title),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
             ),
             body: FutureBuilder(
               // get progress requires the comicId

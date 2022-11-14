@@ -75,7 +75,8 @@ Future<List<Map<String, dynamic>>> getComics(
         'id': responseData['Items'][i]['Id'] ?? '',
         'name': responseData['Items'][i]['Name'] ?? '',
         'imagePath':
-            "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?fillHeight=316&fillWidth=200&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
+            // "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?fillHeight=316&fillWidth=200&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
+            "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
         if (responseData['Items'][i]['ImageTags']['Primary'] == null)
           'imagePath': "https://via.placeholder.com/200x316?text=No+Cover+Art",
         'releaseDate': responseData['Items'][i]['ProductionYear'].toString(),
@@ -113,20 +114,13 @@ Future<List<Map<String, dynamic>>> getComics(
             : responseData['Items'][i]['CommunityRating'].toDouble(),
         tags: responseData['Items'][i]['Tags'] ?? [],
         downloaded: false,
-        // path: comics[i]['path'],
-        // url: comics[i]['url'],
-        // tags: comics[i]['tags'],
-        // rating: comics[i]['rating'],
         progress: 0.0,
-
         type: comicFileTypes.contains(
                 responseData['Items'][i]['Path'].split('.').last.toLowerCase())
             ? 'comic'
             : 'book',
       );
 
-      // add the entry to the database (already initialized)
-      // var box = Hive.box<Entry>('bookShelf');
       // add the entry to the database (with the name being the id)
       // check that the entry doesn't already exist
       bool exists = false;

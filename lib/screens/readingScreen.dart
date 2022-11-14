@@ -208,8 +208,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
           ),
         );
         debugPrint("Filetype: $fileExtension");
-        debugPrint('unimplemented');
-        // read the pdf
         break;
 
       case 'cbz':

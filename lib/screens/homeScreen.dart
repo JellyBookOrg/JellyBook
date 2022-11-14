@@ -1,4 +1,4 @@
-// The purpose of thsi file is to have a screen where the users
+// The purpose of this file is to have a screen where the users
 // can see all their comics and manage them
 
 import 'package:flutter/material.dart';
@@ -157,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               snapshot.data![index]['imagePath'],
                               width:
                                   MediaQuery.of(context).size.width / 4 * 0.8,
+                              fit: BoxFit.fitWidth,
                             ),
                           ),
                         ),

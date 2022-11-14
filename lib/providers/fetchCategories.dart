@@ -89,11 +89,11 @@ Future<List<String>> chooseCategories(List<String> categories, context) async {
                       if (value == true &&
                           !selected.contains(categories[index])) {
                         selected.add(categories[index]);
-                        debugPrint(selected.toString() + " added");
+                        // debugPrint(selected.toString() + " added");
                       } else if (value == false &&
                           selected.contains(categories[index])) {
                         selected.remove(categories[index]);
-                        debugPrint(selected.toString() + " removed");
+                        // debugPrint(selected.toString() + " removed");
                       }
                       setState(() {});
                     },

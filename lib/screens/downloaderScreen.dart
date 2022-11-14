@@ -86,7 +86,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       // get stuff from the secure storage
       String client = await storage.read(key: 'client') ?? '';
       token = await storage.read(key: 'AccessToken') ?? '';
-      fileName = await fileNameFromTitle(entry.title);
+      fileName = await fileNameFromTitle(entry.path.split('/').last);
       String dirLocation =
           await getApplicationDocumentsDirectory().then((value) => value.path);
       Map<String, String> headers = {
@@ -109,13 +109,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
         FileUtils.mkdir([dirLocation]);
         // set the location of the folder
         dir = dirLocation + '/' + fileName;
-        if (entry.path.contains('cbz')) {
-          dir += '.zip';
-        } else if (entry.path.contains('.cbr')) {
-          dir += '.rar';
-        } else if (entry.path.contains('.pdf')) {
-          dir += '.pdf';
-        }
+        // if (entry.path.contains('cbz')) {
+        //   // dir += '.zip';
+        // } else if (entry.path.contains('.cbr')) {
+        //   // dir += '.rar';
+        // } else if (entry.path.contains('.pdf')) {
+        //   // dir += '.pdf';
+        // }
         // set the comic file
         entry.filePath = dir;
         debugPrint('Directory created');
@@ -142,8 +142,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       FileUtils.mkdir([dirLocation + '/' + fileName2]);
       comicFolder = dirLocation + '/' + fileName2;
       if (dir.contains('.zip')) {
-        var bytes =
-            File(dirLocation + '/' + fileName2 + '.zip').readAsBytesSync();
+        var bytes = File(dirLocation + '/' + fileName).readAsBytesSync();
 
         // extract the zip file
         var archive = ZipDecoder().decodeBytes(bytes);
@@ -159,7 +158,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
           }
         }
         debugPrint('Unzipped');
-        File(dirLocation + '/' + fileName + '.zip').deleteSync();
+        File(dirLocation + '/' + fileName).deleteSync();
 
         entry.downloaded = true;
 
@@ -168,11 +167,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
         debugPrint('Zip file extracted');
       } else if (dir.contains('.rar')) {
         try {
-          await UnrarFile.extract_rar(dirLocation + '/' + fileName + '.rar',
+          await UnrarFile.extract_rar(dirLocation + '/' + fileName,
               dirLocation + '/' + fileName2 + '/');
           debugPrint('Rar file extracted');
           debugPrint('Unzipped');
-          File(dirLocation + '/' + fileName + '.rar').deleteSync();
+          File(dirLocation + '/' + fileName).deleteSync();
           entry.downloaded = true;
         } catch (e) {
           debugPrint("Extraction failed " + e.toString());
@@ -181,13 +180,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
         debugPrint('PDF file');
 
         try {
-          var file = File(dirLocation + '/' + fileName + '.pdf');
+          var file = File(dirLocation + '/' + fileName);
+          // var file = File(dirLocation + '/' + fileName + '.pdf');
           FileUtils.mkdir([dirLocation + '/' + fileName2]);
-          file.renameSync(
-              dirLocation + '/' + fileName2 + '/' + fileName + '.pdf');
+          file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
           entry.folderPath = dirLocation + '/' + fileName2;
-          entry.filePath =
-              dirLocation + '/' + fileName2 + '/' + fileName + '.pdf';
+          entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
           debugPrint('PDF file moved');
           entry.downloaded = true;
           entry.folderPath = dirLocation + '/' + fileName2;

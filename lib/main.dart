@@ -13,14 +13,14 @@ Future<void> main() async {
   await Hive.openBox<Entry>('bookShelf');
 
   // if running in debug mode then clear the hive box
-  // if (kDebugMode) {
-  //   try {
-  //     await Hive.box<Entry>('bookShelf').clear();
-  //   } catch (e) {
-  //     debugPrint(e.toString());
-  //   }
-  //   debugPrint("cleared hive box");
-  // }
+  if (kDebugMode) {
+    try {
+      await Hive.box<Entry>('bookShelf').clear();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    debugPrint("cleared hive box");
+  }
 
   runApp(MyApp());
 }

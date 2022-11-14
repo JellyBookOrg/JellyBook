@@ -80,6 +80,7 @@ class InfoScreen extends StatelessWidget {
                         child: Image.network(
                           imageUrl,
                           width: MediaQuery.of(context).size.width / 4 * 0.8,
+                          fit: BoxFit.fitWidth,
                         ),
                       ),
                     ),
