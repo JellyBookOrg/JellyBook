@@ -39,6 +39,16 @@ Future<List<Map<String, dynamic>>> getServerCategories(context) async {
     data['Items'].forEach((item) {
       categories.add(item['Name']);
     });
+
+    categories.remove('Shows');
+    categories.remove('Movies');
+    categories.remove('Music');
+    categories.remove('Collections');
+    categories.remove('shows');
+    categories.remove('movies');
+    categories.remove('music');
+    categories.remove('collections');
+
     List<String> selected = await chooseCategories(categories, context);
     List<Future<List<Map<String, dynamic>>>> comicsArray = [];
     debugPrint("selected: " + selected.toString());
