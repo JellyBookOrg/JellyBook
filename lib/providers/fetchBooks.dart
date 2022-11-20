@@ -4,10 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as Http;
 import 'dart:convert';
+import 'package:jellybook/providers/folderProvider.dart';
 
 // database imports
 import 'package:jellybook/models/entry.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // get comics
@@ -26,8 +26,7 @@ Future<List<Map<String, dynamic>>> getComics(
   final response = Http.get(
     Uri.parse('$url/Users/$userId/Items' +
         '?StartIndex=0' +
-        '&Fields=PrimaryImageAspectRatio,SortName,Path,SongCount,ChildCount,MediaSourceCount,Tags,Overview' +
-        '&Filters=IsNotFolder' +
+        '&Fields=PrimaryImageAspectRatio,SortName,Path,SongCount,ChildCount,MediaSourceCount,Tags,Overview,ParentId' +
         '&ImageTypeLimit=1' +
         '&ParentId=$comicsId' +
         '&Recursive=true' +
@@ -86,6 +85,7 @@ Future<List<Map<String, dynamic>>> getComics(
         if (responseData['Items'][i]['CommunityRating'] != null)
           'rating': responseData['Items'][i]['CommunityRating'].toDouble(),
         'tags': responseData['Items'][i]['Tags'] ?? [],
+        'parentId': responseData['Items'][i]['ParentId'] ?? '',
       });
       debugPrint(responseData['Items'][i]['Name']);
     }
@@ -118,8 +118,17 @@ Future<List<Map<String, dynamic>>> getComics(
         type: comicFileTypes.contains(
                 responseData['Items'][i]['Path'].split('.').last.toLowerCase())
             ? 'comic'
-            : 'book',
+            : bookFileTypes.contains(responseData['Items'][i]['Path']
+                    .split('.')
+                    .last
+                    .toLowerCase())
+                ? 'book'
+                : responseData['Items'][i]['Type'] == 'Folder'
+                    ? 'folder'
+                    : 'unknown',
+        parentId: responseData['Items'][i]['ParentId'] ?? '',
       );
+      // debugPrint("type: ${entry.type}");
 
       // add the entry to the database (with the name being the id)
       // check that the entry doesn't already exist
@@ -131,14 +140,20 @@ Future<List<Map<String, dynamic>>> getComics(
       });
       if (!exists) {
         box.add(entry);
-        debugPrint("book added");
+        // debugPrint("book added");
       } else {
-        debugPrint("book already exists");
+        // debugPrint("book already exists");
       }
     } catch (e) {
       debugPrint(e.toString());
     }
   }
+
+  // set the list of folders from the list of entries and then category ids
+  // List<String> categoryIds = prefs.getStringList('categoryIds') ?? [];
+  // List<Entry> entriesList = box.values.toList();
+  // debugPrint("got entries list");
+  // CreateFolders.createFolders(entriesList, categoryIds);
 
   return comics;
 }

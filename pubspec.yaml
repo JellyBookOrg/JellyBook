@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.6
+version: 1.0.7
 
 environment:
   sdk: '>=2.18.2 <3.0.0'
@@ -46,7 +46,6 @@ dependencies:
   like_button: ^2.0.5
   path_provider: ^2.0.11
   permission_handler: ^10.2.0
-  file_utils: ^1.0.1
   turn_page_transition: ^0.2.0
   unrar_file: ^1.1.0
   flutter_settings_screens: ^0.3.3-null-safety+2
@@ -68,7 +67,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  flutter_launcher_icons: ^0.10.0
+  flutter_launcher_icons: ^0.11.0
   hive_generator: ^2.0.0
   build_runner: ^2.3.2
   # objectbox_generator: ^1.6.2

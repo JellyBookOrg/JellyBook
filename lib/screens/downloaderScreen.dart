@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'dart:async';
-import 'package:file_utils/file_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -106,7 +105,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
       debugPrint(dir);
       debugPrint('Folder does not exist');
       try {
-        FileUtils.mkdir([dirLocation]);
+        // make directory
+        await Directory(dirLocation).create(recursive: true);
+        debugPrint('Directory created');
+        // FileUtils.mkdir([dirLocation]);
         // set the location of the folder
         dir = dirLocation + '/' + fileName;
         // if (entry.path.contains('cbz')) {
@@ -135,11 +137,23 @@ class _DownloadScreenState extends State<DownloadScreen> {
       }
 
       String fileName2 = await fileNameFromTitle(entry.title);
-      FileUtils.mkdir([dirLocation + '/']);
+      // FileUtils.mkdir([dirLocation + '/']);
+      // make directory
+      try {
+        await Directory(dirLocation).create(recursive: true);
+      } catch (e) {
+        debugPrint(e.toString());
+      }
       debugPrint('Comic folder created');
       debugPrint(dirLocation + '/' + fileName2);
 
-      FileUtils.mkdir([dirLocation + '/' + fileName2]);
+      // FileUtils.mkdir([dirLocation + '/' + fileName2]);
+      // make directory
+      try {
+        await Directory(dirLocation + '/' + fileName2).create(recursive: true);
+      } catch (e) {
+        debugPrint(e.toString());
+      }
       comicFolder = dirLocation + '/' + fileName2;
       if (dir.contains('.zip')) {
         var bytes = File(dirLocation + '/' + fileName).readAsBytesSync();
@@ -154,7 +168,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
               ..createSync(recursive: true)
               ..writeAsBytesSync(data);
           } else {
-            FileUtils.mkdir([dirLocation + '/' + fileName2 + '/' + filename]);
+            // FileUtils.mkdir([dirLocation + '/' + fileName2 + '/' + filename]);
+            // make directory
+            try {
+              await Directory(dirLocation + '/' + fileName2 + '/' + filename)
+                  .create(recursive: true);
+            } catch (e) {
+              debugPrint(e.toString());
+            }
           }
         }
         debugPrint('Unzipped');
@@ -182,7 +203,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
         try {
           var file = File(dirLocation + '/' + fileName);
           // var file = File(dirLocation + '/' + fileName + '.pdf');
-          FileUtils.mkdir([dirLocation + '/' + fileName2]);
+          // FileUtils.mkdir([dirLocation + '/' + fileName2]);
+          // make directory
+          try {
+            await Directory('$dirLocation/$fileName2').create(recursive: true);
+          } catch (e) {
+            debugPrint(e.toString());
+          }
           file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
           entry.folderPath = dirLocation + '/' + fileName2;
           entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;

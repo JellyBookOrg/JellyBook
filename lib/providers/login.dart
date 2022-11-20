@@ -37,7 +37,7 @@ class Login {
     const _client = "JellyBook";
     const _device = "Unknown Device";
     const _deviceId = "Unknown Device id";
-    const _version = "1.0.6";
+    const _version = "1.0.7";
 
     if ((!url.contains("http://") || !url.contains("https://")) == false) {
       debugPrint("URL does not contain http:// or https://");

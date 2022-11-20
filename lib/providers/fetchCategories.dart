@@ -6,8 +6,14 @@ import 'dart:convert';
 import 'package:jellybook/providers/fetchBooks.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:jellybook/providers/folderProvider.dart';
+import 'package:jellybook/models/entry.dart';
+import 'package:jellybook/models/folder.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-Future<List<Map<String, dynamic>>> getServerCategories(context) async {
+// have optional perameter to have the function return the list of folders
+Future<List<Map<String, dynamic>>> getServerCategories(context,
+    {bool returnFolders = false}) async {
   debugPrint("getting server categories");
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken') ?? "";
@@ -16,7 +22,7 @@ Future<List<Map<String, dynamic>>> getServerCategories(context) async {
   final client = prefs.getString('client') ?? "JellyBook";
   final device = prefs.getString('device') ?? "";
   final deviceId = prefs.getString('deviceId') ?? "";
-  final version = prefs.getString('version') ?? "1.0.6";
+  final version = prefs.getString('version') ?? "1.0.7";
   debugPrint("got prefs");
   Map<String, String> headers =
       getHeaders(url, client, device, deviceId, version, token);
@@ -49,20 +55,95 @@ Future<List<Map<String, dynamic>>> getServerCategories(context) async {
     categories.remove('music');
     categories.remove('collections');
 
-    List<String> selected = await chooseCategories(categories, context);
+    List<String> selected = [];
+    if (categories.contains('Comics')) {
+      selected.add('Comics');
+    } else if (categories.contains('comics')) {
+      selected.add('comics');
+    } else if (categories.contains('Books')) {
+      selected.add('Books');
+    } else if (categories.contains('books')) {
+      selected.add('books');
+    } else {
+      hasComics = false;
+    }
+    // get length of prefs.getStringList('categories') (its a List<dynamic>?)
+    // List<String> selected = prefs.getStringList('categories') ?? ['Error'];
+    // if (selected[0] == 'Error') {
+    //   selected = await chooseCategories(categories, context);
+    //   debugPrint("selected: $selected");
+    //   prefs.setStringList('categories', selected);
+    // }
+    // if (prefs.getStringList('categories')!.length == 0) {
+    //   selected = await chooseCategories(categories, context);
+    //   prefs.setStringList('categories', selected);
+    // } else {
+    //   selected = prefs.getStringList('categories')!;
+    // }
     List<Future<List<Map<String, dynamic>>>> comicsArray = [];
+    List<String> comicsIds = [];
     debugPrint("selected: " + selected.toString());
     for (int i = 0; i < data['Items'].length; i++) {
       if (selected.contains(data['Items'][i]['Name'])) {
         comicsId = data['Items'][i]['Id'];
+        comicsIds.add(comicsId);
         etag = data['Items'][i]['Etag'];
         comicsArray.add(getComics(comicsId, etag));
       }
     }
+
     // once all the comics are fetched, combine them into one list
     List<Map<String, dynamic>> comics = [];
     for (int i = 0; i < comicsArray.length; i++) {
+      // comicsArray[i].then((value) {
+      //   comics.addAll(value);
+      // });
       comics.addAll(await comicsArray[i]);
+    }
+
+    prefs.setStringList('comicsIds', comicsIds);
+
+    if (returnFolders) {
+      List<String> categoriesList = [];
+      for (int i = 0; i < selected.length; i++) {
+        categoriesList.add(selected[i]);
+      }
+
+      var boxEntries = Hive.box<Entry>('bookShelf');
+      List<Entry> entriesList = boxEntries.values.toList();
+      debugPrint("got entries list");
+      var boxFolders = Hive.box<Folder>('folders');
+      // List<Folder> foldersList = boxFolders.values.toList();
+      // List<Folder> folders = await boxFolders.values.toList();
+      List<Folder> folders =
+          await CreateFolders.getFolders(entriesList, categoriesList);
+
+      debugPrint("created folders");
+      // convert folders to maps<strings, dynamic>
+      List<Map<String, dynamic>> makeFolders() {
+        List<Map<String, dynamic>> foldersMap = [];
+        folders.forEach((folder) {
+          foldersMap.add(
+            {
+              'id': folder.id,
+              'name': folder.name,
+              'image': folder.image,
+              'bookIds': folder.bookIds,
+            },
+          );
+        });
+        return foldersMap;
+      }
+
+      List<Map<String, dynamic>> foldersMap = makeFolders();
+      debugPrint("converted folders to maps");
+
+      // wait for the folders to be created
+
+      // return the list of folders
+      return foldersMap;
+    } else {
+      return comics;
     }
     debugPrint("Returning comics");
     return comics;

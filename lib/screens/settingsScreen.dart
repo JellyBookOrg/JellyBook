@@ -136,7 +136,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           children: [
             Text(
-              'Version 1.0.6',
+              'Version 1.0.7',
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(

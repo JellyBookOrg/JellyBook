@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:file_utils/file_utils.dart';
+import 'dart:io';
 
 Future<void> deleteComic(String id, context) async {
   bool delete = false;
@@ -40,9 +40,13 @@ Future<void> confirmedDelete(String id, context) async {
   if (entry.downloaded == true) {
     debugPrint("Deleting file");
     debugPrint(entry.folderPath);
-    final List<String> path = [entry.folderPath];
+    final String path = entry.folderPath;
     debugPrint(path.toString());
-    FileUtils.rmdir(path);
+    try {
+      Directory(path).deleteSync(recursive: true);
+    } catch (e) {
+      debugPrint("error deleting directory: $e");
+    }
 
     debugPrint("Deleted comic: " + entry.title);
     debugPrint("Deleted comic path: " + entry.folderPath);

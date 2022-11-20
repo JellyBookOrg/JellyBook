@@ -32,13 +32,14 @@ class EntryAdapter extends TypeAdapter<Entry> {
       folderPath: fields[12] as String,
       filePath: fields[13] as String,
       type: fields[14] as String,
+      parentId: fields[15] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Entry obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -68,7 +69,9 @@ class EntryAdapter extends TypeAdapter<Entry> {
       ..writeByte(13)
       ..write(obj.filePath)
       ..writeByte(14)
-      ..write(obj.type);
+      ..write(obj.type)
+      ..writeByte(15)
+      ..write(obj.parentId);
   }
 
   @override

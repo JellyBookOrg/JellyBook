@@ -55,6 +55,10 @@ class Entry extends HiveObject {
   @HiveField(14)
   late String type = 'comic';
 
+  // parentId
+  @HiveField(15)
+  late String parentId = '';
+
   Entry({
     required this.id,
     required this.title,
@@ -71,10 +75,6 @@ class Entry extends HiveObject {
     this.folderPath = '',
     this.filePath = '',
     this.type = 'comic',
+    this.parentId = '',
   });
-
-  // void _requireInitialized() {
-  //   Hive.openBox('bookShelf');
-  // }
-
 }
