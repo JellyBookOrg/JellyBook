@@ -155,7 +155,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         debugPrint(e.toString());
       }
       comicFolder = dirLocation + '/' + fileName2;
-      if (dir.contains('.zip')) {
+      if (dir.contains('.zip') || dir.contains('.cbz')) {
         var bytes = File(dirLocation + '/' + fileName).readAsBytesSync();
 
         // extract the zip file
@@ -186,7 +186,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         entry.folderPath = dirLocation + '/' + fileName2;
 
         debugPrint('Zip file extracted');
-      } else if (dir.contains('.rar')) {
+      } else if (dir.contains('.rar') || dir.contains('.cbr')) {
         try {
           await UnrarFile.extract_rar(dirLocation + '/' + fileName,
               dirLocation + '/' + fileName2 + '/');
