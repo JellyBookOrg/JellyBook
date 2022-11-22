@@ -55,6 +55,7 @@ dependencies:
   http: ^0.13.5
   flutter_pdfview: ^1.2.5
   open_filex: ^4.3.1
+  epub_view: ^3.0.0
   # flutter_cached_pdfview: ^0.4.1
 
 dev_dependencies:

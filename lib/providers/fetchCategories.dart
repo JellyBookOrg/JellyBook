@@ -56,16 +56,25 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
     categories.remove('collections');
 
     List<String> selected = [];
-    if (categories.contains('Comics')) {
-      selected.add('Comics');
-    } else if (categories.contains('comics')) {
-      selected.add('comics');
-    } else if (categories.contains('Books')) {
-      selected.add('Books');
-    } else if (categories.contains('books')) {
-      selected.add('books');
-    } else {
-      hasComics = false;
+    List<String> includedAutomatically = [
+      'Comics',
+      'comics',
+      'Books',
+      'books',
+      'Manga',
+      'manga',
+      'Comics & Graphic Novels',
+      'comics & graphic novels',
+      'Graphic Novels',
+      'graphic novels',
+      'Novels',
+      'novels',
+      'Novel',
+    ];
+    for (var i = 0; i < categories.length; i++) {
+      if (includedAutomatically.contains(categories[i])) {
+        selected.add(categories[i]);
+      }
     }
     // get length of prefs.getStringList('categories') (its a List<dynamic>?)
     // List<String> selected = prefs.getStringList('categories') ?? ['Error'];

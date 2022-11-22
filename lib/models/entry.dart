@@ -59,6 +59,9 @@ class Entry extends HiveObject {
   @HiveField(15)
   late String parentId = '';
 
+  @HiveField(16)
+  late String epubCfi = '';
+
   Entry({
     required this.id,
     required this.title,
@@ -76,5 +79,6 @@ class Entry extends HiveObject {
     this.filePath = '',
     this.type = 'comic',
     this.parentId = '',
+    this.epubCfi = '',
   });
 }

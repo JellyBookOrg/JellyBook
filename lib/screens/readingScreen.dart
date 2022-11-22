@@ -13,6 +13,7 @@ import 'package:jellybook/models/entry.dart';
 // reading screens
 import 'package:jellybook/screens/readingScreens/pdfReader.dart';
 import 'package:jellybook/screens/readingScreens/cbrCbzReader.dart';
+import 'package:jellybook/screens/readingScreens/epubReader.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String title;
@@ -212,6 +213,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
       case 'cbz':
       case 'cbr':
+      case 'zip':
+      case 'rar':
         Navigator.push(
           context,
           // for the route, have no transition
@@ -219,6 +222,33 @@ class _ReadingScreenState extends State<ReadingScreen> {
             transitionDuration: const Duration(milliseconds: 0),
             pageBuilder: (context, animation, secondaryAnimation) =>
                 CbrCbzReader(
+              comicId: comicId,
+              title: title,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              var begin = const Offset(1.0, 0.0);
+              var end = Offset.zero;
+              var curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+          ),
+        );
+        break;
+      case 'epub':
+        Navigator.push(
+          context,
+          // for the route, have no transition
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 0),
+            pageBuilder: (context, animation, secondaryAnimation) => EpubReader(
               comicId: comicId,
               title: title,
             ),

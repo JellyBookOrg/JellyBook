@@ -7,11 +7,14 @@ As time goes on I will add more support and more features
 ## Currenty supported formats:
 - `.cbz` files
 - `.cbr` files
-- `.pdf` files (very basic support)
+- `.zip` files
+- `.rar` files
+- `.pdf` files (doesn't match style of others)
+- `.epub` files (no image support yet)
 
 ## Todo
 
- - epub, audiobooks, etc... support
+ - continuous vertical comics support, audiobooks, etc... support
  - Have a more universal experience between the rest of the formats and pdfs (pdf work a bit differently)
  - Allow local caching of current files and still able to browse what books in collection when offline (proper offline support)
  - Remember user support

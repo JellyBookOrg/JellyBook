@@ -202,9 +202,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
         try {
           var file = File(dirLocation + '/' + fileName);
-          // var file = File(dirLocation + '/' + fileName + '.pdf');
-          // FileUtils.mkdir([dirLocation + '/' + fileName2]);
-          // make directory
           try {
             await Directory('$dirLocation/$fileName2').create(recursive: true);
           } catch (e) {
@@ -222,6 +219,26 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
         debugPrint('PDF file extracted to folder');
         debugPrint('(Not really extracted)');
+      } else if (dir.contains('.epub')) {
+        debugPrint('EPUB file');
+        try {
+          var file = File(dirLocation + '/' + fileName);
+          try {
+            await Directory('$dirLocation/$fileName2').create(recursive: true);
+          } catch (e) {
+            debugPrint(e.toString());
+          }
+          file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
+          entry.folderPath = dirLocation + '/' + fileName2;
+          entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
+          debugPrint('EPUB file moved');
+          entry.downloaded = true;
+          entry.folderPath = dirLocation + '/' + fileName2;
+        } catch (e) {
+          debugPrint(e.toString());
+        }
+
+        debugPrint('EPUB file extracted to folder');
       } else {
         debugPrint('Error');
       }
