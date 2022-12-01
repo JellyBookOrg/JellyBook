@@ -4,6 +4,9 @@ Hi, this is still in a very early, pre-alpha stage.
 It has been maturing stedily since then but still not in a state im the happiest with.
 As time goes on I will add more support and more features
 
+## Now on TestFlight:
+ - [https://testflight.apple.com/join/lEXKY4Dl](https://testflight.apple.com/join/lEXKY4Dl)
+
 ## Currenty supported formats:
 - `.cbz` files
 - `.cbr` files
@@ -23,7 +26,6 @@ As time goes on I will add more support and more features
  - For the download completed screen I want to add a image or gif of a jellyfish reading a book (credit to thornbill on the Matrix server for that idea)
  - UI Overhall in several areas of the app (will keep current for those who want it)
         - Part of the current issue is that it looks like a Android app made in Flutter which although it is made in Flutter, I want it to have a more cross platform feel to it
- - Add progress bar
  - background download
  - Publish to several stores
 
