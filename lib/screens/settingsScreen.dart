@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -22,6 +23,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     Settings.init();
+  }
+
+  late String version;
+
+  Future<void> getPackageInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    version = packageInfo.version;
   }
 
   @override
@@ -136,7 +144,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           children: [
             Text(
-              'Version 1.0.7',
+              'Version: ${Settings.getValue<String>('version')}',
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(

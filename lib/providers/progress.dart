@@ -1,6 +1,7 @@
 // The purpose of this file is to save the progress of the user in a book/comic or get the progress of the user in a book/comic
 
-import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jellybook/models/entry.dart';
 
@@ -9,41 +10,38 @@ Future<void> saveProgress({
   required String comicId,
   List<String> pages = const [],
 }) async {
-  var db = Hive.box<Entry>('bookShelf');
-
-  // get the box that stores the entries
-  var entries = db.values.toList();
+  // open the database
+  final isar = Isar.getInstance();
 
   // get the entry
-  var entry = entries.firstWhere((element) => element.id == comicId);
+  final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
 
   // update the entry
-  entry.pageNum = page;
+  entry!.pageNum = page;
 
   // update the progress
   if (pages.isNotEmpty) {
     entry.progress = (page / pages.length) * 100;
   }
 
-  // delete the old entry and add the new one
-  entries.remove(entry);
-  entries.add(entry);
+  // update the entry
+  await isar.writeTxn(() async {
+    await isar.entrys.put(entry);
+  });
 
   debugPrint("saved progress");
   debugPrint("page num: ${entry.pageNum}");
 }
 
 Future<void> getProgress(String comicId) async {
-  var db = Hive.box<Entry>('bookShelf');
-
-  // get the box that stores the entries
-  var entries = db.get('entries') as List<Entry>;
+  // open the database
+  final isar = Isar.openSync([EntrySchema]);
 
   // get the entry
-  var entry = entries.firstWhere((element) => element.id == comicId);
+  final entry = await isar.entrys.where().idEqualTo(comicId).findFirst();
 
   // get the progress
-  var progress = entry.progress;
+  var progress = entry!.progress;
 
   // get the page number
   var pageNum = entry.pageNum;

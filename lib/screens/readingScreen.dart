@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 
 // reading screens
@@ -43,7 +43,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
   int pageNum = 0;
   double progress = 0.0;
   String fileType = '';
-  var box = Hive.box<Entry>('bookShelf');
+  final isar = Isar.getInstance();
+  // var isar = Isar.open([EntrySchema], inspector: true);
 
   _ReadingScreenState({
     required this.title,
@@ -68,13 +69,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
       // if it is, find the file extension and read it
       try {
         // get the entry
-        var entries =
-            box.values.where((element) => element.id == comicId).toList();
-        var entry = entries[0];
+        var entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+
         debugPrint("entry is not null");
-        debugPrint("entry: $entry");
+        debugPrint("entry of checkPermission: $entry");
       } catch (e) {
-        debugPrint("error: $e");
+        debugPrint("entry in checkPermission: $e");
       }
     } else {
       // if the user hasn't given us permission, we want to tell them to do so
@@ -101,13 +101,15 @@ class _ReadingScreenState extends State<ReadingScreen> {
     // get it from the database
 
     debugPrint("comicId: $comicId");
+    // final isar = await Isar.open([EntrySchema], inspector: true);
 
-    var entries = box.values.where((element) => element.id == comicId).toList();
-    var entry = entries[0];
+    final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+
     debugPrint("entry: $entry");
-    debugPrint("entry.path: ${entry.path}");
+    debugPrint("entry.path: ${entry!.path}");
     debugPrint("entry.title: ${entry.title}");
-    debugPrint("entry.id: ${entry.id}");
+
+    // debugPrint("entry.id: ${entry.id.toString()}");
 
     // get the entry
     var downloaded = entry.downloaded;
@@ -162,16 +164,17 @@ class _ReadingScreenState extends State<ReadingScreen> {
     // get it from the database
 
     // get the entry
-    var entries = box.values.where((element) => element.id == comicId).toList();
-    var entry = entries[0];
+    // final isar = await Isar.open([EntrySchema], inspector: true);
+    final entry =
+        await isar!.entrys.filter().idEqualTo(id).findFirst() as Entry;
 
     // get the file extension
     String fileExtension = '';
     try {
-      fileExtension = entry.path.split('.').last;
+      fileExtension = entry.filePath.split('.').last;
       debugPrint("fileExtension: $fileExtension");
     } catch (e) {
-      debugPrint("error: $e");
+      debugPrint("error getting file extension: $e");
     }
 
     return fileExtension;

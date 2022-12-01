@@ -4,26 +4,21 @@ import 'package:flutter/foundation.dart';
 
 // database imports
 import 'package:jellybook/models/entry.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
 
 // first we need to check if its already downloaded
 Future<bool> checkDownloaded(String id) async {
-  var box = Hive.box<Entry>('bookShelf');
-
-  // get the box that stores the entries
-  var entries = box.get('entries') as List<Entry>;
+  // open the database
+  final isar = Isar.getInstance();
 
   // get the entry
-  var entry = entries.firstWhere((element) => element.id == id);
+  final entry = await isar!.entrys.where().idEqualTo(id).findFirst();
+
+  // get the entry
 
   // print the entry
   debugPrint(entry.toString());
 
   // check if the entry is downloaded
-  if (entry.downloaded) {
-    return true;
-  } else {
-    return false;
-  }
+  return entry?.downloaded ?? false;
 }

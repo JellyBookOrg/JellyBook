@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.7
+version: 1.0.8
 
 environment:
   sdk: '>=2.18.2 <3.0.0'
@@ -50,13 +50,14 @@ dependencies:
   unrar_file: ^1.1.0
   flutter_settings_screens: ^0.3.3-null-safety+2
   url_launcher: ^6.1.6
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
   http: ^0.13.5
-  flutter_pdfview: ^1.2.5
+  # flutter_pdfview: ^1.2.5
   open_filex: ^4.3.1
   epub_view: ^3.0.0
-  # flutter_cached_pdfview: ^0.4.1
+  isar: ^3.0.5
+  isar_flutter_libs: ^3.0.5
+  pdfx: ^2.3.0
+  package_info_plus: ^3.0.2
 
 dev_dependencies:
   flutter_test:
@@ -69,8 +70,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   flutter_launcher_icons: ^0.11.0
-  hive_generator: ^2.0.0
+  # hive_generator: ^2.0.0
   build_runner: ^2.3.2
+  isar_generator: ^3.0.5
   # objectbox_generator: ^1.6.2
 
 # For information on the generic Dart part of this file, see the

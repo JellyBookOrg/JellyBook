@@ -9,12 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:jellybook/providers/folderProvider.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
 
 // have optional perameter to have the function return the list of folders
 Future<List<Map<String, dynamic>>> getServerCategories(context,
     {bool returnFolders = false}) async {
   debugPrint("getting server categories");
+  final PackageInfo packageInfo = await PackageInfo.fromPlatform();
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken') ?? "";
   final url = prefs.getString('server') ?? "";
@@ -22,7 +25,8 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
   final client = prefs.getString('client') ?? "JellyBook";
   final device = prefs.getString('device') ?? "";
   final deviceId = prefs.getString('deviceId') ?? "";
-  final version = prefs.getString('version') ?? "1.0.7";
+  final version = prefs.getString('version') ?? packageInfo.version;
+
   debugPrint("got prefs");
   Map<String, String> headers =
       getHeaders(url, client, device, deviceId, version, token);
@@ -104,58 +108,43 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
     // once all the comics are fetched, combine them into one list
     List<Map<String, dynamic>> comics = [];
     for (int i = 0; i < comicsArray.length; i++) {
-      // comicsArray[i].then((value) {
-      //   comics.addAll(value);
-      // });
       comics.addAll(await comicsArray[i]);
     }
 
     prefs.setStringList('comicsIds', comicsIds);
 
     if (returnFolders) {
+      final isar = Isar.getInstance();
       List<String> categoriesList = [];
       for (int i = 0; i < selected.length; i++) {
         categoriesList.add(selected[i]);
       }
+      debugPrint("categoriesList: $categoriesList");
+      List<Entry> entries = await isar!.entrys.where().findAll();
 
-      var boxEntries = Hive.box<Entry>('bookShelf');
-      List<Entry> entriesList = boxEntries.values.toList();
-      debugPrint("got entries list");
-      var boxFolders = Hive.box<Folder>('folders');
-      // List<Folder> foldersList = boxFolders.values.toList();
-      // List<Folder> folders = await boxFolders.values.toList();
-      List<Folder> folders =
-          await CreateFolders.getFolders(entriesList, categoriesList);
+      List<Folder> folders = [];
+      await CreateFolders.getFolders(entries, categoriesList);
+      folders = await isar.folders.where().findAll();
 
-      debugPrint("created folders");
-      // convert folders to maps<strings, dynamic>
-      List<Map<String, dynamic>> makeFolders() {
-        List<Map<String, dynamic>> foldersMap = [];
-        folders.forEach((folder) {
-          foldersMap.add(
-            {
-              'id': folder.id,
-              'name': folder.name,
-              'image': folder.image,
-              'bookIds': folder.bookIds,
-            },
-          );
-        });
-        return foldersMap;
+      // convert the folders to a list of maps
+      List<Map<String, dynamic>> foldersList = [];
+      for (int i = 0; i < folders.length; i++) {
+        // toMap() function doesn't exist so we have to do it manually
+        Map<String, dynamic> folderMap = {
+          'id': folders[i].id,
+          'name': folders[i].name,
+          'bookIds': folders[i].bookIds,
+          'image': folders[i].image,
+        };
+        foldersList.add(folderMap);
       }
 
-      List<Map<String, dynamic>> foldersMap = makeFolders();
-      debugPrint("converted folders to maps");
-
-      // wait for the folders to be created
-
-      // return the list of folders
-      return foldersMap;
+      return foldersList;
     } else {
       return comics;
     }
-    debugPrint("Returning comics");
-    return comics;
+    // debugPrint("Returning comics");
+    // return comics;
   } else {
     debugPrint('No comics found');
   }

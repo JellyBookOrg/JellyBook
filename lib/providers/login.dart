@@ -7,10 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
-import 'package:jellybook/models/entry.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class Login {
   final String url;
@@ -37,7 +34,10 @@ class Login {
     const _client = "JellyBook";
     const _device = "Unknown Device";
     const _deviceId = "Unknown Device id";
-    const _version = "1.0.7";
+    late String _version;
+
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    _version = packageInfo.version;
 
     if ((!url.contains("http://") || !url.contains("https://")) == false) {
       debugPrint("URL does not contain http:// or https://");

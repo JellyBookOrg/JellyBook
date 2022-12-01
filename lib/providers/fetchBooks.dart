@@ -4,11 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as Http;
 import 'dart:convert';
-import 'package:jellybook/providers/folderProvider.dart';
 
 // database imports
 import 'package:jellybook/models/entry.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
 
 // get comics
 Future<List<Map<String, dynamic>>> getComics(
@@ -24,14 +23,8 @@ Future<List<Map<String, dynamic>>> getComics(
   final version = prefs.getString('version');
   prefs.setString('comicsId', comicsId);
   final response = Http.get(
-    Uri.parse('$url/Users/$userId/Items' +
-        '?StartIndex=0' +
-        '&Fields=PrimaryImageAspectRatio,SortName,Path,SongCount,ChildCount,MediaSourceCount,Tags,Overview,ParentId' +
-        '&ImageTypeLimit=1' +
-        '&ParentId=$comicsId' +
-        '&Recursive=true' +
-        '&SortBy=SortName' +
-        '&SortOrder=Ascending'),
+    Uri.parse(
+        '$url/Users/$userId/Items?StartIndex=0&Fields=PrimaryImageAspectRatio,SortName,Path,SongCount,ChildCount,MediaSourceCount,Tags,Overview,ParentId&ImageTypeLimit=1&ParentId=$comicsId&Recursive=true&SortBy=SortName&SortOrder=Ascending'),
     headers: {
       'Accept': 'application/json',
       'Connection': 'keep-alive',
@@ -49,23 +42,19 @@ Future<List<Map<String, dynamic>>> getComics(
 
   debugPrint("Now saving comics to database");
 
+  final isar = Isar.getInstance();
   // get entries from the database
   try {
-    var box = Hive.box<Entry>('bookShelf');
-    // list contents of the box
-    box.values.forEach((element) {
-      debugPrint(element.title);
-    });
-    debugPrint("got entries");
+    final entries = await isar!.entrys.where().idEqualTo(comicsId).findAll();
+    debugPrint("entries: $entries");
+    debugPrint("entries length: ${entries.length}");
   } catch (e) {
     debugPrint(e.toString());
   }
 
-  var box = Hive.box<Entry>('bookShelf');
   debugPrint("got box");
-  var entries = box.get('entries');
+  var entries = await isar!.entrys.where().findAll();
   debugPrint("got entries");
-  debugPrint(entries.toString());
 
   List<Map<String, dynamic>> comics = [];
   for (var i = 0; i < responseData['Items'].length; i++) {
@@ -74,7 +63,6 @@ Future<List<Map<String, dynamic>>> getComics(
         'id': responseData['Items'][i]['Id'] ?? '',
         'name': responseData['Items'][i]['Name'] ?? '',
         'imagePath':
-            // "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?fillHeight=316&fillWidth=200&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
             "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
         if (responseData['Items'][i]['ImageTags']['Primary'] == null)
           'imagePath': "https://via.placeholder.com/200x316?text=No+Cover+Art",
@@ -84,7 +72,16 @@ Future<List<Map<String, dynamic>>> getComics(
         'url': url ?? '',
         if (responseData['Items'][i]['CommunityRating'] != null)
           'rating': responseData['Items'][i]['CommunityRating'].toDouble(),
-        'tags': responseData['Items'][i]['Tags'] ?? [],
+        // type
+        if (responseData['Items'][i]['Type'] == 'Folder') 'type': 'folder',
+        if (responseData['Items'][i]['Type'] == 'Book')
+          'type': responseData['Items'][i]['Path']
+              .toString()
+              .split('.')
+              .last
+              .toLowerCase(),
+
+        "tags": responseData['Items'][i]['Tags'] ?? [],
         'parentId': responseData['Items'][i]['ParentId'] ?? '',
       });
       debugPrint(responseData['Items'][i]['Name']);
@@ -94,66 +91,85 @@ Future<List<Map<String, dynamic>>> getComics(
   // add the entry to the database
   debugPrint("attempting to add book to database");
   for (var i = 0; i < responseData['Items'].length; i++) {
-    // save the key-value pair to the database
-    // add the key-pair to the database
     try {
       List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
       List<String> comicFileTypes = ['cbz', 'cbr'];
+      String id = responseData['Items'][i]['Id'] ?? '0';
+      String title = responseData['Items'][i]['Name'] ?? '';
+      String imagePath =
+          "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}";
+      if (responseData['Items'][i]['ImageTags']['Primary'] == null) {
+        imagePath = "https://via.placeholder.com/200x316?text=No+Cover+Art";
+      }
+      String releaseDate =
+          responseData['Items'][i]['ProductionYear'].toString();
+      String path = responseData['Items'][i]['Path'] ?? '';
+      String description = responseData['Items'][i]['Overview'] ?? '';
+      String url1 = url ?? '';
+      double rating = -1;
+      if (responseData['Items'][i]['CommunityRating'] != null) {
+        rating = responseData['Items'][i]['CommunityRating'].toDouble();
+      }
+      List<dynamic> tags1 = responseData['Items'][i]['Tags'] ?? [];
+      String parentId = responseData['Items'][i]['ParentId'] ?? '';
+      String type = "Book";
+      if (responseData['Items'][i]['Type'] == 'Folder') {
+        type = 'Folder';
+      } else if (responseData['Items'][i]['Type'] == 'Book') {
+        if (bookFileTypes.contains(responseData['Items'][i]['Path']
+            .toString()
+            .split('.')
+            .last
+            .toLowerCase())) {
+          type = "Book";
+        } else if (comicFileTypes.contains(responseData['Items'][i]['Path']
+            .toString()
+            .split('.')
+            .last
+            .toLowerCase())) {
+          type = "Comic";
+        }
+      }
+      if (responseData['Items'][i]['Type'] == 'Book') {
+        if (bookFileTypes.contains(responseData['Items'][i]['Type'])) {
+          type = "Book";
+        } else if (comicFileTypes.contains(responseData['Items'][i]['Type'])) {
+          type = "Comic";
+        }
+      }
+      var entryExists = await isar.entrys.where().idEqualTo(id).findFirst();
+      bool entryExists1 = entryExists != null;
       Entry entry = Entry(
-        id: responseData['Items'][i]['Id'] ?? 0,
-        title: responseData['Items'][i]['Name'] ?? "",
-        description: responseData['Items'][i]['Overview'] ?? '',
-        imagePath: responseData['Items'][i]['ImageTags'] == null
-            ? 'https://via.placeholder.com/200x316'
-            : "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?fillHeight=316&fillWidth=200&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
-        releaseDate: responseData['Items'][i]['ProductionYear'].toString(),
-        path: responseData['Items'][i]['Path'] ?? '',
-        url: url ?? '',
-        rating: responseData['Items'][i]['CommunityRating'] == null
-            ? -1
-            : responseData['Items'][i]['CommunityRating'].toDouble(),
-        tags: responseData['Items'][i]['Tags'] ?? [],
+        id: id,
+        title: title,
+        description: description,
+        imagePath: imagePath,
+        releaseDate: releaseDate,
+        path: path,
+        url: url1,
+        rating: rating,
+        tags: tags1.map((e) => e.toString()).toList(),
         downloaded: false,
         progress: 0.0,
-        type: comicFileTypes.contains(
-                responseData['Items'][i]['Path'].split('.').last.toLowerCase())
-            ? 'comic'
-            : bookFileTypes.contains(responseData['Items'][i]['Path']
-                    .split('.')
-                    .last
-                    .toLowerCase())
-                ? 'book'
-                : responseData['Items'][i]['Type'] == 'Folder'
-                    ? 'folder'
-                    : 'unknown',
-        parentId: responseData['Items'][i]['ParentId'] ?? '',
+        type: type,
+        parentId: parentId,
       );
-      // debugPrint("type: ${entry.type}");
-
-      // add the entry to the database (with the name being the id)
-      // check that the entry doesn't already exist
-      bool exists = false;
-      box.values.forEach((element) {
-        if (element.id == entry.id) {
-          exists = true;
-        }
-      });
-      if (!exists) {
-        box.add(entry);
-        // debugPrint("book added");
-      } else {
-        // debugPrint("book already exists");
+      if (entryExists1) {
+        entry.isarId = entryExists.isarId;
+        entry.downloaded = entryExists.downloaded;
+        entry.progress = entryExists.progress;
+        entry.folderPath = entryExists.folderPath;
+        entry.filePath = entryExists.filePath;
+        entry.epubCfi = entryExists.epubCfi;
       }
+
+      await isar.writeTxn(() async {
+        await isar.entrys.put(entry);
+      });
     } catch (e) {
       debugPrint(e.toString());
     }
   }
-
-  // set the list of folders from the list of entries and then category ids
-  // List<String> categoryIds = prefs.getStringList('categoryIds') ?? [];
-  // List<Entry> entriesList = box.values.toList();
-  // debugPrint("got entries list");
-  // CreateFolders.createFolders(entriesList, categoryIds);
 
   return comics;
 }

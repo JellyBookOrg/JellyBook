@@ -1,6 +1,8 @@
 // The purpose of this file is to delete a comic from the client
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jellybook/models/entry.dart';
 import 'dart:io';
 
@@ -33,10 +35,17 @@ Future<void> deleteComic(String id, context) async {
 }
 
 Future<void> confirmedDelete(String id, context) async {
-  final box = Hive.box<Entry>('bookShelf');
+  // get the entry from the database
+  final isar = await Isar.getInstance();
   // if download is true, delete the file
-  var entries = box.values.where((element) => element.id == id).toList();
-  var entry = entries[0];
+  final entry = await isar!.entrys.where().idEqualTo(id).findFirst();
+  if (entry!.downloaded == true) {
+    try {
+      await File(entry.folderPath).delete(recursive: true);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
   if (entry.downloaded == true) {
     debugPrint("Deleting file");
     debugPrint(entry.folderPath);
@@ -54,7 +63,11 @@ Future<void> confirmedDelete(String id, context) async {
     entry.folderPath = "";
     entry.pageNum = 0;
     entry.progress = 0;
-    entry.save();
+    await isar.writeTxn(() async {
+      await isar.entrys.put(entry);
+    });
+
+    await isar.close();
   } else {
     debugPrint("Comic not downloaded");
     ScaffoldMessenger.of(context).showSnackBar(

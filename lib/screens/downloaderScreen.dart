@@ -12,8 +12,8 @@ import 'package:jellybook/providers/fileNameFromTitle.dart';
 
 // import the database
 import 'package:jellybook/models/entry.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
 class DownloadScreen extends StatefulWidget {
   final String comicId;
@@ -54,11 +54,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> downloadFile(bool forceDown) async {
-    var box = Hive.box<Entry>('bookShelf');
+    final isar = Isar.getInstance();
+    // var isar = await Isar.open([EntrySchema]);
 
     // get the entry that matches the comicId
-    var entries = box.values.where((element) => element.id == comicId).toList();
-    var entry = entries[0];
+    var entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
 
     final storage = FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
@@ -68,7 +68,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       checkPermission1 = await Permission.storage.request().isGranted;
     }
 
-    if (entry.folderPath != '') {
+    if (entry!.folderPath != '') {
       // set the path to the comic folder
       path = entry.folderPath;
       await Directory(path).create(recursive: true);
@@ -252,6 +252,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
     }
     debugPrint("title: " + entry.title);
     debugPrint("comicFolder: " + comicFolder);
+
+    // save the comic to the database
+    await isar.writeTxn(() async {
+      await isar.entrys.put(entry);
+    });
     // prefs.setString(title, comicFolder);
   }
 

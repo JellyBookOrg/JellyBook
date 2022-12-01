@@ -1,66 +1,31 @@
 // The purpose of this file is to define how book/comic entries are stored in the database
 
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
 
 part 'entry.g.dart';
 
-@HiveType(typeId: 0)
-class Entry extends HiveObject {
-  @HiveField(0)
-  late String id;
+@Collection()
+class Entry {
+  Id isarId = Isar.autoIncrement;
 
-  @HiveField(1)
-  late String title;
-
-  @HiveField(2)
-  late String description;
-
-  @HiveField(3)
-  late String imagePath;
-
-  @HiveField(4)
-  late String releaseDate;
-
-  @HiveField(5)
-  late bool downloaded = false;
-
-  @HiveField(6)
-  late String path;
-
-  @HiveField(7)
-  late String url;
-
-  @HiveField(8)
-  late List<dynamic> tags;
-
-  @HiveField(9)
-  late double rating;
-
-  // the progress of the book/comic
-  @HiveField(10)
-  late double progress = 0.0;
-
-  @HiveField(11)
-  late int pageNum = 0;
-
-  // folder path
-  @HiveField(12)
-  late String folderPath = '';
-
-  @HiveField(13)
-  late String filePath = '';
-
-  // type
-  @HiveField(14)
-  late String type = 'comic';
-
-  // parentId
-  @HiveField(15)
-  late String parentId = '';
-
-  @HiveField(16)
-  late String epubCfi = '';
+  @Index()
+  String id;
+  String title;
+  String description;
+  String imagePath;
+  String releaseDate;
+  bool downloaded = false;
+  String path;
+  String url;
+  List<String> tags;
+  double rating = -1;
+  double progress = 0.0;
+  int pageNum = 0;
+  String folderPath = "";
+  String filePath = "";
+  String type = "";
+  String parentId = "";
+  String epubCfi = "";
 
   Entry({
     required this.id,

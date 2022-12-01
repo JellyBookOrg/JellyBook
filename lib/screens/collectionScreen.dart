@@ -1,12 +1,12 @@
 // The purpose of this file is to create a list of entries from a selected folder
 
 // import 'package:shared_preferences/shared_preferences.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:jellybook/models/folder.dart';
+import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:jellybook/screens/infoScreen.dart';
+import 'package:jellybook/providers/fixRichText.dart';
 
 class collectionScreen extends StatelessWidget {
   final String folderId;
@@ -14,7 +14,7 @@ class collectionScreen extends StatelessWidget {
   final String image;
   final List<String> bookIds;
 
-  collectionScreen({
+  const collectionScreen({
     required this.folderId,
     required this.name,
     required this.image,
@@ -23,9 +23,12 @@ class collectionScreen extends StatelessWidget {
 
   // make a list of entries from the the list of bookIds
   Future<List<Map<String, dynamic>>> getEntries() async {
-    var box = Hive.box<Entry>('bookShelf');
+    final isar = Isar.getInstance();
+    // final isar = Isar.openSync([EntrySchema]);
     List<Map<String, dynamic>> entries = [];
-    var entryList = box.values.toList();
+    // get the entries from the database
+    final entryList = await isar!.entrys.where().findAll();
+    // var entryList = box.values.toList();
     debugPrint("bookIds: ${bookIds.length}");
     for (int i = 0; i < bookIds.length; i++) {
       // get the first entry that matches the bookId
@@ -44,15 +47,15 @@ class collectionScreen extends StatelessWidget {
         'tags': entry.tags,
         'url': entry.url,
       });
-      debugPrint("entry: ${entry.id}");
-      debugPrint("entry: ${entry.title}");
-      debugPrint("entry: ${entry.imagePath}");
-      debugPrint("entry: ${entry.rating}");
-      debugPrint("entry: ${entry.type}");
-      debugPrint("entry: ${entry.description}");
-      debugPrint("entry: ${entry.path}");
-      debugPrint("entry: ${entry.tags}");
-      debugPrint("entry: ${entry.url}");
+      // debugPrint("entry: ${entry.id}");
+      // debugPrint("entry: ${entry.title}");
+      // debugPrint("entry: ${entry.imagePath}");
+      // debugPrint("entry: ${entry.rating}");
+      // debugPrint("entry: ${entry.type}");
+      // debugPrint("entry: ${entry.description}");
+      // debugPrint("entry: ${entry.path}");
+      // debugPrint("entry: ${entry.tags}");
+      // debugPrint("entry: ${entry.url}");
     }
     return entries;
     // checkeach field of the entry to make sure it is not null
@@ -80,8 +83,7 @@ class collectionScreen extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   onTap: () {
-                    if (snapshot.data[index]['type'] == 'book' ||
-                        snapshot.data[index]['type'] == 'comic') {
+                    if (snapshot.data[index]['type'] != 'Folder') {
                       Navigator.push(
                         context,
                         PageRouteBuilder(
@@ -100,7 +102,7 @@ class collectionScreen extends StatelessWidget {
                           ),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
-                            var begin = Offset(1.0, 0.0);
+                            var begin = const Offset(1.0, 0.0);
                             var end = Offset.zero;
                             var curve = Curves.ease;
 
@@ -128,7 +130,7 @@ class collectionScreen extends StatelessWidget {
                           ),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
-                            var begin = Offset(1.0, 0.0);
+                            var begin = const Offset(1.0, 0.0);
                             var end = Offset.zero;
                             var curve = Curves.ease;
 
@@ -145,7 +147,31 @@ class collectionScreen extends StatelessWidget {
                     }
                   },
                   title: Text(snapshot.data[index]['title']),
-                  leading: Image.network(snapshot.data[index]['imagePath']),
+                  leading: Expanded(
+                    flex: 2,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: const Offset(2, 3),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Image.network(
+                          snapshot.data[index]['imagePath'],
+                          // set the width to 10% of the screen width
+                          width: MediaQuery.of(context).size.width * 0.1,
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
+                  ),
                   // have the subitle be the rating
                   subtitle: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -194,7 +220,7 @@ class collectionScreen extends StatelessWidget {
                                         0,
                                         0,
                                         MediaQuery.of(context).size.width *
-                                            0.29,
+                                            0.28,
                                         0),
                                   ),
                                 ],
@@ -205,15 +231,33 @@ class collectionScreen extends StatelessWidget {
                       // then display the first 50 characters of the description
                       if (snapshot.data[index]['rating'] < 0 &&
                           snapshot.data[index]['description'] != '')
-                        Text(
-                          snapshot.data[index]['description'].length > 50
-                              ? snapshot.data[index]['description']
-                                      .substring(0, 42) +
-                                  "..."
-                              : snapshot.data[index]['description'],
-                          style: const TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontSize: 15,
+                        // Text(
+                        //   snapshot.data[index]['description'].length > 50
+                        //       ? snapshot.data[index]['description']
+                        //               .substring(0, 42) +
+                        //           "..."
+                        //       : snapshot.data[index]['description'],
+                        //   style: const TextStyle(
+                        //     fontStyle: FontStyle.italic,
+                        //     fontSize: 15,
+                        //   ),
+                        // ),
+                        // use rich text instead
+                        Flexible(
+                          child: RichText(
+                            text: TextSpan(
+                              text: fixRichText(
+                                  snapshot.data[index]['description']),
+                              // prevent overflow
+                              style: const TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontSize: 15,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            // prevent the text from overflowing
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                     ],
@@ -237,58 +281,12 @@ class collectionScreen extends StatelessWidget {
               },
             );
           } else {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
         },
       ),
     );
-    // return FutureBuilder(
-    //   // wait until the list of entries is created before building the screen
-    //   future: getEntries(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.hasData) {
-    //       debugPrint("snapshot: ${snapshot.data}");
-    //       return Scaffold(
-    //         appBar: AppBar(
-    //           title: Text(name),
-    //           backgroundColor: Colors.blueGrey[900],
-    //         ),
-    //         body: Container(
-    //           child: ListView.builder(
-    //             itemCount: snapshot.data!.length,
-    //             itemBuilder: (context, index) {
-    //               // have the image, title, and rating
-    //               return Container(
-    //                 child: ListTile(
-    //                   leading: Image.network(
-    //                     snapshot.data![index]['imagePath'],
-    //                     width: 100,
-    //                     height: 100,
-    //                     fit: BoxFit.cover,
-    //                   ),
-    //                   title: Text(snapshot.data![index]['title']),
-    //                 ),
-    //               );
-    //             },
-    //           ),
-    //         ),
-    //       );
-    //     } else {
-    //       return Scaffold(
-    //         appBar: AppBar(
-    //           title: Text('Loading'),
-    //           backgroundColor: Colors.blueGrey[900],
-    //         ),
-    //         body: Container(
-    //           child: Center(
-    //             child: CircularProgressIndicator(),
-    //           ),
-    //         ),
-    //       );
-    //     }
-    //   },
-    // );
   }
 }
