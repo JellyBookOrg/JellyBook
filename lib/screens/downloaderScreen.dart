@@ -108,16 +108,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         // make directory
         await Directory(dirLocation).create(recursive: true);
         debugPrint('Directory created');
-        // FileUtils.mkdir([dirLocation]);
         // set the location of the folder
         dir = dirLocation + '/' + fileName;
-        // if (entry.path.contains('cbz')) {
-        //   // dir += '.zip';
-        // } else if (entry.path.contains('.cbr')) {
-        //   // dir += '.rar';
-        // } else if (entry.path.contains('.pdf')) {
-        //   // dir += '.pdf';
-        // }
         // set the comic file
         entry.filePath = dir;
         debugPrint('Directory created');
@@ -137,7 +129,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
       }
 
       String fileName2 = await fileNameFromTitle(entry.title);
-      // FileUtils.mkdir([dirLocation + '/']);
       // make directory
       try {
         await Directory(dirLocation).create(recursive: true);
@@ -147,8 +138,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
       debugPrint('Comic folder created');
       debugPrint(dirLocation + '/' + fileName2);
 
-      // FileUtils.mkdir([dirLocation + '/' + fileName2]);
-      // make directory
       try {
         await Directory(dirLocation + '/' + fileName2).create(recursive: true);
       } catch (e) {
@@ -168,8 +157,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
               ..createSync(recursive: true)
               ..writeAsBytesSync(data);
           } else {
-            // FileUtils.mkdir([dirLocation + '/' + fileName2 + '/' + filename]);
-            // make directory
             try {
               await Directory(dirLocation + '/' + fileName2 + '/' + filename)
                   .create(recursive: true);
@@ -194,6 +181,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
           debugPrint('Unzipped');
           File(dirLocation + '/' + fileName).deleteSync();
           entry.downloaded = true;
+          entry.folderPath = dirLocation + '/' + fileName2;
         } catch (e) {
           debugPrint("Extraction failed " + e.toString());
         }
