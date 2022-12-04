@@ -8,13 +8,15 @@ import 'package:dio/adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:isar/isar.dart';
+import 'package:jellybook/models/login.dart';
 
-class Login {
+class LoginProvider {
   final String url;
   final String username;
   final String password;
 
-  Login({
+  LoginProvider({
     required this.url,
     required this.username,
     required this.password,
@@ -68,6 +70,22 @@ class Login {
         r"^(http|https)://[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$");
     if (!urlTest.hasMatch(_url)) {
       debugPrint("URL is not valid");
+      // tell why it is not valid
+      if (!_url.contains("http")) {
+        return "URL does not contain http:// or https://";
+      }
+      if (!_url.contains(".")) {
+        return "URL does not contain a .";
+      }
+      if (!_url.contains("/")) {
+        return "URL does not contain a /";
+      }
+      if (_url.endsWith("/")) {
+        return "URL ends with a /";
+      }
+      if (_url.contains(" ")) {
+        return "URL contains a space";
+      }
       return "URL is not valid";
     }
 
@@ -111,6 +129,25 @@ class Login {
       await storage.write(key: "deviceId", value: _deviceId);
       await storage.write(key: "version", value: _version);
       debugPrint("saved data");
+
+      // now save the data to the isar database
+      debugPrint("saving data to isar");
+      final isar = Isar.getInstance();
+      // check if the user already exists
+      final entry =
+          await isar!.logins.where().serverUrlEqualTo(url).findFirst();
+      if (entry == null) {
+        // if the user does not exist, create a new one
+        Login login = Login(
+          serverUrl: url,
+          username: username,
+          password: password,
+        );
+        // save the login to the database
+        await isar.writeTxn(() async {
+          await isar.logins.put(login);
+        });
+      }
 
       return "true";
     } else {

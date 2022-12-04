@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
 import 'package:jellybook/screens/collectionScreen.dart';
 import 'package:jellybook/screens/infoScreen.dart';
+import 'package:jellybook/screens/loginScreen.dart';
+import 'package:jellybook/models/login.dart';
+import 'package:isar/isar.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -28,6 +31,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 - a settings section
         */
 
+  Future<void> logout() async {
+    final isar = Isar.getInstance();
+    var logins = await isar!.logins.where().findAll();
+    var loginIds = logins.map((e) => e.isarId).toList();
+    await isar.writeTxn(() async {
+      isar.logins.deleteAll(loginIds);
+      debugPrint('deleted ${loginIds.length} logins');
+    });
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
+
 // should be a futureBuilder
   @override
   Widget build(BuildContext context) {
@@ -38,6 +55,14 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {},
         ),
         title: const Text('Home'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              logout();
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -412,125 +437,6 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(
             height: 10,
           ),
-
-          // FutureBuilder(
-          //   future: getServerCategories(context),
-          //   builder: (context, snapshot) {
-          //     if (snapshot.hasData) {
-          //       return GridView.builder(
-          //         itemCount: snapshot.data?.length,
-          //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          //             crossAxisCount: 2),
-          //         itemBuilder: (context, index) {
-          //           return Card(
-          //             child: InkWell(
-          //               onTap: () {
-          //                 Navigator.push(
-          //                   context,
-          //                   PageRouteBuilder(
-          //                     pageBuilder:
-          //                         (context, animation, secondaryAnimation) =>
-          //                             InfoScreen(
-          //                       title: snapshot.data![index]['name'] ?? "null",
-          //                       imageUrl: (snapshot.data![index]['imagePath'] ??
-          //                           "null"),
-          //                       description: snapshot.data![index]
-          //                               ['description'] ??
-          //                           "null",
-          //                       tags: snapshot.data![index]['tags'] ?? ["null"],
-          //                       url: snapshot.data![index]['url'] ?? "null",
-          //                       year: snapshot.data![index]['releaseDate'] ??
-          //                           "null",
-          //                       stars: snapshot.data![index]['rating'] ?? -1,
-          //                       path: snapshot.data![index]['path'] ?? "null",
-          //                       comicId: snapshot.data![index]['id'] ?? "null",
-          //                     ),
-          //                     transitionsBuilder: (context, animation,
-          //                         secondaryAnimation, child) {
-          //                       var begin = Offset(1.0, 0.0);
-          //                       var end = Offset.zero;
-          //                       var curve = Curves.ease;
-          //
-          //                       var tween = Tween(begin: begin, end: end)
-          //                           .chain(CurveTween(curve: curve));
-          //
-          //                       return SlideTransition(
-          //                         position: animation.drive(tween),
-          //                         child: child,
-          //                       );
-          //                     },
-          //                   ),
-          //                 );
-          //               },
-          //               child: Column(
-          //                 children: <Widget>[
-          //                   SizedBox(
-          //                     height: 10,
-          //                   ),
-          //                   Container(
-          //                     decoration: BoxDecoration(
-          //                       borderRadius: BorderRadius.circular(8),
-          //                       boxShadow: [
-          //                         BoxShadow(
-          //                           color: Colors.black.withOpacity(0.4),
-          //                           spreadRadius: 5,
-          //                           blurRadius: 7,
-          //                           offset: Offset(0, 3),
-          //                         ),
-          //                       ],
-          //                     ),
-          //                     child: ClipRRect(
-          //                       borderRadius: BorderRadius.circular(8),
-          //                       // add a shadow to the image
-          //                       child: Image.network(
-          //                         snapshot.data![index]['imagePath'],
-          //                         width: MediaQuery.of(context).size.width /
-          //                             4 *
-          //                             0.8,
-          //                         fit: BoxFit.fitWidth,
-          //                       ),
-          //                     ),
-          //                   ),
-          //                   const SizedBox(
-          //                     height: 10,
-          //                   ),
-          //                   Flexible(
-          //                     child: Text(snapshot.data![index]['name'],
-          //                         textAlign: TextAlign.center,
-          //                         style: TextStyle(
-          //                           fontSize:
-          //                               MediaQuery.of(context).size.width /
-          //                                   4 *
-          //                                   0.12,
-          //                           fontWeight: FontWeight.bold,
-          //                         )),
-          //                   ),
-          //                   const SizedBox(
-          //                     height: 5,
-          //                   ),
-          //                   if (snapshot.data![index]['releaseDate'] != "null")
-          //                     Text(snapshot.data![index]['releaseDate'],
-          //                         style: TextStyle(
-          //                             fontSize:
-          //                                 MediaQuery.of(context).size.width /
-          //                                     4 *
-          //                                     0.12,
-          //                             // set color to a very light grey
-          //                             color: Colors.grey)),
-          //                 ],
-          //               ),
-          //             ),
-          //           );
-          //         },
-          //       );
-          //       // fixed version
-          //     } else {
-          //       return const Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     }
-          //   },
-          // ),
         ],
       ),
     );

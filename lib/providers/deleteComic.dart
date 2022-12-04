@@ -36,7 +36,7 @@ Future<void> deleteComic(String id, context) async {
 
 Future<void> confirmedDelete(String id, context) async {
   // get the entry from the database
-  final isar = await Isar.getInstance();
+  final isar = Isar.getInstance();
   // if download is true, delete the file
   final entry = await isar!.entrys.where().idEqualTo(id).findFirst();
   if (entry!.downloaded == true) {

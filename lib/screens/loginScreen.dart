@@ -5,11 +5,31 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jellybook/screens/homeScreen.dart';
 
 class LoginScreen extends StatefulWidget {
+// optional inputs of url, username, and password (use empty string if not provided)
+  final String? url;
+  final String? username;
+  final String? password;
+  LoginScreen({this.url = "", this.username = "", this.password = ""});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _LoginScreenState createState() => _LoginScreenState(
+        url: url,
+        username: username,
+        password: password,
+      );
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // optional inputs of url, username, and password (use empty string if not provided)
+  final String? url;
+  final String? username;
+  final String? password;
+  _LoginScreenState({
+    required this.url,
+    required this.username,
+    required this.password,
+  });
+
   final storage = FlutterSecureStorage();
   final _url = TextEditingController();
   final _username = TextEditingController();
@@ -23,6 +43,32 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     // check_url();
     _passwordVisible = false;
+    // check if url and username are provided
+    if (url != "" && username != "") {
+      _loading = true;
+      debugPrint("url: " + url!);
+      debugPrint("username: " + username!);
+      debugPrint("password: " + password!);
+      LoginProvider.loginStatic(
+        url!,
+        username!,
+        password!,
+      ).then((value) {
+        if (value == "true") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
+        } else {
+          setState(() {
+            _error = value;
+            _loading = false;
+          });
+        }
+      });
+    }
   }
 
   // FocusNodes
@@ -118,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     debugPrint(_url.text);
                     debugPrint(_username.text);
                     debugPrint(_password.text);
-                    Login.loginStatic(
+                    LoginProvider.loginStatic(
                       _url.text,
                       _username.text,
                       _password.text,
