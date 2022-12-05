@@ -30,7 +30,10 @@ end
 def create_temp_keychain(name, password)
   create_keychain(
     name: name,
-    password: password
+    password: password,
+    unlock: false,
+    default_keychain: true,
+    timeout: 0
   )
 end
 
@@ -51,7 +54,7 @@ platform :ios do
       git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
       readonly: true,
       keychain_name: keychain_name,
-      keychain_password: keychain_password
+      keychain_password: keychain_password 
     )
 
     gym(
