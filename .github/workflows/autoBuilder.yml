@@ -30,7 +30,7 @@ jobs:
 
       # Now we build the release version for iOS
       - name: Building IPA
-        run: flutter buiild ios --release
+        run: flutter build ios --release
 
       # Now we build the release version for android
       - name: Building APK
