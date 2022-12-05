@@ -22,7 +22,6 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
-      - uses: actions/upload-artifact@v3
 
 
       # install flutter
@@ -39,7 +38,7 @@ jobs:
 
       # Collect the files (iOS)
       - name: collect ipa artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: JellyBook-Release-ipa
           path: build/ios/ipa/*.ipa
@@ -47,7 +46,7 @@ jobs:
 
       # Collect the files (Android)
       - name: collect APK artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: JellyBook-Release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
