@@ -10,76 +10,34 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
+ deploy_ios:
+    name: Deploy beta build to TestFlight
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
+      - name: Checkout code from ref
+        uses: actions/checkout@v3
         with:
-          distribution: 'zulu'
-          java-version: '11'
-      - uses: subosito/flutter-action@v2
+          ref: ${{ github.ref }}
+      - name: Run Flutter tasks
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          architecture: x64
-
-      - name: Set environment variables from project settings
-        run: exec .github/scripts/set-env-from-xcodeproj.sh
-
-
-      - name: Import signing certificate
-        env:
-          SIGNING_CERTIFICATE_P12_DATA: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
-          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
-        run: exec .github/scripts/import-certificate.sh
-      - name: Import provisioning profile
-        env:
-          PROVISIONING_PROFILE_DATA: ${{ secrets.PROVISIONING_PROFILE_DATA }}
-        run: exec .github/scripts/import-profile.sh
-
-
-      # install flutter
-      - name: Flutter get
-        run: flutter pub get
-
-      - name: Build app
-        run: flutter build ipa --release --verbose
-
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+      - run: flutter pub get
+      - run: flutter build ios --release --no-codesign
+      - name: Deploy iOS Beta to TestFlight via Fastlane
+        uses: maierj/fastlane-action@v2.3.0
         with:
-          name: IPA file
-          path: build/ios/ipa/*.ipa
-
-
-      - name: Upload app to App Store Connect
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v1
-        with:
-          files: 
-            ${{ env.PRODUCT_NAME }}.ipa
+          lane: closed_beta
+          subdirectory: ios
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-      - name: Upload app to App Store Connect
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
-          APP_STORE_CONNECT_PASSWORD: ${{ secrets.APP_STORE_CONNECT_PASSWORD }}
-        run: xcrun altool --upload-app -t ios -f build/ios/ipa/*.ipa -u "$APP_STORE_CONNECT_USERNAME" -p "$APP_STORE_CONNECT_PASSWORD"
-
-
-      # Now we build the release version for android
-      - name: Building APK
-        run: flutter build apk --release
-
-
-      # Collect the files (Android)
-      - name: collect APK artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: JellyBook-Release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
+          APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
+          DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
+          DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
+          DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
+          FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
+          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+          GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+          PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
