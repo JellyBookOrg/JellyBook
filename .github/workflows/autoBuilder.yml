@@ -43,7 +43,7 @@ jobs:
         run: flutter pub get
 
       - name: Build app
-        run: flutter build ipa --release
+        run: flutter build ipa --release --verbose
 
 
       - name: Upload build artifacts
