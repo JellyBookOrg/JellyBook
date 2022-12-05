@@ -42,7 +42,7 @@ def ensure_temp_keychain(name, password)
 end
 
 platform :ios do
-  lane :closed_beta do
+  lane :beta do
     keychain_name = TEMP_KEYCHAIN_USER
     keychain_password = TEMP_KEYCHAIN_PASSWORD
     ensure_temp_keychain(keychain_name, keychain_password)
