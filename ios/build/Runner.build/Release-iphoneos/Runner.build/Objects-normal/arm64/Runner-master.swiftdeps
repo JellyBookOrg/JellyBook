@@ -1,0 +1,6 @@
+version: "Apple Swift version 5.7.1 (swiftlang-5.7.1.135.3 clang-1400.0.29.51)"
+options: "718fb681960ecde9aa09e3b5d2e736bca3c897e0d36ce434ba4ee7fe79b490d6"
+build_start_time: [1670010121, 726068019]
+build_end_time: [1670010121, 758705139]
+inputs:
+  "/Users/kara/Dev/JellyBook/ios/Runner/AppDelegate.swift": !dirty [1668278162, 393075942]
