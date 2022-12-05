@@ -34,7 +34,7 @@ jobs:
 
       # Now we build the release version for android
       - name: Building APK
-        run: flutter build apk --release --no-codesign
+        run: flutter build apk --release
 
       # Collect the files (iOS)
       - name: collect ipa artifacts
