@@ -35,11 +35,11 @@ jobs:
 
       # Now we build the release version for android
       - name: Building APK
-
         run: flutter build apk --release --no-codesign
 
       # Collect the files (iOS)
       - name: collect ipa artifacts
+        uses: actions/upload-artifact@v2
         with:
           name: JellyBook-Release-ipa
           path: build/ios/ipa/*.ipa
@@ -47,6 +47,7 @@ jobs:
 
       # Collect the files (Android)
       - name: collect APK artifacts
+        uses: actions/upload-artifact@v2
         with:
           name: JellyBook-Release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
