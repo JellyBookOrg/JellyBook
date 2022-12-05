@@ -23,13 +23,9 @@ jobs:
           channel: 'stable'
           architecture: x64
 
-
-      # install flutter
-      - name: Flutter get
-        run: flutter pub get
-
       - name: Set environment variables from project settings
         run: exec .github/scripts/set-env-from-xcodeproj.sh
+
 
       - name: Import signing certificate
         env:
@@ -41,47 +37,44 @@ jobs:
           PROVISIONING_PROFILE_DATA: ${{ secrets.PROVISIONING_PROFILE_DATA }}
         run: exec .github/scripts/import-profile.sh
 
+
+      # install flutter
+      - name: Flutter get
+        run: flutter pub get
+
       - name: Build app
-        run: |
-          fastlane run build_app
+        run: flutter build ipa --release
+
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: build.log
-          path: ~/Library/Logs/gym/*.log
+          name: *.ipa
+          path: build/ios/ipa/*.ipa
 
-      - name: Upload release assets
+
+      - name: Upload app to App Store Connect
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
-          files: |
+          files: 
             ${{ env.PRODUCT_NAME }}.ipa
-            ${{ env.PRODUCT_NAME }}.app.dSYM.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Upload app to App Store Connect
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
           APP_STORE_CONNECT_PASSWORD: ${{ secrets.APP_STORE_CONNECT_PASSWORD }}
-        run: xcrun altool --upload-app -t ios -f "$PRODUCT_NAME.ipa" -u "$APP_STORE_CONNECT_USERNAME" -p "$APP_STORE_CONNECT_PASSWORD"
+        run: xcrun altool --upload-app -t ios -f build/ios/ipa/*.ipa -u "$APP_STORE_CONNECT_USERNAME" -p "$APP_STORE_CONNECT_PASSWORD"
 
-      # # Now we build the release version for iOS
-      # - name: Building IPA
-      #   run: flutter build ipa --release --no-codesign
 
       # Now we build the release version for android
       - name: Building APK
         run: flutter build apk --release
 
-      # Collect the files (iOS)
-      # - name: collect ipa artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: JellyBook-Release-ipa
-      #     path: build/ios/ipa/*.ipa
-      #     if-no-files-found: error
 
       # Collect the files (Android)
       - name: collect APK artifacts
