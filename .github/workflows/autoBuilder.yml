@@ -1,43 +1,60 @@
-# Set the name of the workflow
-name: Flutter-Builder
-
-
-
-on: 
-  push:
-    branches:
-      - main
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
- deploy_ios:
-    name: Deploy beta build to TestFlight
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code from ref
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-      - name: Run Flutter tasks
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-      - run: flutter pub get
-      - run: flutter build ios --release --no-codesign
-      - name: Deploy iOS Beta to TestFlight via Fastlane
-        uses: maierj/fastlane-action@v1.4.0
-        with:
-          lane: 'beta'
-          subdirectory: 'ios'
-        env:
-          APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
-          DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
-          DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
-          DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
-          FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
-          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
-          GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
-          PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
-          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
-          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+# # Set the name of the workflow
+# name: Flutter-Builder-iOS
+#
+#
+#
+# on: 
+#   push:
+#     branches:
+#       - main
+#
+# # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# jobs:
+#  deploy_ios:
+#     name: Deploy beta build to TestFlight
+#     runs-on: macos-latest
+#
+#     steps:
+#       - name: Checkout code from ref
+#         uses: actions/checkout@v3
+#         with:
+#           ref: ${{ github.ref }}
+#       - name: Install Apple Certificate
+#         uses: apple-actions/import-codesign-certs@v1
+#         with:
+#           p12-file-base64: '${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}'
+#           p12-password: '{{ secrets.SIGNING_CERTIFICATE_PASSWORD }}'
+#       - name: Install the provisioning profile
+#         env:
+#           PROVISIONING_CERTIFICATE_BASE64: '${{ secrets.PROVISIONING_PROFILE_DATA }}'
+#         run: |
+#           PP_PATH='$RUNNER_TEMP/build_ppmobileprovision'
+#           echo -n "$PROVISIONING_CERTIFICATE_BASE64" | base64 --decode --output $PP_PATH
+#           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+#           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+#
+#       - name: Install and set Flutter version
+#         uses: subosito/flutter-action@v2.8.0
+#         with:
+#           channel: 'stable'
+#
+#       - name: Get packages
+#         run: flutter pub get
+#
+#       - name: Build Flutter
+#         run: flutter build ios --release --no-codesign
+#
+#       - name: Build resolve Swift dependencies
+#         run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
+#
+#       - name: Build xArchive
+#         run: |
+#           xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=QJS8XD3ZR5 -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=YOUR_UUID clean archive CODE_SIGN_IDENTITY="Apple Distribution: Damien Aicheh"
+#
+#
+#       - name: Run Flutter tasks
+#         uses: subosito/flutter-action@v2
+#         with:
+#           channel: 'stable'
+#       - run: flutter pub get
+#       - run: flutter build ios --release --no-codesign
