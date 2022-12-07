@@ -147,9 +147,7 @@ class collectionScreen extends StatelessWidget {
                     }
                   },
                   title: Text(snapshot.data[index]['title']),
-                  leading: Expanded(
-                    flex: 2,
-                    child: Container(
+                    leading: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         boxShadow: [
@@ -171,17 +169,13 @@ class collectionScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
                   // have the subitle be the rating
                   subtitle: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  // allign the row to the left
+                  mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       if (snapshot.data[index]['rating'] >= 0)
                         // allign the stars to the very left of the row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            if (snapshot.data[index]['rating'] >= 0)
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -213,18 +207,7 @@ class collectionScreen extends StatelessWidget {
                                         fontSize: 15,
                                       ),
                                     ),
-                                  ),
-                                  // add a padding for 80% of the screen width
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                        0,
-                                        0,
-                                        MediaQuery.of(context).size.width *
-                                            0.28,
-                                        0),
-                                  ),
-                                ],
-                              ),
+                                    ),
                           ],
                         ),
                       // if the rating is less than 0 and the description is not empty

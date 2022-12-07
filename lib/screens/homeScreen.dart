@@ -8,6 +8,7 @@ import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:isar/isar.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -174,12 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             // snapshot.data[index]['name'],
                                             snapshot.data?[index]['name'] ?? "",
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  4 *
-                                                  0.13,
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -375,16 +371,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               // auto size text to fit the width of the card (max 2 lines)
                               Flexible(
-                                child: Text(snapshot.data![index]['name'],
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      // auto size the text
-                                      fontSize:
-                                          MediaQuery.of(context).size.width /
-                                              4 *
-                                              0.13,
-                                      fontWeight: FontWeight.bold,
-                                    )),
+                              // give some padding to the text
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 5, right: 5),
+                                child: AutoSizeText(
+                                  snapshot.data![index]['name'],
+                                  maxLines: 3,
+                                  minFontSize: 10,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                               ),
                               const SizedBox(
                                 height: 5,
