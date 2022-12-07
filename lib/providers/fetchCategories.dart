@@ -61,22 +61,24 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
 
     List<String> selected = [];
     List<String> includedAutomatically = [
-      'Comics',
       'comics',
-      'Books',
+      'book',
+      'comic book',
+      'book',
       'books',
-      'Manga',
+      'comic books',
       'manga',
-      'Comics & Graphic Novels',
+      'mangas',
       'comics & graphic novels',
-      'Graphic Novels',
       'graphic novels',
-      'Novels',
+      'graphic novel',
       'novels',
-      'Novel',
+      'novel',
+      'ebook',
+      'ebooks',
     ];
     for (var i = 0; i < categories.length; i++) {
-      if (includedAutomatically.contains(categories[i])) {
+      if (includedAutomatically.contains(categories[i].toLowerCase())) {
         selected.add(categories[i]);
       }
     }
