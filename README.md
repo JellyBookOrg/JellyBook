@@ -12,7 +12,7 @@ As time goes on I will add more support and more features
 - `.cbr` files
 - `.zip` files
 - `.rar` files
-- `.pdf` files (doesn't match style of others)
+- `.pdf` files
 - `.epub` files (no image support yet)
 
 ## Todo
