@@ -167,19 +167,21 @@ Future<void> removeEntriesFromDatabase(
   for (var i = 0; i < comicsArray.length; i++) {
     List<Map<String, dynamic>> comics = await comicsArray[i];
     for (var j = 0; j < comics.length; j++) {
-      serverIds.add(comics[j]['Id']);
+      serverIds.add(comics[j]['id']);
     }
   }
 
   for (var i = 0; i < entryIds.length; i++) {
     if (!serverIds.contains(entryIds[i])) {
-      entriesToRemove.add(entryIds[i] as int);
+      int isarId = await isar.entrys.where().idEqualTo(entryIds[i]).findAll().then((value) => value[0].isarId);
+      entriesToRemove.add(isarId);
     }
   }
 
   for (var i = 0; i < folderIds.length; i++) {
     if (!serverIds.contains(folderIds[i])) {
-      foldersToRemove.add(folderIds[i] as int);
+        int isarId = await isar.folders.where().findAll().then((value) => value[i].isarId);
+        foldersToRemove.add(isarId);
     }
   }
 
