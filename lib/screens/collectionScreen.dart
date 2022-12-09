@@ -47,15 +47,6 @@ class collectionScreen extends StatelessWidget {
         'tags': entry.tags,
         'url': entry.url,
       });
-      // debugPrint("entry: ${entry.id}");
-      // debugPrint("entry: ${entry.title}");
-      // debugPrint("entry: ${entry.imagePath}");
-      // debugPrint("entry: ${entry.rating}");
-      // debugPrint("entry: ${entry.type}");
-      // debugPrint("entry: ${entry.description}");
-      // debugPrint("entry: ${entry.path}");
-      // debugPrint("entry: ${entry.tags}");
-      // debugPrint("entry: ${entry.url}");
     }
     return entries;
     // checkeach field of the entry to make sure it is not null
@@ -147,67 +138,63 @@ class collectionScreen extends StatelessWidget {
                     }
                   },
                   title: Text(snapshot.data[index]['title']),
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 3,
-                            offset: const Offset(2, 3),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: Image.network(
-                          snapshot.data[index]['imagePath'],
-                          // set the width to 10% of the screen width
-                          width: MediaQuery.of(context).size.width * 0.1,
-                          fit: BoxFit.fitWidth,
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                          offset: const Offset(2, 3),
                         ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Image.network(
+                        snapshot.data[index]['imagePath'],
+                        // set the width to 10% of the screen width
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        fit: BoxFit.fitWidth,
                       ),
                     ),
+                  ),
                   // have the subitle be the rating
                   subtitle: Row(
-                  // allign the row to the left
-                  mainAxisAlignment: MainAxisAlignment.start,
+                    // allign the row to the left
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       if (snapshot.data[index]['rating'] >= 0)
                         // allign the stars to the very left of the row
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    child: CustomRating(
-                                      max: 5,
-                                      score: snapshot.data[index]['rating'] / 2,
-                                      star: Star(
-                                        fillColor: Color.lerp(
-                                            Colors.red,
-                                            Colors.yellow,
-                                            snapshot.data[index]['rating'] /
-                                                10)!,
-                                        emptyColor:
-                                            Colors.grey.withOpacity(0.5),
-                                      ),
-                                      onRating: (double score) {},
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                    child: Text(
-                                      "${(snapshot.data[index]['rating'] / 2).toStringAsFixed(2)} / 5.00",
-                                      style: const TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                    ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: CustomRating(
+                                max: 5,
+                                score: snapshot.data[index]['rating'] / 2,
+                                star: Star(
+                                  fillColor: Color.lerp(
+                                      Colors.red,
+                                      Colors.yellow,
+                                      snapshot.data[index]['rating'] / 10)!,
+                                  emptyColor: Colors.grey.withOpacity(0.5),
+                                ),
+                                onRating: (double score) {},
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                              child: Text(
+                                "${(snapshot.data[index]['rating'] / 2).toStringAsFixed(2)} / 5.00",
+                                style: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       // if the rating is less than 0 and the description is not empty
@@ -246,22 +233,45 @@ class collectionScreen extends StatelessWidget {
                     ],
                   ),
                 );
-
-                // subtitle: snapshot.data[index]['rating'] != null
-                //     ? Row(
-                //         mainAxisSize: MainAxisSize.min,
-                //         children: [
-                //           for (int i = 0;
-                //               i < snapshot.data[index]['rating'];
-                //               i++)
-                //             Icon(
-                //               Icons.star,
-                //               color: Colors.yellow,
-                //             ),
-                //         ],
-                //       )
-                //     : null,
               },
+            );
+          } else if (snapshot.hasData &&
+              snapshot.data.length == 0 &&
+              snapshot.connectionState == ConnectionState.done) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    "No results found in this folder",
+                    style: TextStyle(
+                      fontSize: 25,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Icon(Icons.sentiment_dissatisfied, size: 100),
+                ],
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    "An error has occured",
+                    style: TextStyle(
+                      fontSize: 25,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Icon(Icons.sentiment_dissatisfied, size: 100),
+                ],
+              ),
             );
           } else {
             return const Center(

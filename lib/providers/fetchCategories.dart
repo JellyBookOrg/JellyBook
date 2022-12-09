@@ -82,19 +82,6 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
         selected.add(categories[i]);
       }
     }
-    // get length of prefs.getStringList('categories') (its a List<dynamic>?)
-    // List<String> selected = prefs.getStringList('categories') ?? ['Error'];
-    // if (selected[0] == 'Error') {
-    //   selected = await chooseCategories(categories, context);
-    //   debugPrint("selected: $selected");
-    //   prefs.setStringList('categories', selected);
-    // }
-    // if (prefs.getStringList('categories')!.length == 0) {
-    //   selected = await chooseCategories(categories, context);
-    //   prefs.setStringList('categories', selected);
-    // } else {
-    //   selected = prefs.getStringList('categories')!;
-    // }
     List<Future<List<Map<String, dynamic>>>> comicsArray = [];
     List<String> comicsIds = [];
     debugPrint("selected: " + selected.toString());
@@ -112,6 +99,8 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
     for (int i = 0; i < comicsArray.length; i++) {
       comics.addAll(await comicsArray[i]);
     }
+
+    removeEntriesFromDatabase(comicsArray);
 
     prefs.setStringList('comicsIds', comicsIds);
 
@@ -131,7 +120,6 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
       // convert the folders to a list of maps
       List<Map<String, dynamic>> foldersList = [];
       for (int i = 0; i < folders.length; i++) {
-        // toMap() function doesn't exist so we have to do it manually
         Map<String, dynamic> folderMap = {
           'id': folders[i].id,
           'name': folders[i].name,
@@ -151,6 +139,57 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
     debugPrint('No comics found');
   }
   return [];
+}
+
+// function to remove entries from the database that are not in the server
+Future<void> removeEntriesFromDatabase(
+    List<Future<List<Map<String, dynamic>>>> comicsArray) async {
+  // now see if the database has any entries that are not in the server
+  // if it does, remove those from the database
+
+  final isar = Isar.getInstance();
+  final entries = await isar!.entrys.where().findAll();
+  final folders = await isar.folders.where().findAll();
+  List<String> entryIds = [];
+  List<String> folderIds = [];
+  List<String> serverIds = [];
+  List<int> entriesToRemove = [];
+  List<int> foldersToRemove = [];
+
+  for (var i = 0; i < entries.length; i++) {
+    entryIds.add(entries[i].id);
+  }
+
+  for (var i = 0; i < folders.length; i++) {
+    folderIds.add(folders[i].id);
+  }
+
+  for (var i = 0; i < comicsArray.length; i++) {
+    List<Map<String, dynamic>> comics = await comicsArray[i];
+    for (var j = 0; j < comics.length; j++) {
+      serverIds.add(comics[j]['Id']);
+    }
+  }
+
+  for (var i = 0; i < entryIds.length; i++) {
+    if (!serverIds.contains(entryIds[i])) {
+      entriesToRemove.add(entryIds[i] as int);
+    }
+  }
+
+  for (var i = 0; i < folderIds.length; i++) {
+    if (!serverIds.contains(folderIds[i])) {
+      foldersToRemove.add(folderIds[i] as int);
+    }
+  }
+
+  debugPrint("entriesToRemove: $entriesToRemove");
+  debugPrint("foldersToRemove: $foldersToRemove");
+
+  await isar.writeTxn(() async {
+    await isar.entrys.deleteAll(entriesToRemove);
+    await isar.folders.deleteAll(foldersToRemove);
+  });
 }
 
 Future<List<String>> chooseCategories(List<String> categories, context) async {
