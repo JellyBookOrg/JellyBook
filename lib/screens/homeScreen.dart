@@ -65,229 +65,231 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 10,
-          ),
-          // text align left side of the column
-          FutureBuilder(
-            future: getServerCategories(context, returnFolders: true),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData &&
-                    snapshot.data != null &&
-                    snapshot.data.isNotEmpty) {
-                  debugPrint("snapshot data: ${snapshot.data}");
-                  return Column(
-                    children: [
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text(
-                            "Collections",
-                            style: TextStyle(
-                              // size is the size of a title
-                              fontSize: 30,
-                              // decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
+      body: ListView(
+          children: <Widget>[
+            const SizedBox(
+              height: 10,
+            ),
+            // text align left side of the column
+            FutureBuilder(
+              future: getServerCategories(context, returnFolders: true),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData &&
+                      snapshot.data != null &&
+                      snapshot.data.isNotEmpty) {
+                    debugPrint("snapshot data: ${snapshot.data}");
+                    return Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text(
+                              "Collections",
+                              style: TextStyle(
+                                // size is the size of a title
+                                fontSize: 30,
+                                // decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.height / 6 * 1.2,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: snapshot.data?.length,
-                          itemBuilder: (context, index) {
-                            return SizedBox(
-                              width: MediaQuery.of(context).size.width / 3,
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    debugPrint("tapped");
-                                    debugPrint(
-                                        "snapshot data: ${snapshot.data[index]['id']}");
-                                    debugPrint(
-                                        "snapshot data: ${snapshot.data[index]['name']}");
-                                    debugPrint(
-                                        "snapshot data: ${snapshot.data[index]['image']}");
-                                    debugPrint(
-                                        "snapshot data: ${snapshot.data[index]['bookIds']}");
-                                    Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (context, animation,
-                                                secondaryAnimation) =>
-                                            collectionScreen(
-                                          folderId: snapshot.data[index]['id'],
-                                          name: snapshot.data[index]['name'],
-                                          image: snapshot.data[index]['image'],
-                                          bookIds: snapshot.data[index]
-                                              ['bookIds'],
-                                        ),
-                                        transitionsBuilder: (context, animation,
-                                            secondaryAnimation, child) {
-                                          var begin = const Offset(1.0, 0.0);
-                                          var end = Offset.zero;
-                                          var curve = Curves.ease;
-
-                                          var tween = Tween(
-                                                  begin: begin, end: end)
-                                              .chain(CurveTween(curve: curve));
-
-                                          return SlideTransition(
-                                            position: animation.drive(tween),
-                                            child: child,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  child: Column(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        height: 10 *
-                                            MediaQuery.of(context).size.height /
-                                            1000,
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 10 *
-                                                MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                1000,
-                                            right: 10 *
-                                                MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                1000),
-                                        child: FittedBox(
-                                          fit: BoxFit.fitWidth,
-                                          child: Text(
-                                            // snapshot.data[index]['name'],
-                                            snapshot.data?[index]['name'] ?? "",
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: MediaQuery.of(context).size.height / 6 * 1.2,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: snapshot.data?.length,
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                width: MediaQuery.of(context).size.width / 3,
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      debugPrint("tapped");
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              collectionScreen(
+                                            folderId: snapshot.data[index]
+                                                ['id'],
+                                            name: snapshot.data[index]['name'],
+                                            image: snapshot.data[index]
+                                                ['image'],
+                                            bookIds: snapshot.data[index]
+                                                ['bookIds'],
                                           ),
+                                          transitionsBuilder: (context,
+                                              animation,
+                                              secondaryAnimation,
+                                              child) {
+                                            var begin = const Offset(1.0, 0.0);
+                                            var end = Offset.zero;
+                                            var curve = Curves.ease;
+
+                                            var tween = Tween(
+                                                    begin: begin, end: end)
+                                                .chain(
+                                                    CurveTween(curve: curve));
+
+                                            return SlideTransition(
+                                              position: animation.drive(tween),
+                                              child: child,
+                                            );
+                                          },
                                         ),
-                                      ),
-                                      // start all images at the same height rather than same offset
-                                      SizedBox(
-                                        height: 5 *
-                                            MediaQuery.of(context).size.height /
-                                            1000,
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.4),
-                                              spreadRadius: 5,
-                                              blurRadius: 7,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
+                                      );
+                                    },
+                                    child: Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 10 *
+                                              MediaQuery.of(context)
+                                                  .size
+                                                  .height /
+                                              1000,
                                         ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          // add a shadow to the image
-                                          child: Image.network(
-                                            // snapshot.data[index]['image'],
-                                            snapshot.data?[index]['image'] ??
-                                                "https://via.placeholder.com/200x316?text=No+Image",
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height /
-                                                6 *
-                                                0.8,
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1000,
+                                              right: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1000),
+                                          child: FittedBox(
                                             fit: BoxFit.fitWidth,
+                                            child: Text(
+                                              // snapshot.data[index]['name'],
+                                              snapshot.data?[index]['name'] ??
+                                                  "",
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                    ],
+                                        // start all images at the same height rather than same offset
+                                        SizedBox(
+                                          height: 5 *
+                                              MediaQuery.of(context)
+                                                  .size
+                                                  .height /
+                                              1000,
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.4),
+                                                spreadRadius: 5,
+                                                blurRadius: 7,
+                                                offset: const Offset(0, 3),
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            // add a shadow to the image
+                                            child: Image.network(
+                                              // snapshot.data[index]['image'],
+                                              snapshot.data?[index]['image'] ??
+                                                  "https://via.placeholder.com/200x316?text=No+Image",
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  6 *
+                                                  0.8,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      // page break
-                      const Divider(
-                        height: 5,
-                        thickness: 5,
-                        indent: 0,
-                        endIndent: 0,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  );
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        // page break
+                        const Divider(
+                          height: 5,
+                          thickness: 5,
+                          indent: 0,
+                          endIndent: 0,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Container();
+                  }
                 } else {
-                  return Container();
-                  // return const Center(
-                  // child: Text("No data"),
-                  // );
+                  return SizedBox(
+                    height: 100,
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
                 }
-              } else {
-                return SizedBox(
-                  height: 100,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+              },
+            ),
+            // text align left side of the column
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: Text(
+                  "Library",
+                  style: TextStyle(
+                    // size is the size of a title
+                    fontSize: 30,
+                    // decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              }
-            },
-          ),
-          // text align left side of the column
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text(
-                "Library",
-                style: TextStyle(
-                  // size is the size of a title
-                  fontSize: 30,
-                  // decoration: TextDecoration.underline,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          // vertical list of books
-          FutureBuilder(
-            future: getServerCategories(context, returnFolders: false),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                debugPrint("snapshot data: ${snapshot.data}");
-                return Expanded(
-                  // use grid view to make the list of books
-                  child: GridView.builder(
+            const SizedBox(
+              height: 10,
+            ),
+            // vertical list of books
+            FutureBuilder(
+              future: getServerCategories(context, returnFolders: false),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  debugPrint("snapshot data: ${snapshot.data}");
+                  return GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -371,74 +373,67 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               // auto size text to fit the width of the card (max 2 lines)
                               Flexible(
-                              // give some padding to the text
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 5, right: 5),
-                                child: AutoSizeText(
-                                  snapshot.data![index]['name'],
-                                  maxLines: 3,
-                                  minFontSize: 10,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                // give some padding to the text
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 5, right: 5),
+                                  child: AutoSizeText(
+                                    snapshot.data![index]['name'],
+                                    maxLines: 3,
+                                    minFontSize: 10,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
                               ),
                               const SizedBox(
                                 height: 5,
                               ),
+
                               if (snapshot.data![index]['releaseDate'] !=
                                   "null")
-                                Text(snapshot.data![index]['releaseDate'],
-                                    style: TextStyle(
-                                        fontSize:
-                                            MediaQuery.of(context).size.width /
-                                                4 *
-                                                0.12,
-                                        // set color to a very light grey
-                                        color: Colors.grey)),
-                              // check if screen is > 600
-                              if (MediaQuery.of(context).size.width > 600)
-                                Flexible(
-                                  child: SingleChildScrollView(
-                                    child: Text(
-                                        snapshot.data![index]['description'],
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              2 *
-                                              0.03,
-                                        )),
-                                  ),
-                                ),
-                              // add a icon button to the card
+                                    Flexible(
+                                      // give some padding to the text
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 5, right: 5),
+                                        child: AutoSizeText(
+                                          snapshot.data![index]['releaseDate'],
+                                          maxLines: 1,
+                                          minFontSize: 10,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),
                       );
                     },
                     itemCount: snapshot.data!.length,
-                  ),
-                );
-              } else {
-                return SizedBox(
-                  height: 100,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-            },
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-        ],
-      ),
+                  );
+                } else {
+                  return SizedBox(
+                    height: 100,
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+              },
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
     );
   }
 }
