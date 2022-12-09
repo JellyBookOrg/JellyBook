@@ -97,7 +97,7 @@ class LoginProvider {
       ),
     );
     debugPrint("Response: ${response.statusCode}");
-    debugPrint("Response: ${response.data}");
+    // debugPrint("Response: ${response.data}");
 
     if (response.statusCode == 200) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
