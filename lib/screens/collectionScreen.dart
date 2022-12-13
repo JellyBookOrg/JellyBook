@@ -154,19 +154,15 @@ class collectionScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5),
                       child: Image.network(
                         snapshot.data[index]['imagePath'],
-                        // set the width to 10% of the screen width
                         width: MediaQuery.of(context).size.width * 0.1,
                         fit: BoxFit.fitWidth,
                       ),
                     ),
                   ),
-                  // have the subitle be the rating
                   subtitle: Row(
-                    // allign the row to the left
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       if (snapshot.data[index]['rating'] >= 0)
-                        // allign the stars to the very left of the row
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -197,22 +193,8 @@ class collectionScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                      // if the rating is less than 0 and the description is not empty
-                      // then display the first 50 characters of the description
                       if (snapshot.data[index]['rating'] < 0 &&
                           snapshot.data[index]['description'] != '')
-                        // Text(
-                        //   snapshot.data[index]['description'].length > 50
-                        //       ? snapshot.data[index]['description']
-                        //               .substring(0, 42) +
-                        //           "..."
-                        //       : snapshot.data[index]['description'],
-                        //   style: const TextStyle(
-                        //     fontStyle: FontStyle.italic,
-                        //     fontSize: 15,
-                        //   ),
-                        // ),
-                        // use rich text instead
                         Flexible(
                           child: RichText(
                             text: TextSpan(
@@ -225,7 +207,6 @@ class collectionScreen extends StatelessWidget {
                                 color: Colors.grey,
                               ),
                             ),
-                            // prevent the text from overflowing
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
