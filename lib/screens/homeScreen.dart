@@ -2,18 +2,16 @@
 // can see all their comics and manage them
 
 import 'package:flutter/material.dart';
-import 'package:jellybook/providers/fetchCategories.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:isar/isar.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 
 // Screens imports
 import 'package:jellybook/screens/MainScreens/mainMenu.dart';
 import 'package:jellybook/screens/MainScreens/settingsScreen.dart';
 import 'package:jellybook/screens/MainScreens/downloadsScreen.dart';
-import 'package:jellybook/screens/collectionScreen.dart';
-import 'package:jellybook/screens/infoScreen.dart';
+import 'package:jellybook/screens/MainScreens/continueReadingScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -55,8 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> screens = [
     MainMenu(),
     DownloadsScreen(),
-    // CollectionScreen(),
-    // InfoScreen(),
+    ContinueReadingScreen(),
     SettingsScreen(),
   ];
 
@@ -75,122 +72,123 @@ class _HomeScreenState extends State<HomeScreen> {
             topRight: Radius.circular(20),
           ),
         ),
-        // child: BottomNavigationBar(
-        //   type: BottomNavigationBarType.fixed,
-        //   showSelectedLabels: false,
-        //   showUnselectedLabels: false,
-        //   selectedItemColor: Colors.pink,
-        //   unselectedItemColor: Colors.grey,
-        //   iconSize: 24,
-        //   // make active one bold
-        //   selectedIconTheme: const IconThemeData(
-        //     size: 30,
-        //   ),
-        //   currentIndex: _selectedIndex,
-        //   onTap: (index) {
-        //     setState(() {
-        //       _selectedIndex = index;
-        //     });
-        //   },
-        //   items: const <BottomNavigationBarItem>[
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.home),
-        //       label: 'Home',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          child: GNav(
+            rippleColor: Colors.grey[300]!,
+            hoverColor: Colors.grey[100]!,
+            activeColor: Colors.white,
+            tabBorderRadius: 15,
+            tabBackgroundGradient: LinearGradient(
+              colors: [
+                const Color(0xFFAA5CC3).withOpacity(0.75),
+                const Color(0xFF00A4DC).withOpacity(0.75),
+              ],
+            ),
+            haptic: true,
+            iconSize: 24,
+            gap: 8,
+            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 7),
+            duration: Duration(milliseconds: 600),
+            tabBackgroundColor: Theme.of(context).primaryColor,
+            color: Colors.white,
+            tabs: [
+              GButton(
+                icon: Icons.home,
+                text: 'Home',
+              ),
+              GButton(
+                icon: Icons.download,
+                text: 'Downloads',
+              ),
+              GButton(
+                icon: Icons.book,
+                text: 'Reading',
+              ),
+              // GButton(
+              //   icon: Icons.settings,
+              //   text: 'Settings',
+              // ),
+            ],
+            selectedIndex: _selectedIndex,
+            onTabChange: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+          ),
+        ),
+        // child: Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //   children: <Widget>[
+        //     // Home Screen
+        //     IconButton(
+        //       icon: const Icon(Icons.home),
+        //       color:
+        //           _selectedIndex == 0 ? const Color(0xFFAA5CC3) : Colors.grey,
+        //       iconSize: _selectedIndex == 0 ? 30 : 24,
+        //       splashColor: Colors.transparent,
+        //       onPressed: () {
+        //         setState(() {
+        //           _selectedIndex = 0;
+        //         });
+        //       },
         //     ),
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.search),
-        //       label: 'Search',
-        //     ),
+        //     // // Search Screen
+        //     // IconButton(
+        //     //   iconSize: _selectedIndex == 1 ? 30 : 24,
+        //     //   color:
+        //     //       _selectedIndex == 1 ? const Color(0xFFAA5CC3) : Colors.grey,
+        //     //   splashColor: Colors.transparent,
+        //     //   icon: const Icon(Icons.search),
+        //     //   onPressed: () {
+        //     //     setState(() {
+        //     //       _selectedIndex = 1;
+        //     //     });
+        //     //   },
+        //     // ),
         //     // Downloaded Screen
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.download),
-        //       label: 'Downloads',
+        //     IconButton(
+        //       icon: const Icon(Icons.download),
+        //       color:
+        //           _selectedIndex == 1 ? const Color(0xFFAA5CC3) : Colors.grey,
+        //       iconSize: _selectedIndex == 1 ? 30 : 24,
+        //       splashColor: Colors.transparent,
+        //       onPressed: () {
+        //         setState(() {
+        //           _selectedIndex = 1;
+        //         });
+        //       },
         //     ),
         //     // continue reading screen
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.book),
-        //       label: 'Continue Reading',
+        //     IconButton(
+        //       icon: const Icon(Icons.book),
+        //       color:
+        //           _selectedIndex == 2 ? const Color(0xFFAA5CC3) : Colors.grey,
+        //       iconSize: _selectedIndex == 2 ? 30 : 24,
+        //       splashColor: Colors.transparent,
+        //       onPressed: () {
+        //         setState(() {
+        //           _selectedIndex = 2;
+        //         });
+        //       },
         //     ),
         //     // Settings Screen
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.settings),
-        //       label: 'Settings',
-        //     ),
+        //     // IconButton(
+        //     //   icon: const Icon(Icons.settings),
+        //     //   color:
+        //     //       _selectedIndex == 3 ? const Color(0xFFAA5CC3) : Colors.grey,
+        //     //   iconSize: _selectedIndex == 3 ? 30 : 24,
+        //     //   splashColor: Colors.transparent,
+        //     //   onPressed: () {
+        //     //     setState(() {
+        //     //       _selectedIndex = 3;
+        //     //       // go to settings screen
+        //     //     });
+        //     //   },
+        //     // ),
         //   ],
         // ),
-        // use a row to make the bottom navigation bar
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            // Home Screen
-            IconButton(
-              icon: const Icon(Icons.home),
-              // make the color a gradient between #AA5CC3 and #00A4DC if selected
-              color:
-                  _selectedIndex == 0 ? const Color(0xFFAA5CC3) : Colors.grey,
-              iconSize: _selectedIndex == 0 ? 30 : 24,
-              splashColor: Colors.transparent,
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 0;
-                });
-              },
-            ),
-            // Search Screen
-            IconButton(
-              iconSize: _selectedIndex == 1 ? 30 : 24,
-              color:
-                  _selectedIndex == 1 ? const Color(0xFFAA5CC3) : Colors.grey,
-              splashColor: Colors.transparent,
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
-            ),
-            // Downloaded Screen
-            IconButton(
-              icon: const Icon(Icons.download),
-              color:
-                  _selectedIndex == 2 ? const Color(0xFFAA5CC3) : Colors.grey,
-              iconSize: _selectedIndex == 2 ? 30 : 24,
-              splashColor: Colors.transparent,
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 2;
-                });
-              },
-            ),
-            // continue reading screen
-            IconButton(
-              icon: const Icon(Icons.book),
-              color:
-                  _selectedIndex == 3 ? const Color(0xFFAA5CC3) : Colors.grey,
-              iconSize: _selectedIndex == 3 ? 30 : 24,
-              splashColor: Colors.transparent,
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 3;
-                });
-              },
-            ),
-            // Settings Screen
-            IconButton(
-              icon: const Icon(Icons.settings),
-              color:
-                  _selectedIndex == 4 ? const Color(0xFFAA5CC3) : Colors.grey,
-              iconSize: _selectedIndex == 4 ? 30 : 24,
-              splashColor: Colors.transparent,
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 4;
-                  // go to settings screen
-                });
-              },
-            ),
-          ],
-        ),
       ),
     );
   }
