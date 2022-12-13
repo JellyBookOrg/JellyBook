@@ -65,7 +65,7 @@ Future<List<Map<String, dynamic>>> getComics(
         'imagePath':
             "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
         if (responseData['Items'][i]['ImageTags']['Primary'] == null)
-          'imagePath': "https://via.placeholder.com/200x316?text=No+Cover+Art",
+          'imagePath': 'Asset',
         'releaseDate': responseData['Items'][i]['ProductionYear'].toString(),
         'path': responseData['Items'][i]['Path'] ?? '',
         'description': responseData['Items'][i]['Overview'] ?? '',
@@ -99,7 +99,7 @@ Future<List<Map<String, dynamic>>> getComics(
       String imagePath =
           "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}";
       if (responseData['Items'][i]['ImageTags']['Primary'] == null) {
-        imagePath = "https://via.placeholder.com/200x316?text=No+Cover+Art";
+        imagePath = 'Asset';
       }
       String releaseDate =
           responseData['Items'][i]['ProductionYear'].toString();
@@ -161,6 +161,7 @@ Future<List<Map<String, dynamic>>> getComics(
         entry.folderPath = entryExists.folderPath;
         entry.filePath = entryExists.filePath;
         entry.epubCfi = entryExists.epubCfi;
+        entry.pageNum = entryExists.pageNum;
       }
 
       await isar.writeTxn(() async {

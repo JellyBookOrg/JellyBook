@@ -36,9 +36,7 @@ class collectionScreen extends StatelessWidget {
       entries.add({
         'id': entry.id,
         'title': entry.title,
-        'imagePath': entry.imagePath != ''
-            ? entry.imagePath
-            : 'https://via.placeholder.com/200x316?text=No+Image',
+        'imagePath': entry.imagePath != '' ? entry.imagePath : 'Asset',
         'rating': entry.rating,
         'description': entry.description,
         'path': entry.path,
@@ -152,11 +150,17 @@ class collectionScreen extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      child: Image.network(
-                        snapshot.data[index]['imagePath'],
-                        width: MediaQuery.of(context).size.width * 0.1,
-                        fit: BoxFit.fitWidth,
-                      ),
+                      child: snapshot.data[index]['imagePath'] != "Asset"
+                          ? Image.network(
+                              snapshot.data[index]['imagePath'],
+                              width: MediaQuery.of(context).size.width * 0.1,
+                              fit: BoxFit.fitWidth,
+                            )
+                          : Image.asset(
+                              'assets/images/NoCoverArt.png',
+                              width: MediaQuery.of(context).size.width * 0.1,
+                              fit: BoxFit.fitWidth,
+                            ),
                     ),
                   ),
                   subtitle: Row(

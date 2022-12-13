@@ -165,18 +165,23 @@ class _MainMenuState extends State<MainMenu> {
                                                     .size
                                                     .width /
                                                 1000),
-                                        child: Flexible(
-                                          // ensure that it wont overflow
-                                          child: AutoSizeText(
-                                            snapshot.data[index]['name'],
-                                            maxLines: 2,
-                                            minFontSize: 5,
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
+                                        child: Flex(
+                                          direction: Axis.horizontal,
+                                          children: <Widget>[
+                                            Flexible(
+                                              // ensure that it wont overflow
+                                              child: AutoSizeText(
+                                                snapshot.data[index]['name'],
+                                                maxLines: 2,
+                                                minFontSize: 5,
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
                                       ),
                                       // start all images at the same height rather than same offset
@@ -185,7 +190,6 @@ class _MainMenuState extends State<MainMenu> {
                                             MediaQuery.of(context).size.height /
                                             1000,
                                       ),
-                                      // have the image change size based to fit the card
                                       Flexible(
                                         child: SizedBox(
                                           child: Container(
@@ -206,13 +210,21 @@ class _MainMenuState extends State<MainMenu> {
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                               // add a shadow to the image
-                                              child: Image.network(
-                                                // snapshot.data[index]['image'],
-                                                snapshot.data?[index]
-                                                        ['image'] ??
-                                                    "https://via.placeholder.com/200x316?text=No+Image",
-                                                fit: BoxFit.cover,
-                                              ),
+                                              child: snapshot.data[index]
+                                                              ['image'] !=
+                                                          null &&
+                                                      snapshot.data[index]
+                                                              ['image'] !=
+                                                          "Asset"
+                                                  ? Image.network(
+                                                      snapshot.data[index]
+                                                          ['image'],
+                                                      fit: BoxFit.fitWidth,
+                                                    )
+                                                  : Image.asset(
+                                                      "assets/images/NoCoverArt.png",
+                                                      fit: BoxFit.fitWidth,
+                                                    ),
                                             ),
                                           ),
                                         ),
@@ -299,7 +311,7 @@ class _MainMenuState extends State<MainMenu> {
                                       InfoScreen(
                                 title: snapshot.data![index]['name'] ?? "null",
                                 imageUrl: (snapshot.data![index]['imagePath'] ??
-                                    "null"),
+                                    "Asset"),
                                 description: snapshot.data![index]
                                         ['description'] ??
                                     "null",
@@ -348,13 +360,33 @@ class _MainMenuState extends State<MainMenu> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 // add a shadow to the image
-                                child: Image.network(
-                                  snapshot.data![index]['imagePath'],
-                                  height: MediaQuery.of(context).size.height /
-                                      6 *
-                                      0.8,
-                                  fit: BoxFit.fitWidth,
-                                ),
+                                // child: Image.network(
+                                //   snapshot.data![index]['imagePath'],
+                                //   height: MediaQuery.of(context).size.height /
+                                //       6 *
+                                //       0.8,
+                                //   fit: BoxFit.fitWidth,
+                                // ),
+                                child: snapshot.data![index]['imagePath'] !=
+                                            null &&
+                                        snapshot.data![index]['imagePath'] !=
+                                            "Asset"
+                                    ? Image.network(
+                                        snapshot.data![index]['imagePath'],
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                6 *
+                                                0.8,
+                                        fit: BoxFit.fitWidth,
+                                      )
+                                    : Image.asset(
+                                        "assets/images/NoCoverArt.png",
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                6 *
+                                                0.8,
+                                        fit: BoxFit.fitWidth,
+                                      ),
                               ),
                             ),
                             const SizedBox(

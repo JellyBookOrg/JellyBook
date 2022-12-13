@@ -77,11 +77,19 @@ class InfoScreen extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.network(
-                          imageUrl,
-                          width: MediaQuery.of(context).size.width / 4 * 0.8,
-                          fit: BoxFit.fitWidth,
-                        ),
+                        child: imageUrl.isNotEmpty && imageUrl != "Asset"
+                            ? Image.network(
+                                imageUrl,
+                                width:
+                                    MediaQuery.of(context).size.width / 4 * 0.8,
+                                fit: BoxFit.fitWidth,
+                              )
+                            : Image.asset(
+                                'assets/images/NoCoverArt.png',
+                                width:
+                                    MediaQuery.of(context).size.width / 4 * 0.8,
+                                fit: BoxFit.fitWidth,
+                              ),
                       ),
                     ),
                   ),

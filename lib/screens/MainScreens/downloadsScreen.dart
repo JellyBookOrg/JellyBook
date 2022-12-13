@@ -26,16 +26,12 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     final length = entryList.length;
     // var entryList = box.values.toList();
     debugPrint("bookIds: $length");
-    for (int i = 0; i < length; i++) {
-      // get the first entry that matches the bookId
-      // convert element.id to int
-      var entry = entryList.firstWhere((element) => int.parse(element.id) == i);
+
+    for (var entry in entryList) {
       entries.add({
-        'id': entry.id,
         'title': entry.title,
-        'imagePath': entry.imagePath != ''
-            ? entry.imagePath
-            : 'https://via.placeholder.com/200x316?text=No+Image',
+        'imagePath': entry.imagePath,
+        'id': entry.id,
         'rating': entry.rating,
         'description': entry.description,
         'path': entry.path,
@@ -43,6 +39,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         'type': entry.type,
         'tags': entry.tags,
         'url': entry.url,
+        'downloaded': entry.downloaded,
       });
     }
     return entries;
@@ -85,6 +82,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                   snapshot.data.length > 0 &&
                   snapshot.connectionState == ConnectionState.done) {
                 return ListView.builder(
+                  shrinkWrap: true,
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
@@ -178,7 +176,9 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                                           .where()
                                           .idEqualTo(snapshot.data[index]['id'])
                                           .findFirstSync();
-                                      isar.entrys.delete(entry!.isarId);
+                                      isar.writeTxn(() async {
+                                        await isar.entrys.delete(entry!.isarId);
+                                      });
                                       snapshot.data.removeAt(index);
                                       setState(() {});
                                       Navigator.of(context).pop();
@@ -188,12 +188,6 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                               );
                             },
                           );
-                          final isar = Isar.getInstance();
-                          isar!.entrys.delete(snapshot.data[index]['id']);
-                          // delete the entry from the list
-                          setState(() {
-                            snapshot.data.removeAt(index);
-                          });
                         },
                       ),
                       title: Text(snapshot.data[index]['title']),
@@ -211,11 +205,19 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(5),
-                          child: Image.network(
-                            snapshot.data[index]['imagePath'],
-                            width: MediaQuery.of(context).size.width * 0.1,
-                            fit: BoxFit.fitWidth,
-                          ),
+                          child: snapshot.data![index]['imagePath'] != 'Asset'
+                              ? Image.network(
+                                  snapshot.data![index]['imagePath'],
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  fit: BoxFit.fitWidth,
+                                )
+                              : Image.asset(
+                                  'assets/images/NoCoverArt.png',
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  fit: BoxFit.fitWidth,
+                                ),
                         ),
                       ),
                       subtitle: Row(
@@ -279,7 +281,6 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
               } else if (snapshot.hasData &&
                   snapshot.data.length == 0 &&
                   snapshot.connectionState == ConnectionState.done) {
-                // due to this being inside a Column, just using a Center widget doesn't work
                 return Expanded(
                   child: Center(
                     child: Column(
@@ -301,6 +302,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                   ),
                 );
               } else if (snapshot.hasError) {
+                debugPrint(snapshot.error.toString());
                 return Expanded(
                   child: Center(
                     child: Column(
