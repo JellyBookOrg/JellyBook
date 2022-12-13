@@ -62,9 +62,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // have the body be the selected screen
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+      extendBody: true,
       body: screens[_selectedIndex],
       bottomNavigationBar: Container(
-        height: 60,
+        height: 70,
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor,
           borderRadius: const BorderRadius.only(
@@ -73,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 8, bottom: 15),
           child: GNav(
             rippleColor: Colors.grey[300]!,
             hoverColor: Colors.grey[100]!,
