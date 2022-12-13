@@ -173,15 +173,22 @@ Future<void> removeEntriesFromDatabase(
 
   for (var i = 0; i < entryIds.length; i++) {
     if (!serverIds.contains(entryIds[i])) {
-      int isarId = await isar.entrys.where().idEqualTo(entryIds[i]).findAll().then((value) => value[0].isarId);
-      entriesToRemove.add(isarId);
+      if (entries[i].isarId != null) {
+        int isarId = await isar.entrys
+            .where()
+            .idEqualTo(entryIds[i])
+            .findAll()
+            .then((value) => value[0].isarId);
+        entriesToRemove.add(isarId);
+      }
     }
   }
 
   for (var i = 0; i < folderIds.length; i++) {
     if (!serverIds.contains(folderIds[i])) {
-        int isarId = await isar.folders.where().findAll().then((value) => value[i].isarId);
-        foldersToRemove.add(isarId);
+      int isarId =
+          await isar.folders.where().findAll().then((value) => value[i].isarId);
+      foldersToRemove.add(isarId);
     }
   }
 
