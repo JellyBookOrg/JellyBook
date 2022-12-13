@@ -147,6 +147,8 @@ Future<void> removeEntriesFromDatabase(
   // now see if the database has any entries that are not in the server
   // if it does, remove those from the database
 
+  // get all the entries from the database
+
   final isar = Isar.getInstance();
   final entries = await isar!.entrys.where().findAll();
   final folders = await isar.folders.where().findAll();
@@ -156,38 +158,39 @@ Future<void> removeEntriesFromDatabase(
   List<int> entriesToRemove = [];
   List<int> foldersToRemove = [];
 
-  for (var i = 0; i < entries.length; i++) {
-    entryIds.add(entries[i].id);
-  }
-
-  for (var i = 0; i < folders.length; i++) {
-    folderIds.add(folders[i].id);
-  }
-
-  for (var i = 0; i < comicsArray.length; i++) {
+  // get all the ids from the server
+  for (int i = 0; i < comicsArray.length; i++) {
     List<Map<String, dynamic>> comics = await comicsArray[i];
-    for (var j = 0; j < comics.length; j++) {
+    for (int j = 0; j < comics.length; j++) {
       serverIds.add(comics[j]['id']);
     }
   }
 
-  for (var i = 0; i < entryIds.length; i++) {
+  // get all the ids from the database
+  for (int i = 0; i < entries.length; i++) {
+    entryIds.add(entries[i].id);
+  }
+
+  // get all the ids from the database
+  for (int i = 0; i < folders.length; i++) {
+    folderIds.add(folders[i].id);
+  }
+
+  // find the ids that are in the database but not in the server
+  for (int i = 0; i < entryIds.length; i++) {
     if (!serverIds.contains(entryIds[i])) {
-      int isarId = await isar.entrys.where().idEqualTo(entryIds[i]).findAll().then((value) => value[0].isarId);
-      entriesToRemove.add(isarId);
+      entriesToRemove.add(i);
     }
   }
 
-  for (var i = 0; i < folderIds.length; i++) {
+  // find the ids that are in the database but not in the server
+  for (int i = 0; i < folderIds.length; i++) {
     if (!serverIds.contains(folderIds[i])) {
-        int isarId = await isar.folders.where().findAll().then((value) => value[i].isarId);
-        foldersToRemove.add(isarId);
+      foldersToRemove.add(i);
     }
   }
 
-  debugPrint("entriesToRemove: $entriesToRemove");
-  debugPrint("foldersToRemove: $foldersToRemove");
-
+  // remove the entries from the database
   await isar.writeTxn(() async {
     await isar.entrys.deleteAll(entriesToRemove);
     await isar.folders.deleteAll(foldersToRemove);
@@ -237,7 +240,7 @@ Future<List<String>> chooseCategories(List<String> categories, context) async {
               TextButton(
                 child: const Text('Done'),
                 onPressed: () {
-                  if (selected != null && selected.isNotEmpty) {
+                  if (selected.isNotEmpty) {
                     Navigator.of(context).pop();
                   } else {
                     debugPrint("No categories selected");

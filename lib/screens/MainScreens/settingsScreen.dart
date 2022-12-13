@@ -23,9 +23,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     Settings.init();
+    getPackageInfo();
   }
 
-  late String version;
+  String version = '';
 
   Future<void> getPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -37,12 +38,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings', style: TextStyle(fontSize: 20)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -65,8 +60,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               height: 20,
             ),
             experimentalFeaturesSettings(),
-            const SizedBox(
-              height: 300,
+            SizedBox(
+              // depends on screen size
+              height: MediaQuery.of(context).size.height * 0.15,
             ),
             aboutSettings(),
             const SizedBox(
@@ -141,42 +137,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // about settings (should contain the version number and the link to the github repo, and author)
   Widget aboutSettings() => Container(
-        child: Column(
-          children: [
-            Text(
-              'Version: ${Settings.getValue<String>('version')}',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Made by Kara Wilson",
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            // insert https://github.com/Kara-Zor-El/JellyBook
-            InkWell(
-              child: Text(
-                "https://github.com/Kara-Zor-El/JellyBook",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.blue,
+        // future builder to get the version number
+        child: FutureBuilder(
+          future: getPackageInfo(),
+          builder: (context, snapshot) {
+            return Column(
+              children: [
+                // version number (should be a future builder)
+                Text(
+                  'Version: ' + (version.isNotEmpty ? version : 'Unknown'),
+                  style: TextStyle(fontSize: 20),
                 ),
-              ),
-              onTap: () async {
-                if (await canLaunchUrl(
-                  Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
-                )) {
-                  await launchUrl(
-                    Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
-                  );
-                }
-              },
-            ),
-          ],
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "Made by Kara Wilson",
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // insert https://github.com/Kara-Zor-El/JellyBook
+                InkWell(
+                  child: Text(
+                    "https://github.com/Kara-Zor-El/JellyBook",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  onTap: () async {
+                    try {
+                      if (await canLaunchUrl(
+                        Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
+                      )) {
+                        await launchUrl(
+                          Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
+                        );
+                      }
+                    } catch (e) {
+                      debugPrint(e.toString());
+                    }
+                  },
+                ),
+              ],
+            );
+          },
         ),
       );
 }
