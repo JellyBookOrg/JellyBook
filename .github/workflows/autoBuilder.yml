@@ -24,7 +24,7 @@ jobs:
       run: cp provisioning_profile.mobileprovision $HOME/Library/MobileDevice/Provisioning\ Profiles/
     - name: Build IPA
       run: |
-        flutter build ios --release \
+        flutter build ipa --release \
           --export-options-plist ios/Runner/Info-Release.plist \
           --codesign
       shell: bash
