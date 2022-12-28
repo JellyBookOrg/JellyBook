@@ -14,6 +14,14 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: '17.0.5'
+    - name: Create provisioning profile directory
+      run: mkdir -p $HOME/Library/MobileDevice/Provisioning\ Profiles
+    - name: Save provisioning profile
+      run: echo ${{ secrets.PROVISIONING_PROFILE_DATA }} | base64 --decode > provisioning_profile.mobileprovision
+      env:
+        PROVISIONING_PROFILE_DATA: ${{ secrets.PROVISIONING_PROFILE_DATA }}
+    - name: Install provisioning profile
+      run: cp provisioning_profile.mobileprovision $HOME/Library/MobileDevice/Provisioning\ Profiles/
     - name: Build APK
       run: flutter build apk --release
       shell: bash
@@ -27,15 +35,11 @@ jobs:
     - name: Build IPA
       run: |
         flutter build ios --release \
-          --signing-certificate ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }} \
-          --signing-certificate-password ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }} \
-          --provisioning-profile ${{ secrets.PROVISIONING_PROFILE_DATA }}
+          --codesign \
+          --provisioning-profile provisioning_profile.mobileprovision
       shell: bash
       env:
-        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
-        SIGNING_CERTIFICATE_P12_DATA: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
-        SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
-        PROVISIONING_PROFILE_DATA: ${{ secrets.PROVISIONING_PROFILE_DATA }}
+        FL
     - name: Upload IPA
       uses: actions/upload-artifact@v2
       with:
