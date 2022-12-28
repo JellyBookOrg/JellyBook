@@ -1,5 +1,9 @@
 *.m linguist-language=none
 *.h linguist-language=none
+*.d linguist-language=none
+*.cc linguist-language=none
+*.cmake linguist-language=none
+Rakefile linguist-language=none
 Makefile linguist-language=none
 CMakeLists.txt linguist-language=none
 *.cpp linguist-language=none
