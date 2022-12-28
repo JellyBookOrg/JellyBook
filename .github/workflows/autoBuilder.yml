@@ -1,60 +1,58 @@
-# # Set the name of the workflow
-# name: Flutter-Builder-iOS
-#
-#
-#
-# on: 
-#   push:
-#     branches:
-#       - main
-#
-# # A workflow run is made up of one or more jobs that can run sequentially or in parallel
-# jobs:
-#  deploy_ios:
-#     name: Deploy beta build to TestFlight
-#     runs-on: macos-latest
-#
-#     steps:
-#       - name: Checkout code from ref
-#         uses: actions/checkout@v3
-#         with:
-#           ref: ${{ github.ref }}
-#       - name: Install Apple Certificate
-#         uses: apple-actions/import-codesign-certs@v1
-#         with:
-#           p12-file-base64: '${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}'
-#           p12-password: '{{ secrets.SIGNING_CERTIFICATE_PASSWORD }}'
-#       - name: Install the provisioning profile
-#         env:
-#           PROVISIONING_CERTIFICATE_BASE64: '${{ secrets.PROVISIONING_PROFILE_DATA }}'
-#         run: |
-#           PP_PATH='$RUNNER_TEMP/build_ppmobileprovision'
-#           echo -n "$PROVISIONING_CERTIFICATE_BASE64" | base64 --decode --output $PP_PATH
-#           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-#           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-#
-#       - name: Install and set Flutter version
-#         uses: subosito/flutter-action@v2.8.0
-#         with:
-#           channel: 'stable'
-#
-#       - name: Get packages
-#         run: flutter pub get
-#
-#       - name: Build Flutter
-#         run: flutter build ios --release --no-codesign
-#
-#       - name: Build resolve Swift dependencies
-#         run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
-#
-#       - name: Build xArchive
-#         run: |
-#           xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=QJS8XD3ZR5 -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=YOUR_UUID clean archive CODE_SIGN_IDENTITY="Apple Distribution: Damien Aicheh"
-#
-#
-#       - name: Run Flutter tasks
-#         uses: subosito/flutter-action@v2
-#         with:
-#           channel: 'stable'
-#       - run: flutter pub get
-#       - run: flutter build ios --release --no-codesign
+name: Auto Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v1
+    - name: Build APK
+      run: flutter build apk --release
+      shell: bash
+      env:
+        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: apk
+        path: build/app/outputs/apk/release/app-release.apk
+    - name: Build IPA
+      run: |
+        flutter build ios --release \
+          --signing-certificate $SIGNING_CERTIFICATE_P12_DATA \
+          --signing-certificate-password $SIGNING_CERTIFICATE_PASSWORD \
+          --provisioning-profile $PROVISIONING_PROFILE_DATA
+      shell: bash
+      env:
+        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
+        SIGNING_CERTIFICATE_P12_DATA: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
+        SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+        PROVISIONING_PROFILE_DATA: ${{ secrets.PROVISIONING_PROFILE_DATA }}
+    - name: Upload IPA
+      uses: actions/upload-artifact@v2
+      with:
+        name: ipa
+        path: build/ios/ipa/Runner.ipa
+    - name: Build APK (debug)
+      run: flutter build apk
+      shell: bash
+      env:
+        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
+    - name: Upload APK (debug)
+      uses: actions/upload-artifact@v2
+      with:
+        name: apk (debug)
+        path: build/app/outputs/apk/debug/app-debug.apk
+    - name: Build IPA (debug)
+      run: flutter build ios
+      shell: bash
+      env:
+        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
+    - name: Upload IPA (debug)
+      uses: actions/upload-artifact@v2
+      with:
+        name: ipa (debug)
+        path: build/ios/ipa/Runner.ipa
