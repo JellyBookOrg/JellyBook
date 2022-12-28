@@ -27,9 +27,9 @@ jobs:
     - name: Build IPA
       run: |
         flutter build ios --release \
-          --signing-certificate $SIGNING_CERTIFICATE_P12_DATA \
-          --signing-certificate-password $SIGNING_CERTIFICATE_PASSWORD \
-          --provisioning-profile $PROVISIONING_PROFILE_DATA
+          --signing-certificate ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }} \
+          --signing-certificate-password ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }} \
+          --provisioning-profile ${{ secrets.PROVISIONING_PROFILE_DATA }}
       shell: bash
       env:
         FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
