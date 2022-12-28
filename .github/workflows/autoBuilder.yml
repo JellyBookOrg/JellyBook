@@ -39,7 +39,7 @@ jobs:
           --provisioning-profile provisioning_profile.mobileprovision
       shell: bash
       env:
-        FL
+        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
     - name: Upload IPA
       uses: actions/upload-artifact@v2
       with:
