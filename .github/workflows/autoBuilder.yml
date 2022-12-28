@@ -22,11 +22,6 @@ jobs:
         PROVISIONING_PROFILE_DATA: ${{ secrets.PROVISIONING_PROFILE_DATA }}
     - name: Install provisioning profile
       run: cp provisioning_profile.mobileprovision $HOME/Library/MobileDevice/Provisioning\ Profiles/
-    - name: Build APK
-      run: flutter build apk --release
-      shell: bash
-      env:
-        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
     - name: Build IPA
       run: |
         flutter build ios --release \
@@ -40,6 +35,11 @@ jobs:
       with:
         name: ipa
         path: build/ios/ipa/Runner.ipa
+    - name: Build APK
+      run: flutter build apk --release
+      shell: bash
+      env:
+        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
     - name: Upload APK
       uses: actions/upload-artifact@v2
       with:
