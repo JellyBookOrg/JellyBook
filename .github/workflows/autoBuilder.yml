@@ -27,11 +27,6 @@ jobs:
       shell: bash
       env:
         FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
-    - name: Upload APK
-      uses: actions/upload-artifact@v2
-      with:
-        name: apk
-        path: build/app/outputs/apk/release/app-release.apk
     - name: Build IPA
       run: |
         flutter build ios --release \
@@ -45,6 +40,11 @@ jobs:
       with:
         name: ipa
         path: build/ios/ipa/Runner.ipa
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: apk
+        path: build/app/outputs/apk/release/app-release.apk
     - name: Build APK (debug)
       run: flutter build apk
       shell: bash
