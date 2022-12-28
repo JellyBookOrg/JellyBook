@@ -350,7 +350,10 @@ class _MainMenuState extends State<MainMenu> {
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.4),
+                                    color: Theme.of(context)
+                                        .shadowColor
+                                        .withOpacity(0.4),
+                                    // color: Colors.black.withOpacity(0.4),
                                     spreadRadius: 5,
                                     blurRadius: 7,
                                     offset: const Offset(0, 3),

@@ -85,7 +85,11 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                             borderRadius: BorderRadius.circular(5),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.grey[900]!.withOpacity(0.5)
+                                    : Colors.grey[300]!.withOpacity(0.5),
+                                // color: Colors.black.withOpacity(0.5),
                                 spreadRadius: 1,
                                 blurRadius: 3,
                                 offset: const Offset(2, 3),
@@ -120,7 +124,11 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                   height:
                                       MediaQuery.of(context).size.height * 0.14,
                                   decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.5),
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.black.withOpacity(0.5)
+                                        : Colors.grey.withOpacity(0.5),
+                                    // color: Colors.black.withOpacity(0.5),
                                     borderRadius: BorderRadius.only(
                                       bottomRight: Radius.circular(5),
                                     ),
@@ -131,7 +139,10 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                               .toString() +
                                           "%",
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
                                         fontSize: 20,
                                       ),
                                     ),
@@ -147,7 +158,10 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                   height:
                                       MediaQuery.of(context).size.width * 0.14,
                                   decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.5),
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.black.withOpacity(0.5)
+                                        : Colors.grey.withOpacity(0.5),
                                     borderRadius: BorderRadius.only(
                                       bottomRight: Radius.circular(5),
                                     ),
@@ -156,7 +170,10 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                     child: Text(
                                       snapshot.data![index].pageNum.toString(),
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
                                         fontSize: 20,
                                       ),
                                     ),
@@ -190,7 +207,11 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                         Colors.red,
                                         Colors.yellow,
                                         snapshot.data![index].rating / 10)!,
-                                    emptyColor: Colors.grey.withOpacity(0.5),
+                                    emptyColor: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.grey[900]!
+                                        : Colors.grey[300]!,
+                                    // emptyColor: Colors.grey.withOpacity(0.5),
                                   ),
                                   onRating: (double score) {},
                                 ),

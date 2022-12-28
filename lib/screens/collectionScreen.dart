@@ -141,7 +141,8 @@ class collectionScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Theme.of(context).shadowColor.withOpacity(0.5),
+                          // color: Colors.black.withOpacity(0.5),
                           spreadRadius: 1,
                           blurRadius: 3,
                           offset: const Offset(2, 3),

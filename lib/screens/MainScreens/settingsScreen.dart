@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:jellybook/themes/themeManager.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -21,9 +23,20 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
+    getPackageInfo();
     super.initState();
     Settings.init();
-    getPackageInfo();
+  }
+
+  themeListener() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   String version = '';
@@ -35,6 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeManager themeManager = Provider.of<ThemeManager>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings', style: TextStyle(fontSize: 20)),
@@ -47,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               height: 40,
             ),
             // should be comprised of widgets
-            themeSettings(),
+            themeSettings(context),
             const SizedBox(
               height: 20,
             ),
@@ -75,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // theme settings (future builder to get the current theme and then change it)
-  Widget themeSettings() => DropDownSettingsTile(
+  Widget themeSettings(BuildContext context) => DropDownSettingsTile(
         settingKey: 'theme',
         title: 'Theme',
         selected: Settings.getValue<String>('theme') ?? 'System',
@@ -84,12 +98,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'System': 'System',
           'Light': 'Light',
           'Dark': 'Dark',
-          'Amoled': 'Amoled',
-          'Custom': 'Custom',
         },
         onChange: (value) async {
+          ThemeManager themeManager = Provider.of<ThemeManager>(context);
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('theme', value.toString());
+          ThemeData _themeData = ThemeMode.system == ThemeMode.dark
+              ? ThemeData.dark()
+              : ThemeData.light();
+          if (value == 'System') {
+            themeManager.setTheme(_themeData);
+          } else if (value == 'Light') {
+            themeManager.setTheme(ThemeData.light());
+          } else if (value == 'Dark') {
+            themeManager.setTheme(ThemeData.dark());
+          }
         },
       );
 

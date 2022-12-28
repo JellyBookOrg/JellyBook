@@ -73,7 +73,14 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
           ),
           // add a divider
           const SizedBox(height: 5),
-          Divider(height: 10, color: Colors.grey[400]),
+          Divider(
+            height: 10,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[800]
+                : Colors.grey[400],
+            // color: Theme.of(context).colorScheme.secondary,
+          ),
+
           const SizedBox(height: 5),
           FutureBuilder(
             future: entries,
@@ -196,7 +203,11 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                           borderRadius: BorderRadius.circular(5),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.black.withOpacity(0.5)
+                                  : Colors.grey.withOpacity(0.5),
+                              // color: Colors.black.withOpacity(0.5),
                               spreadRadius: 1,
                               blurRadius: 3,
                               offset: const Offset(2, 3),
@@ -238,7 +249,12 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                                           Colors.red,
                                           Colors.yellow,
                                           snapshot.data[index]['rating'] / 10)!,
-                                      emptyColor: Colors.grey.withOpacity(0.5),
+                                      emptyColor: Theme.of(context)
+                                                  .brightness ==
+                                              Brightness.dark
+                                          ? Colors.grey[800]!.withOpacity(0.5)
+                                          : Colors.grey[300]!.withOpacity(0.5),
+                                      // emptyColor: Colors.grey.withOpacity(0.5),
                                     ),
                                     onRating: (double score) {},
                                   ),

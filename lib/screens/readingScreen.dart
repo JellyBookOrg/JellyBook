@@ -1,13 +1,10 @@
 // The purpose of this file is to allow the user to read the book/comic they have downloaded
 // The new version will have seperate methods for doing so for different file types
 
-import 'dart:io';
+// import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:jellybook/screens/downloaderScreen.dart';
-import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 
 // reading screens

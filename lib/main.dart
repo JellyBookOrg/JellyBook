@@ -68,13 +68,19 @@ class MyApp extends StatelessWidget {
   final String? username;
   final String? password;
 
-  MyApp({this.url = "", this.username = "", this.password = ""});
+  const MyApp({Key? key, this.url, this.username, this.password})
+      : super(key: key);
+  // MyApp({this.url = "", this.username = "", this.password = ""});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
       title: 'Jellybook',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      darkTheme: ThemeData.dark(),
       home: LoginScreen(
         url: url,
         username: username,

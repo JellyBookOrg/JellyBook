@@ -13,6 +13,9 @@ import 'package:jellybook/screens/MainScreens/continueReadingScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
+// Cupertino imports
+import 'package:flutter/cupertino.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -65,133 +68,168 @@ class _HomeScreenState extends State<HomeScreen> {
       resizeToAvoidBottomInset: true,
       extendBody: true,
       body: screens[_selectedIndex],
-      bottomNavigationBar: Container(
-        height: 70,
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 8, bottom: 15),
-          child: GNav(
-            rippleColor: Colors.grey[300]!,
-            hoverColor: Colors.grey[100]!,
-            activeColor: Colors.white,
-            tabBorderRadius: 15,
-            tabBackgroundGradient: LinearGradient(
-              colors: [
-                const Color(0xFFAA5CC3).withOpacity(0.75),
-                const Color(0xFF00A4DC).withOpacity(0.75),
+      // bottomNavigationBar: Container(
+      //   height: 70,
+      //   decoration: BoxDecoration(
+      //     color: Theme.of(context).primaryColor,
+      //     borderRadius: const BorderRadius.only(
+      //       topLeft: Radius.circular(20),
+      //       topRight: Radius.circular(20),
+      //     ),
+      //   ),
+      //   child: Padding(
+      //     padding: const EdgeInsets.only(
+      //         left: 15.0, right: 15.0, top: 8, bottom: 15),
+      //     child: GNav(
+      //       // use the theme colors
+      //       // rippleColor: Colors.grey[300]!,
+      //       // hoverColor: Colors.grey[100]!,
+      //       // activeColor: Colors.white,
+      //       rippleColor: Theme.of(context).colorScheme.secondary,
+      //       hoverColor: Theme.of(context).colorScheme.secondary,
+      //       activeColor: Colors.white,
+      //
+      //       tabBorderRadius: 15,
+      //       tabBackgroundGradient: LinearGradient(
+      //         colors: [
+      //           const Color(0xFFAA5CC3).withOpacity(0.75),
+      //           const Color(0xFF00A4DC).withOpacity(0.75),
+      //         ],
+      //       ),
+      //       // set the boarder color
+      //       tabActiveBorder: Theme.of(context).brightness == Brightness.dark
+      //           ? Border.all(color: Colors.transparent, width: 0)
+      //           : Border.all(color: Colors.white, width: 1),
+      //       haptic: true,
+      //       iconSize: 24,
+      //       gap: 7,
+      //       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 7),
+      //       duration: Duration(milliseconds: 600),
+      //       tabBackgroundColor: Theme.of(context).primaryColor,
+      //       color: Colors.white,
+      //       tabs: [
+      //         GButton(
+      //           icon: Icons.home,
+      //           text: 'Home',
+      //         ),
+      //         GButton(
+      //           icon: Icons.download,
+      //           text: 'Downloads',
+      //         ),
+      //         GButton(
+      //           icon: Icons.book,
+      //           text: 'Reading',
+      //         ),
+      //         GButton(
+      //           icon: Icons.settings,
+      //           text: 'Settings',
+      //         ),
+      //       ],
+      //       selectedIndex: _selectedIndex,
+      //       onTabChange: (index) {
+      //         setState(() {
+      //           _selectedIndex = index;
+      //         });
+      //       },
+      //     ),
+      //   ),
+      // ),
+      // use the cupertino bottom navigation bar if the user is on ios
+      bottomNavigationBar: Theme.of(context).platform == TargetPlatform.iOS
+          ? CupertinoTabBar(
+              backgroundColor: Theme.of(context).primaryColor,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.download),
+                  label: 'Downloads',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.book),
+                  label: 'Reading',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
+                ),
               ],
+              currentIndex: _selectedIndex,
+              onTap: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+            )
+          : Container(
+              height: 70,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 8, bottom: 15),
+                child: GNav(
+                  // use the theme colors
+                  // rippleColor: Colors.grey[300]!,
+                  // hoverColor: Colors.grey[100]!,
+                  // activeColor: Colors.white,
+                  rippleColor: Theme.of(context).colorScheme.secondary,
+                  hoverColor: Theme.of(context).colorScheme.secondary,
+                  activeColor: Colors.white,
+
+                  tabBorderRadius: 15,
+                  tabBackgroundGradient: LinearGradient(
+                    colors: [
+                      const Color(0xFFAA5CC3).withOpacity(0.75),
+                      const Color(0xFF00A4DC).withOpacity(0.75),
+                    ],
+                  ),
+                  // set the boarder color
+                  tabActiveBorder:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Border.all(color: Colors.transparent, width: 0)
+                          : Border.all(color: Colors.white, width: 1),
+                  haptic: true,
+                  iconSize: 24,
+                  gap: 7,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 7),
+                  duration: Duration(milliseconds: 600),
+                  tabBackgroundColor: Theme.of(context).primaryColor,
+                  color: Colors.white,
+                  tabs: [
+                    GButton(
+                      icon: Icons.home,
+                      text: 'Home',
+                    ),
+                    GButton(
+                      icon: Icons.download,
+                      text: 'Downloads',
+                    ),
+                    GButton(
+                      icon: Icons.book,
+                      text: 'Reading',
+                    ),
+                    // GButton(
+                    //   icon: Icons.settings,
+                    //   text: 'Settings',
+                    // ),
+                  ],
+                  selectedIndex: _selectedIndex,
+                  onTabChange: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                ),
+              ),
             ),
-            haptic: true,
-            iconSize: 24,
-            gap: 8,
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 7),
-            duration: Duration(milliseconds: 600),
-            tabBackgroundColor: Theme.of(context).primaryColor,
-            color: Colors.white,
-            tabs: [
-              GButton(
-                icon: Icons.home,
-                text: 'Home',
-              ),
-              GButton(
-                icon: Icons.download,
-                text: 'Downloads',
-              ),
-              GButton(
-                icon: Icons.book,
-                text: 'Reading',
-              ),
-              // GButton(
-              //   icon: Icons.settings,
-              //   text: 'Settings',
-              // ),
-            ],
-            selectedIndex: _selectedIndex,
-            onTabChange: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-          ),
-        ),
-        // child: Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //   children: <Widget>[
-        //     // Home Screen
-        //     IconButton(
-        //       icon: const Icon(Icons.home),
-        //       color:
-        //           _selectedIndex == 0 ? const Color(0xFFAA5CC3) : Colors.grey,
-        //       iconSize: _selectedIndex == 0 ? 30 : 24,
-        //       splashColor: Colors.transparent,
-        //       onPressed: () {
-        //         setState(() {
-        //           _selectedIndex = 0;
-        //         });
-        //       },
-        //     ),
-        //     // // Search Screen
-        //     // IconButton(
-        //     //   iconSize: _selectedIndex == 1 ? 30 : 24,
-        //     //   color:
-        //     //       _selectedIndex == 1 ? const Color(0xFFAA5CC3) : Colors.grey,
-        //     //   splashColor: Colors.transparent,
-        //     //   icon: const Icon(Icons.search),
-        //     //   onPressed: () {
-        //     //     setState(() {
-        //     //       _selectedIndex = 1;
-        //     //     });
-        //     //   },
-        //     // ),
-        //     // Downloaded Screen
-        //     IconButton(
-        //       icon: const Icon(Icons.download),
-        //       color:
-        //           _selectedIndex == 1 ? const Color(0xFFAA5CC3) : Colors.grey,
-        //       iconSize: _selectedIndex == 1 ? 30 : 24,
-        //       splashColor: Colors.transparent,
-        //       onPressed: () {
-        //         setState(() {
-        //           _selectedIndex = 1;
-        //         });
-        //       },
-        //     ),
-        //     // continue reading screen
-        //     IconButton(
-        //       icon: const Icon(Icons.book),
-        //       color:
-        //           _selectedIndex == 2 ? const Color(0xFFAA5CC3) : Colors.grey,
-        //       iconSize: _selectedIndex == 2 ? 30 : 24,
-        //       splashColor: Colors.transparent,
-        //       onPressed: () {
-        //         setState(() {
-        //           _selectedIndex = 2;
-        //         });
-        //       },
-        //     ),
-        //     // Settings Screen
-        //     // IconButton(
-        //     //   icon: const Icon(Icons.settings),
-        //     //   color:
-        //     //       _selectedIndex == 3 ? const Color(0xFFAA5CC3) : Colors.grey,
-        //     //   iconSize: _selectedIndex == 3 ? 30 : 24,
-        //     //   splashColor: Colors.transparent,
-        //     //   onPressed: () {
-        //     //     setState(() {
-        //     //       _selectedIndex = 3;
-        //     //       // go to settings screen
-        //     //     });
-        //     //   },
-        //     // ),
-        //   ],
-        // ),
-      ),
     );
   }
 }
