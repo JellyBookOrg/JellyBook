@@ -35,8 +35,8 @@ jobs:
     - name: Build IPA
       run: |
         flutter build ios --release \
-          --codesign \
-          --provisioning-profile provisioning_profile.mobileprovision
+          --export-options-plist ios/Runner/Info-Release.plist \
+          --codesign
       shell: bash
       env:
         FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
