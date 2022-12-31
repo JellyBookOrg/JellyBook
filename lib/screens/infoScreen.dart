@@ -131,34 +131,37 @@ class InfoScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           if (stars >= 0)
-                            Row(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                  child: CustomRating(
-                                    max: 5,
-                                    score: stars / 2,
-                                    star: Star(
-                                      fillColor: Color.lerp(Colors.red,
-                                          Colors.yellow, stars / 10)!,
-                                      emptyColor: Colors.grey.withOpacity(0.5),
-                                    ),
-                                    onRating: (double score) {},
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                  child: Text(
-                                    "${(stars / 2).toStringAsFixed(2)} / 5.00",
-                                    style: const TextStyle(
-                                      fontStyle: FontStyle.italic,
-                                      fontSize: 15,
+                            IgnorePointer(
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    child: CustomRating(
+                                      max: 5,
+                                      score: stars / 2,
+                                      star: Star(
+                                        fillColor: Color.lerp(Colors.red,
+                                            Colors.yellow, stars / 10)!,
+                                        emptyColor:
+                                            Colors.grey.withOpacity(0.5),
+                                      ),
+                                      onRating: (double score) {},
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                                    child: Text(
+                                      "${(stars / 2).toStringAsFixed(2)} / 5.00",
+                                      style: const TextStyle(
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                         ],
                       ),

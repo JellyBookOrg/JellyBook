@@ -173,35 +173,37 @@ class collectionScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       if (snapshot.data[index]['rating'] >= 0)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              child: CustomRating(
-                                max: 5,
-                                score: snapshot.data[index]['rating'] / 2,
-                                star: Star(
-                                  fillColor: Color.lerp(
-                                      Colors.red,
-                                      Colors.yellow,
-                                      snapshot.data[index]['rating'] / 10)!,
-                                  emptyColor: Colors.grey.withOpacity(0.5),
-                                ),
-                                onRating: (double score) {},
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                              child: Text(
-                                "${(snapshot.data[index]['rating'] / 2).toStringAsFixed(2)} / 5.00",
-                                style: const TextStyle(
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 15,
+                        IgnorePointer(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                child: CustomRating(
+                                  max: 5,
+                                  score: snapshot.data[index]['rating'] / 2,
+                                  star: Star(
+                                    fillColor: Color.lerp(
+                                        Colors.red,
+                                        Colors.yellow,
+                                        snapshot.data[index]['rating'] / 10)!,
+                                    emptyColor: Colors.grey.withOpacity(0.5),
+                                  ),
+                                  onRating: (double score) {},
                                 ),
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                                child: Text(
+                                  "${(snapshot.data[index]['rating'] / 2).toStringAsFixed(2)} / 5.00",
+                                  style: const TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       if (snapshot.data[index]['rating'] < 0 &&
                           snapshot.data[index]['description'] != '')
