@@ -61,51 +61,49 @@ class InfoScreen extends StatelessWidget {
                 ),
                 Expanded(
                   flex: 2,
-                  child: Padding(
-                    // padding: const EdgeInsets.all(8.0),
-                    padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color:
-                                Theme.of(context).shadowColor.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 3,
-                            offset: const Offset(2, 3),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: imageUrl.isNotEmpty && imageUrl != "Asset"
-                            // ? Image.network(
-                            //     imageUrl,
-                            //     width:
-                            //         MediaQuery.of(context).size.width / 4 * 0.8,
-                            //     fit: BoxFit.fitWidth,
-                            //   )
-                            // replace the image with a shimmer image
-                            ? FancyShimmerImage(
-                                imageUrl: imageUrl,
-                                boxFit: BoxFit.fitWidth,
-                                errorWidget: Image.asset(
-                                  "assets/images/NoCoverArt.png",
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                              offset: const Offset(2, 3),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: imageUrl.isNotEmpty && imageUrl != "Asset"
+                              ? FancyShimmerImage(
+                                  imageUrl: imageUrl,
+                                  boxFit: BoxFit.cover,
+                                  errorWidget: Image.asset(
+                                    "assets/images/NoCoverArt.png",
+                                    width: MediaQuery.of(context).size.width /
+                                        4 *
+                                        0.8,
+                                    fit: BoxFit.cover,
+                                  ),
                                   width: MediaQuery.of(context).size.width /
                                       4 *
                                       0.8,
-                                  fit: BoxFit.fitWidth,
+                                )
+                              : Image.asset(
+                                  'assets/images/NoCoverArt.png',
+                                  width: MediaQuery.of(context).size.width /
+                                      4 *
+                                      0.8,
+                                  fit: BoxFit.cover,
                                 ),
-                                width:
-                                    MediaQuery.of(context).size.width / 4 * 0.8,
-                              )
-                            : Image.asset(
-                                'assets/images/NoCoverArt.png',
-                                width:
-                                    MediaQuery.of(context).size.width / 4 * 0.8,
-                                fit: BoxFit.fitWidth,
-                              ),
+                        ),
                       ),
                     ),
                   ),
