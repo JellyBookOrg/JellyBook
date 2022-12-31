@@ -8,6 +8,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:flutter_star/flutter_star.dart';
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 
 class ContinueReadingScreen extends StatefulWidget {
   @override
@@ -99,11 +100,15 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5),
                             child: snapshot.data![index].imagePath != "Asset"
-                                ? Image.network(
-                                    snapshot.data![index].imagePath,
+                                ? FancyShimmerImage(
+                                    imageUrl: snapshot.data![index].imagePath,
+                                    errorWidget: Image.asset(
+                                      "assets/images/NoCoverArt.png",
+                                      fit: BoxFit.cover,
+                                    ),
                                     width:
                                         MediaQuery.of(context).size.width * 0.1,
-                                    fit: BoxFit.fitWidth,
+                                    boxFit: BoxFit.fitWidth,
                                   )
                                 : Image.asset(
                                     'assets/images/NoCoverArt.png',
@@ -195,34 +200,42 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         if (snapshot.data![index].rating > 0)
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                child: CustomRating(
-                                  max: 5,
-                                  score: snapshot.data![index].rating / 2,
-                                  star: Star(
-                                    fillColor: Color.lerp(
-                                        Colors.red,
-                                        Colors.yellow,
-                                        snapshot.data![index].rating / 10)!,
-                                    emptyColor: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.grey[900]!
-                                        : Colors.grey[300]!,
-                                    // emptyColor: Colors.grey.withOpacity(0.5),
+                          // prevent the rating from being touched since it can be changed if touched
+                          IgnorePointer(
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                  child: CustomRating(
+                                    max: 5,
+                                    score: snapshot.data![index].rating / 2,
+                                    star: Star(
+                                      fillColor: Color.lerp(
+                                          Colors.red,
+                                          Colors.yellow,
+                                          snapshot.data![index].rating / 10)!,
+                                      emptyColor:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.grey[900]!
+                                              : Colors.grey[300]!,
+                                      // emptyColor: Colors.grey.withOpacity(0.5),
+                                    ),
+                                    onRating: (double score) {},
                                   ),
-                                  onRating: (double score) {},
                                 ),
-                              ),
-                              Text(
-                                " " + snapshot.data![index].rating.toString(),
-                                style: TextStyle(
-                                  fontSize: 15,
+                                Text(
+                                  " " +
+                                      (snapshot.data![index].rating / 2)
+                                          .toString() +
+                                      "/5.0",
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                       ],
                     ),

@@ -60,6 +60,8 @@ dependencies:
   package_info_plus: ^3.0.2
   auto_size_text: ^3.0.0
   google_nav_bar: ^5.0.6
+  cached_network_image: ^3.2.3
+  fancy_shimmer_image: ^2.0.2
 
 dev_dependencies:
   flutter_test:

@@ -8,6 +8,7 @@ import 'package:jellybook/screens/loginScreen.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:isar/isar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -165,23 +166,15 @@ class _MainMenuState extends State<MainMenu> {
                                                     .size
                                                     .width /
                                                 1000),
-                                        child: Flex(
-                                          direction: Axis.horizontal,
-                                          children: <Widget>[
-                                            Flexible(
-                                              // ensure that it wont overflow
-                                              child: AutoSizeText(
-                                                snapshot.data[index]['name'],
-                                                maxLines: 2,
-                                                minFontSize: 5,
-                                                textAlign: TextAlign.center,
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                        child: AutoSizeText(
+                                          snapshot.data[index]['name'],
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          minFontSize: 5,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       // start all images at the same height rather than same offset
@@ -216,10 +209,18 @@ class _MainMenuState extends State<MainMenu> {
                                                       snapshot.data[index]
                                                               ['image'] !=
                                                           "Asset"
-                                                  ? Image.network(
-                                                      snapshot.data[index]
-                                                          ['image'],
-                                                      fit: BoxFit.fitWidth,
+                                                  ? FancyShimmerImage(
+                                                      imageUrl: snapshot
+                                                          .data[index]['image'],
+                                                      errorWidget: Image.asset(
+                                                          'assets/images/placeholder.png',
+                                                          fit: BoxFit.cover),
+                                                      boxFit: BoxFit.cover,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              5,
                                                     )
                                                   : Image.asset(
                                                       "assets/images/NoCoverArt.png",
@@ -345,51 +346,57 @@ class _MainMenuState extends State<MainMenu> {
                             const SizedBox(
                               height: 10,
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Theme.of(context)
-                                        .shadowColor
-                                        .withOpacity(0.4),
-                                    // color: Colors.black.withOpacity(0.4),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                // add a shadow to the image
-                                // child: Image.network(
-                                //   snapshot.data![index]['imagePath'],
-                                //   height: MediaQuery.of(context).size.height /
-                                //       6 *
-                                //       0.8,
-                                //   fit: BoxFit.fitWidth,
-                                // ),
-                                child: snapshot.data![index]['imagePath'] !=
-                                            null &&
-                                        snapshot.data![index]['imagePath'] !=
-                                            "Asset"
-                                    ? Image.network(
-                                        snapshot.data![index]['imagePath'],
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                6 *
-                                                0.8,
-                                        fit: BoxFit.fitWidth,
-                                      )
-                                    : Image.asset(
-                                        "assets/images/NoCoverArt.png",
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                6 *
-                                                0.8,
-                                        fit: BoxFit.fitWidth,
-                                      ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height / 6 * 0.8,
+                              width: MediaQuery.of(context).size.width / 5,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context)
+                                          .shadowColor
+                                          .withOpacity(0.4),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: snapshot.data![index]['imagePath'] !=
+                                              null &&
+                                          snapshot.data![index]['imagePath'] !=
+                                              "Asset"
+                                      ? FancyShimmerImage(
+                                          imageUrl: snapshot.data[index]
+                                              ['imagePath'],
+                                          errorWidget: Image.asset(
+                                            "assets/images/NoCoverArt.png",
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              5,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height /
+                                              5,
+                                          boxFit: BoxFit.cover,
+                                        )
+                                      : Image.asset(
+                                          "assets/images/NoCoverArt.png",
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height /
+                                              6 *
+                                              0.8,
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                ),
                               ),
                             ),
                             const SizedBox(
@@ -443,9 +450,9 @@ class _MainMenuState extends State<MainMenu> {
                   itemCount: snapshot.data!.length,
                 );
               } else {
-                return SizedBox(
+                return const SizedBox(
                   height: 100,
-                  child: const Center(
+                  child: Center(
                     child: CircularProgressIndicator(),
                   ),
                 );

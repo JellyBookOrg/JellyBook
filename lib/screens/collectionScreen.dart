@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/providers/fixRichText.dart';
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 
 class collectionScreen extends StatelessWidget {
   final String folderId;
@@ -152,10 +153,14 @@ class collectionScreen extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
                       child: snapshot.data[index]['imagePath'] != "Asset"
-                          ? Image.network(
-                              snapshot.data[index]['imagePath'],
+                          ? FancyShimmerImage(
+                              imageUrl: snapshot.data[index]['imagePath'],
+                              errorWidget: Image.asset(
+                                'assets/images/NoCoverArt.png',
+                                fit: BoxFit.cover,
+                              ),
+                              boxFit: BoxFit.fitWidth,
                               width: MediaQuery.of(context).size.width * 0.1,
-                              fit: BoxFit.fitWidth,
                             )
                           : Image.asset(
                               'assets/images/NoCoverArt.png',

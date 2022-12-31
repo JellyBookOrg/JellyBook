@@ -7,6 +7,7 @@ import 'package:jellybook/providers/fixRichText.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/screens/readingScreen.dart';
 import 'package:like_button/like_button.dart';
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 
 class InfoScreen extends StatelessWidget {
   final String title;
@@ -79,11 +80,25 @@ class InfoScreen extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: imageUrl.isNotEmpty && imageUrl != "Asset"
-                            ? Image.network(
-                                imageUrl,
+                            // ? Image.network(
+                            //     imageUrl,
+                            //     width:
+                            //         MediaQuery.of(context).size.width / 4 * 0.8,
+                            //     fit: BoxFit.fitWidth,
+                            //   )
+                            // replace the image with a shimmer image
+                            ? FancyShimmerImage(
+                                imageUrl: imageUrl,
+                                boxFit: BoxFit.fitWidth,
+                                errorWidget: Image.asset(
+                                  "assets/images/NoCoverArt.png",
+                                  width: MediaQuery.of(context).size.width /
+                                      4 *
+                                      0.8,
+                                  fit: BoxFit.fitWidth,
+                                ),
                                 width:
                                     MediaQuery.of(context).size.width / 4 * 0.8,
-                                fit: BoxFit.fitWidth,
                               )
                             : Image.asset(
                                 'assets/images/NoCoverArt.png',

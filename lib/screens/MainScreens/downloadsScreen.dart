@@ -8,6 +8,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:flutter_star/flutter_star.dart';
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 
 class DownloadsScreen extends StatefulWidget {
   @override
@@ -217,11 +218,15 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(5),
                           child: snapshot.data![index]['imagePath'] != 'Asset'
-                              ? Image.network(
-                                  snapshot.data![index]['imagePath'],
+                              ? FancyShimmerImage(
+                                  imageUrl: snapshot.data![index]['imagePath'],
+                                  errorWidget: Image.asset(
+                                    'assets/images/NoCoverArt.png',
+                                    fit: BoxFit.cover,
+                                  ),
                                   width:
                                       MediaQuery.of(context).size.width * 0.1,
-                                  fit: BoxFit.fitWidth,
+                                  boxFit: BoxFit.fitWidth,
                                 )
                               : Image.asset(
                                   'assets/images/NoCoverArt.png',
