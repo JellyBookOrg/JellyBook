@@ -83,6 +83,8 @@ Future<List<Map<String, dynamic>>> getComics(
 
         "tags": responseData['Items'][i]['Tags'] ?? [],
         'parentId': responseData['Items'][i]['ParentId'] ?? '',
+        'isFavorited':
+            responseData['Items'][i]['UserData']['IsFavorite'] ?? false,
       });
       debugPrint(responseData['Items'][i]['Name']);
     }
@@ -113,6 +115,8 @@ Future<List<Map<String, dynamic>>> getComics(
       List<dynamic> tags1 = responseData['Items'][i]['Tags'] ?? [];
       String parentId = responseData['Items'][i]['ParentId'] ?? '';
       String type = "Book";
+      bool isFavorited =
+          responseData['Items'][i]['UserData']['IsFavorite'] ?? false;
       if (responseData['Items'][i]['Type'] == 'Folder') {
         type = 'Folder';
       } else if (responseData['Items'][i]['Type'] == 'Book') {
@@ -153,6 +157,7 @@ Future<List<Map<String, dynamic>>> getComics(
         progress: 0.0,
         type: type,
         parentId: parentId,
+        isFavorited: isFavorited,
       );
       if (entryExists1) {
         entry.isarId = entryExists.isarId;

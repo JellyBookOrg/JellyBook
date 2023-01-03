@@ -52,53 +52,58 @@ const EntrySchema = CollectionSchema(
       name: r'imagePath',
       type: IsarType.string,
     ),
-    r'pageNum': PropertySchema(
+    r'isFavorited': PropertySchema(
       id: 7,
+      name: r'isFavorited',
+      type: IsarType.bool,
+    ),
+    r'pageNum': PropertySchema(
+      id: 8,
       name: r'pageNum',
       type: IsarType.long,
     ),
     r'parentId': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'parentId',
       type: IsarType.string,
     ),
     r'path': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'path',
       type: IsarType.string,
     ),
     r'progress': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'progress',
       type: IsarType.double,
     ),
     r'rating': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'rating',
       type: IsarType.double,
     ),
     r'releaseDate': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'releaseDate',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'title': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'title',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'type',
       type: IsarType.string,
     ),
     r'url': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'url',
       type: IsarType.string,
     )
@@ -172,16 +177,17 @@ void _entrySerialize(
   writer.writeString(offsets[4], object.folderPath);
   writer.writeString(offsets[5], object.id);
   writer.writeString(offsets[6], object.imagePath);
-  writer.writeLong(offsets[7], object.pageNum);
-  writer.writeString(offsets[8], object.parentId);
-  writer.writeString(offsets[9], object.path);
-  writer.writeDouble(offsets[10], object.progress);
-  writer.writeDouble(offsets[11], object.rating);
-  writer.writeString(offsets[12], object.releaseDate);
-  writer.writeStringList(offsets[13], object.tags);
-  writer.writeString(offsets[14], object.title);
-  writer.writeString(offsets[15], object.type);
-  writer.writeString(offsets[16], object.url);
+  writer.writeBool(offsets[7], object.isFavorited);
+  writer.writeLong(offsets[8], object.pageNum);
+  writer.writeString(offsets[9], object.parentId);
+  writer.writeString(offsets[10], object.path);
+  writer.writeDouble(offsets[11], object.progress);
+  writer.writeDouble(offsets[12], object.rating);
+  writer.writeString(offsets[13], object.releaseDate);
+  writer.writeStringList(offsets[14], object.tags);
+  writer.writeString(offsets[15], object.title);
+  writer.writeString(offsets[16], object.type);
+  writer.writeString(offsets[17], object.url);
 }
 
 Entry _entryDeserialize(
@@ -198,16 +204,17 @@ Entry _entryDeserialize(
     folderPath: reader.readStringOrNull(offsets[4]) ?? '',
     id: reader.readString(offsets[5]),
     imagePath: reader.readString(offsets[6]),
-    pageNum: reader.readLongOrNull(offsets[7]) ?? 0,
-    parentId: reader.readStringOrNull(offsets[8]) ?? '',
-    path: reader.readString(offsets[9]),
-    progress: reader.readDoubleOrNull(offsets[10]) ?? 0.0,
-    rating: reader.readDouble(offsets[11]),
-    releaseDate: reader.readString(offsets[12]),
-    tags: reader.readStringList(offsets[13]) ?? [],
-    title: reader.readString(offsets[14]),
-    type: reader.readStringOrNull(offsets[15]) ?? 'comic',
-    url: reader.readString(offsets[16]),
+    isFavorited: reader.readBoolOrNull(offsets[7]) ?? false,
+    pageNum: reader.readLongOrNull(offsets[8]) ?? 0,
+    parentId: reader.readStringOrNull(offsets[9]) ?? '',
+    path: reader.readString(offsets[10]),
+    progress: reader.readDoubleOrNull(offsets[11]) ?? 0.0,
+    rating: reader.readDouble(offsets[12]),
+    releaseDate: reader.readString(offsets[13]),
+    tags: reader.readStringList(offsets[14]) ?? [],
+    title: reader.readString(offsets[15]),
+    type: reader.readStringOrNull(offsets[16]) ?? 'comic',
+    url: reader.readString(offsets[17]),
   );
   object.isarId = id;
   return object;
@@ -235,24 +242,26 @@ P _entryDeserializeProp<P>(
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 8:
-      return (reader.readStringOrNull(offset) ?? '') as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 9:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 10:
-      return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
+      return (reader.readString(offset)) as P;
     case 11:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
     case 12:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 13:
-      return (reader.readStringList(offset) ?? []) as P;
-    case 14:
       return (reader.readString(offset)) as P;
+    case 14:
+      return (reader.readStringList(offset) ?? []) as P;
     case 15:
-      return (reader.readStringOrNull(offset) ?? 'comic') as P;
+      return (reader.readString(offset)) as P;
     case 16:
+      return (reader.readStringOrNull(offset) ?? 'comic') as P;
+    case 17:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1174,6 +1183,16 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'imagePath',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Entry, Entry, QAfterFilterCondition> isFavoritedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isFavorited',
+        value: value,
       ));
     });
   }
@@ -2482,6 +2501,18 @@ extension EntryQuerySortBy on QueryBuilder<Entry, Entry, QSortBy> {
     });
   }
 
+  QueryBuilder<Entry, Entry, QAfterSortBy> sortByIsFavorited() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorited', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Entry, Entry, QAfterSortBy> sortByIsFavoritedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorited', Sort.desc);
+    });
+  }
+
   QueryBuilder<Entry, Entry, QAfterSortBy> sortByPageNum() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pageNum', Sort.asc);
@@ -2676,6 +2707,18 @@ extension EntryQuerySortThenBy on QueryBuilder<Entry, Entry, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Entry, Entry, QAfterSortBy> thenByIsFavorited() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorited', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Entry, Entry, QAfterSortBy> thenByIsFavoritedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorited', Sort.desc);
+    });
+  }
+
   QueryBuilder<Entry, Entry, QAfterSortBy> thenByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.asc);
@@ -2846,6 +2889,12 @@ extension EntryQueryWhereDistinct on QueryBuilder<Entry, Entry, QDistinct> {
     });
   }
 
+  QueryBuilder<Entry, Entry, QDistinct> distinctByIsFavorited() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isFavorited');
+    });
+  }
+
   QueryBuilder<Entry, Entry, QDistinct> distinctByPageNum() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'pageNum');
@@ -2959,6 +3008,12 @@ extension EntryQueryProperty on QueryBuilder<Entry, Entry, QQueryProperty> {
   QueryBuilder<Entry, String, QQueryOperations> imagePathProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'imagePath');
+    });
+  }
+
+  QueryBuilder<Entry, bool, QQueryOperations> isFavoritedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isFavorited');
     });
   }
 

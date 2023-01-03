@@ -26,6 +26,7 @@ class Entry {
   String type = "";
   String parentId = "";
   String epubCfi = "";
+  bool isFavorited = false;
 
   Entry({
     required this.id,
@@ -45,5 +46,6 @@ class Entry {
     this.type = 'comic',
     this.parentId = '',
     this.epubCfi = '',
+    this.isFavorited = false,
   });
 }

@@ -45,6 +45,7 @@ class collectionScreen extends StatelessWidget {
         'type': entry.type,
         'tags': entry.tags,
         'url': entry.url,
+        'isFavorited': entry.isFavorited,
       });
     }
     return entries;
@@ -89,6 +90,7 @@ class collectionScreen extends StatelessWidget {
                             year: snapshot.data[index]['year'],
                             url: snapshot.data[index]['url'],
                             tags: snapshot.data[index]['tags'],
+                            isLiked: snapshot.data[index]['isFavorited'],
                           ),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {

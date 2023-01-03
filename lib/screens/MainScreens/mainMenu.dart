@@ -48,6 +48,12 @@ class _MainMenuState extends State<MainMenu> {
 
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    // fetchCategories();
+  }
+
 // should be a futureBuilder
   @override
   Widget build(BuildContext context) {
@@ -115,9 +121,9 @@ class _MainMenuState extends State<MainMenu> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: InkWell(
-                                  onTap: () {
+                                  onTap: () async {
                                     debugPrint("tapped");
-                                    Navigator.push(
+                                    await Navigator.push(
                                       context,
                                       PageRouteBuilder(
                                         pageBuilder: (context, animation,
@@ -146,6 +152,7 @@ class _MainMenuState extends State<MainMenu> {
                                         },
                                       ),
                                     );
+                                    setState(() {});
                                   },
                                   child: Column(
                                     children: <Widget>[
@@ -290,9 +297,11 @@ class _MainMenuState extends State<MainMenu> {
           ),
           // vertical list of books
           FutureBuilder(
-            future: getServerCategories(context, returnFolders: false),
+            future: getServerCategories(context,
+                returnFolders: false, likedFirst: true),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
+                debugPrint("Working!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 debugPrint("snapshot data: ${snapshot.data}");
                 return GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
@@ -303,8 +312,8 @@ class _MainMenuState extends State<MainMenu> {
                   itemBuilder: (context, index) {
                     return Card(
                       child: InkWell(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          await Navigator.push(
                             context,
                             PageRouteBuilder(
                               pageBuilder:
@@ -323,6 +332,9 @@ class _MainMenuState extends State<MainMenu> {
                                 stars: snapshot.data![index]['rating'] ?? -1,
                                 path: snapshot.data![index]['path'] ?? "null",
                                 comicId: snapshot.data![index]['id'] ?? "null",
+                                isLiked: snapshot.data![index]
+                                        ['isFavourited'] ??
+                                    false,
                               ),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
@@ -340,64 +352,95 @@ class _MainMenuState extends State<MainMenu> {
                               },
                             ),
                           );
+                          setState(() {});
                         },
                         child: Column(
                           children: <Widget>[
                             const SizedBox(
                               height: 10,
                             ),
-                            SizedBox(
-                              height:
-                                  MediaQuery.of(context).size.height / 6 * 0.8,
-                              width: MediaQuery.of(context).size.width / 5,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Theme.of(context)
-                                          .shadowColor
-                                          .withOpacity(0.4),
-                                      spreadRadius: 5,
-                                      blurRadius: 7,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: snapshot.data![index]['imagePath'] !=
-                                              null &&
-                                          snapshot.data![index]['imagePath'] !=
-                                              "Asset"
-                                      ? FancyShimmerImage(
-                                          imageUrl: snapshot.data[index]
-                                              ['imagePath'],
-                                          errorWidget: Image.asset(
-                                            "assets/images/NoCoverArt.png",
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              5,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height /
-                                              5,
-                                          boxFit: BoxFit.cover,
-                                        )
-                                      : Image.asset(
-                                          "assets/images/NoCoverArt.png",
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height /
-                                              6 *
-                                              0.8,
-                                          fit: BoxFit.fitWidth,
+                            Stack(
+                              children: <Widget>[
+                                SizedBox(
+                                  height: MediaQuery.of(context).size.height /
+                                      6 *
+                                      0.8,
+                                  width: MediaQuery.of(context).size.width / 5,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Theme.of(context)
+                                              .shadowColor
+                                              .withOpacity(0.4),
+                                          spreadRadius: 5,
+                                          blurRadius: 7,
+                                          offset: const Offset(0, 3),
                                         ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: snapshot.data![index]
+                                                      ['imagePath'] !=
+                                                  null &&
+                                              snapshot.data![index]
+                                                      ['imagePath'] !=
+                                                  "Asset"
+                                          ? FancyShimmerImage(
+                                              imageUrl: snapshot.data[index]
+                                                  ['imagePath'],
+                                              errorWidget: Image.asset(
+                                                "assets/images/NoCoverArt.png",
+                                                fit: BoxFit.fitWidth,
+                                              ),
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  5,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  5,
+                                              boxFit: BoxFit.cover,
+                                            )
+                                          : Image.asset(
+                                              "assets/images/NoCoverArt.png",
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  6 *
+                                                  0.8,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                if (snapshot.data![index]['isFavorited'] ==
+                                    true)
+                                  // icon in circle in top right corner
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .primaryColor
+                                            .withOpacity(0.8),
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(5),
+                                        child: Icon(
+                                          Icons.favorite,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                             const SizedBox(
                               height: 10,
@@ -448,6 +491,12 @@ class _MainMenuState extends State<MainMenu> {
                     );
                   },
                   itemCount: snapshot.data!.length,
+                );
+                // if there is no data or an error occured
+              } else if (snapshot.hasError || snapshot.data == null) {
+                debugPrint("Error: ${snapshot.error}");
+                return const Center(
+                  child: Text("Error"),
                 );
               } else {
                 return const SizedBox(

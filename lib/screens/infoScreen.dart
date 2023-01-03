@@ -8,6 +8,9 @@ import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/screens/readingScreen.dart';
 import 'package:like_button/like_button.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:jellybook/providers/updateLike.dart';
+import 'package:isar/isar.dart';
+import 'package:jellybook/models/entry.dart';
 
 class InfoScreen extends StatelessWidget {
   final String title;
@@ -19,6 +22,7 @@ class InfoScreen extends StatelessWidget {
   final double stars;
   final String comicId;
   final String path;
+  bool isLiked;
 
   InfoScreen(
       {required this.title,
@@ -29,7 +33,28 @@ class InfoScreen extends StatelessWidget {
       required this.comicId,
       required this.stars,
       required this.path,
-      required this.year});
+      required this.year,
+      required this.isLiked});
+
+// check if it is liked or not by checking the database
+  Future<bool> checkLiked(String id) async {
+    final isar = Isar.getInstance();
+    final entries = await isar!.entrys.where().idEqualTo(id).findFirst();
+    return entries!.isFavorited;
+  }
+
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    await updateLike(comicId);
+    return !isLiked;
+  }
+
+  // init
+  @override
+  void initState() {
+    checkLiked(comicId).then((value) {
+      isLiked = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +63,7 @@ class InfoScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
+            // update the page so that the liked comics are at the top
             Navigator.pop(context);
           },
         ),
@@ -218,31 +244,48 @@ class InfoScreen extends StatelessWidget {
                             },
                             icon: const Icon(Icons.download),
                           ),
-                          LikeButton(
-                            circleColor: const CircleColor(
-                                start: Colors.red, end: Colors.red),
-                            bubblesColor: const BubblesColor(
-                              dotPrimaryColor: Colors.green,
-                              dotSecondaryColor: Colors.red,
-                            ),
-                            likeBuilder: (bool isLiked) {
-                              return Icon(
-                                Icons.favorite,
-                                color: isLiked ? Colors.red : Colors.white,
-                              );
-                            },
-                            onTap: (bool isLiked) async {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text("This feature is not available yet",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          )),
-                                  backgroundColor: Colors.black,
-                                ),
-                              );
-                              return !isLiked;
+                          // check if the comic is liked
+                          FutureBuilder(
+                            future: checkLiked(comicId),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                isLiked = snapshot.data as bool;
+                                debugPrint("isLiked: $isLiked");
+                                return LikeButton(
+                                  isLiked: isLiked,
+                                  circleColor: const CircleColor(
+                                    start: Colors.red,
+                                    end: Colors.redAccent,
+                                  ),
+                                  bubblesColor: const BubblesColor(
+                                    dotPrimaryColor: Colors.green,
+                                    dotSecondaryColor: Colors.red,
+                                  ),
+                                  likeBuilder: (bool isLiked) {
+                                    return Icon(
+                                      Icons.favorite,
+                                      color:
+                                          isLiked ? Colors.red : Colors.white,
+                                    );
+                                  },
+                                  onTap: (bool isLiked) async {
+                                    updateLike(comicId);
+                                    // ScaffoldMessenger.of(context).showSnackBar(
+                                    //   const SnackBar(
+                                    //     content: Text(
+                                    //         "This feature is not available yet",
+                                    //         style: TextStyle(
+                                    //           color: Colors.white,
+                                    //         )),
+                                    //     backgroundColor: Colors.black,
+                                    //   ),
+                                    // );
+                                    return !isLiked;
+                                  },
+                                );
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
                             },
                           ),
                         ],

@@ -15,17 +15,24 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 // have optional perameter to have the function return the list of folders
 Future<List<Map<String, dynamic>>> getServerCategories(context,
-    {bool returnFolders = false}) async {
+    {bool returnFolders = false, bool likedFirst = false}) async {
   debugPrint("getting server categories");
   final PackageInfo packageInfo = await PackageInfo.fromPlatform();
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken') ?? "";
+  debugPrint(token);
   final url = prefs.getString('server') ?? "";
+  debugPrint(url);
   final userId = prefs.getString('UserId') ?? "";
+  debugPrint(userId);
   final client = prefs.getString('client') ?? "JellyBook";
+  debugPrint(client);
   final device = prefs.getString('device') ?? "";
+  debugPrint(device);
   final deviceId = prefs.getString('deviceId') ?? "";
+  debugPrint(deviceId);
   final version = prefs.getString('version') ?? packageInfo.version;
+  debugPrint(version);
 
   debugPrint("got prefs");
   Map<String, String> headers =
@@ -103,6 +110,26 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
     removeEntriesFromDatabase(comicsArray);
 
     prefs.setStringList('comicsIds', comicsIds);
+
+    if (likedFirst) {
+      // if liked then bring them to the top of the list
+      List<Map<String, dynamic>> likedComics = [];
+      List<Map<String, dynamic>> unlikedComics = [];
+      List<Map<String, dynamic>> newComics = [];
+      debugPrint(comics.length.toString());
+      for (int i = 0; i < comics.length; i++) {
+        // debugPrint(comics[i]['isFavorited'].toString());
+        if (comics[i]['isFavorited'].toString() == 'true') {
+          likedComics.add(comics[i]);
+        } else {
+          unlikedComics.add(comics[i]);
+        }
+      }
+      newComics.addAll(likedComics);
+      newComics.addAll(unlikedComics);
+      comics = newComics;
+      // return newComics;
+    }
 
     if (returnFolders) {
       final isar = Isar.getInstance();

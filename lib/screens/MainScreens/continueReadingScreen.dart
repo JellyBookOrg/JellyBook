@@ -67,6 +67,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                             tags: snapshot.data![index].tags,
                             description: snapshot.data![index].description,
                             imageUrl: snapshot.data![index].imagePath,
+                            isLiked: snapshot.data![index].isFavorited,
                           ),
                         ),
                       );
