@@ -460,7 +460,7 @@ class _MainMenuState extends State<MainMenu> {
                               // auto size text to fit the width of the card (max 2 lines)
 
                               Expanded(
-                                flex: 2,
+                                flex: 3,
                                 // give some padding to the text
                                 child: Padding(
                                   padding:
@@ -510,8 +510,15 @@ class _MainMenuState extends State<MainMenu> {
                   );
                 } else if (snapshot.hasError) {
                   logger.e("Error: ${snapshot.error}");
-                  return const Center(
-                    child: Text("Error"),
+                  return Center(
+                    // return error message if there is an error
+                    child: Text(
+                      "Error" + snapshot.error.toString(),
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 20,
+                      ),
+                    ),
                   );
                   // if theres no books in the database, show a message
                 } else if (snapshot.data == null) {

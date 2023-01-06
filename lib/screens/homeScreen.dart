@@ -140,6 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: Theme.of(context).platform == TargetPlatform.iOS
           ? CupertinoTabBar(
               backgroundColor: Theme.of(context).primaryColor,
+              activeColor: Theme.of(context).colorScheme.secondary,
+              inactiveColor: Theme.of(context).colorScheme.onPrimary,
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
@@ -153,10 +155,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icon(Icons.book),
                   label: 'Reading',
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  label: 'Settings',
-                ),
+                // BottomNavigationBarItem(
+                //   icon: Icon(Icons.settings),
+                //   label: 'Settings',
+                // ),
               ],
               currentIndex: _selectedIndex,
               onTap: (index) {
