@@ -9,6 +9,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:logger/logger.dart';
 
 class ContinueReadingScreen extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class ContinueReadingScreen extends StatefulWidget {
 
 class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
   var isar = Isar.getInstance();
+  var logger = Logger();
 
   // get all the entries that have been started but not finished
   Future<List<Entry>> getEntries() async {
@@ -47,7 +49,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
           if (snapshot.hasData &&
               snapshot.data != null &&
               snapshot.data!.length > 0) {
-            debugPrint(snapshot.data.toString());
+            logger.d(snapshot.data.toString());
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {

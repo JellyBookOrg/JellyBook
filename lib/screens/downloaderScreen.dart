@@ -16,6 +16,8 @@ import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
 
+import 'package:logger/logger.dart';
+
 class DownloadScreen extends StatefulWidget {
   final String comicId;
 
@@ -47,6 +49,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
   String platformVersion = 'Unknown';
   bool downloading = false;
   String comicFolder = 'Error';
+
+  var logger = Logger();
 
   @override
   void initState() {
@@ -101,20 +105,20 @@ class _DownloadScreenState extends State<DownloadScreen> {
       };
       url = url + '/Items/' + comicId + '/Download?api_key=' + token;
       var files = await Directory(dirLocation).list().toList();
-      debugPrint(files.toString());
+      logger.d(files.toString());
       String dir = dirLocation + '/' + fileName;
-      debugPrint(dir);
-      debugPrint('Folder does not exist');
+      logger.d(dir);
+      logger.d('Folder does not exist');
       try {
         // make directory
         await Directory(dirLocation).create(recursive: true);
-        debugPrint('Directory created');
+        logger.d('Directory created');
         // set the location of the folder
         dir = dirLocation + '/' + fileName;
         // set the comic file
         entry.filePath = dir;
-        debugPrint('Directory created');
-        debugPrint("Attempting to download file");
+        logger.d('Directory created');
+        logger.d('Attempting to download file');
         await dio.download(url, dir,
             options: Options(
               headers: headers,
@@ -124,9 +128,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
             progress = (receivedBytes / totalBytes * 100);
           });
         });
-        debugPrint(files.toString());
+        logger.d('File downloaded');
       } catch (e) {
-        debugPrint(e.toString());
+        logger.d(e.toString());
       }
 
       String fileName2 = await fileNameFromTitle(entry.title);
@@ -134,15 +138,15 @@ class _DownloadScreenState extends State<DownloadScreen> {
       try {
         await Directory(dirLocation).create(recursive: true);
       } catch (e) {
-        debugPrint(e.toString());
+        logger.d(e.toString());
       }
-      debugPrint('Comic folder created');
-      debugPrint(dirLocation + '/' + fileName2);
+      logger.d('Comic folder created');
+      logger.d('$dirLocation/$fileName2');
 
       try {
         await Directory(dirLocation + '/' + fileName2).create(recursive: true);
       } catch (e) {
-        debugPrint(e.toString());
+        logger.d(e.toString());
       }
       comicFolder = dirLocation + '/' + fileName2;
       if (dir.contains('.zip') || dir.contains('.cbz')) {
@@ -162,74 +166,74 @@ class _DownloadScreenState extends State<DownloadScreen> {
               await Directory(dirLocation + '/' + fileName2 + '/' + filename)
                   .create(recursive: true);
             } catch (e) {
-              debugPrint(e.toString());
+              logger.d(e.toString());
             }
           }
         }
-        debugPrint('Unzipped');
+        logger.d('Unzipped');
         File(dirLocation + '/' + fileName).deleteSync();
 
         entry.downloaded = true;
 
         entry.folderPath = dirLocation + '/' + fileName2;
 
-        debugPrint('Zip file extracted');
+        logger.d('Zip file extracted');
       } else if (dir.contains('.rar') || dir.contains('.cbr')) {
         try {
           await UnrarFile.extract_rar(dirLocation + '/' + fileName,
               dirLocation + '/' + fileName2 + '/');
-          debugPrint('Rar file extracted');
-          debugPrint('Unzipped');
+          logger.d('Rar file extracted');
+          logger.d('Unzipped');
           File(dirLocation + '/' + fileName).deleteSync();
           entry.downloaded = true;
           entry.folderPath = dirLocation + '/' + fileName2;
         } catch (e) {
-          debugPrint("Extraction failed " + e.toString());
+          logger.d(e.toString());
         }
       } else if (entry.path.contains('.pdf')) {
-        debugPrint('PDF file');
+        logger.d('PDF file');
 
         try {
           var file = File(dirLocation + '/' + fileName);
           try {
             await Directory('$dirLocation/$fileName2').create(recursive: true);
           } catch (e) {
-            debugPrint(e.toString());
+            logger.d(e.toString());
           }
           file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
           entry.folderPath = dirLocation + '/' + fileName2;
           entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
-          debugPrint('PDF file moved');
+          logger.d('PDF file moved');
           entry.downloaded = true;
           entry.folderPath = dirLocation + '/' + fileName2;
         } catch (e) {
-          debugPrint(e.toString());
+          logger.d(e.toString());
         }
 
-        debugPrint('PDF file extracted to folder');
-        debugPrint('(Not really extracted)');
+        logger.d('PDF file extracted to folder');
+        logger.d('PDF file extracted');
       } else if (dir.contains('.epub')) {
-        debugPrint('EPUB file');
+        logger.d('EPUB file');
         try {
           var file = File(dirLocation + '/' + fileName);
           try {
             await Directory('$dirLocation/$fileName2').create(recursive: true);
           } catch (e) {
-            debugPrint(e.toString());
+            logger.d(e.toString());
           }
           file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
           entry.folderPath = dirLocation + '/' + fileName2;
           entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
-          debugPrint('EPUB file moved');
+          logger.d('EPUB file moved');
           entry.downloaded = true;
           entry.folderPath = dirLocation + '/' + fileName2;
         } catch (e) {
-          debugPrint(e.toString());
+          logger.e(e.toString());
         }
 
-        debugPrint('EPUB file extracted to folder');
+        logger.d('EPUB file extracted');
       } else {
-        debugPrint('Error');
+        logger.e('Error');
       }
 
       setState(() {
@@ -239,8 +243,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         Navigator.pop(context);
       });
     }
-    debugPrint("title: " + entry.title);
-    debugPrint("comicFolder: " + comicFolder);
+    logger.d('title: ' + entry.title);
+    logger.d('comicFolder: ' + comicFolder);
 
     // save the comic to the database
     await isar.writeTxn(() async {

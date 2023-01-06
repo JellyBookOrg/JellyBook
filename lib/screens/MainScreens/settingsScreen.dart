@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:jellybook/themes/themeManager.dart';
 import 'package:provider/provider.dart';
+import 'package:logger/logger.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -40,6 +41,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   String version = '';
+
+  var logger = Logger();
 
   Future<void> getPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -200,7 +203,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         );
                       }
                     } catch (e) {
-                      debugPrint(e.toString());
+                      logger.e(e.toString());
                     }
                   },
                 ),

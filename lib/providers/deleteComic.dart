@@ -2,12 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jellybook/models/entry.dart';
 import 'dart:io';
+import 'package:logger/logger.dart';
 
 Future<void> deleteComic(String id, context) async {
   bool delete = false;
+  var logger = Logger();
   await showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -35,30 +36,29 @@ Future<void> deleteComic(String id, context) async {
 }
 
 Future<void> confirmedDelete(String id, context) async {
-  // get the entry from the database
   final isar = Isar.getInstance();
-  // if download is true, delete the file
+  var logger = Logger();
   final entry = await isar!.entrys.where().idEqualTo(id).findFirst();
   if (entry!.downloaded == true) {
     try {
       await File(entry.folderPath).delete(recursive: true);
     } catch (e) {
-      debugPrint(e.toString());
+      logger.e(e.toString());
     }
   }
   if (entry.downloaded == true) {
-    debugPrint("Deleting file");
-    debugPrint(entry.folderPath);
+    logger.d("Deleting file");
+    logger.d(entry.folderPath);
     final String path = entry.folderPath;
-    debugPrint(path.toString());
+    logger.d(path.toString());
     try {
       Directory(path).deleteSync(recursive: true);
     } catch (e) {
-      debugPrint("error deleting directory: $e");
+      logger.e("error deleting directory: $e");
     }
 
-    debugPrint("Deleted comic: " + entry.title);
-    debugPrint("Deleted comic path: " + entry.folderPath);
+    logger.d("Deleted comic: " + entry.title);
+    logger.d("Deleted comic path: " + entry.folderPath);
     entry.downloaded = false;
     entry.folderPath = "";
     entry.pageNum = 0;
@@ -69,7 +69,7 @@ Future<void> confirmedDelete(String id, context) async {
 
     await isar.close();
   } else {
-    debugPrint("Comic not downloaded");
+    logger.d("Comic not downloaded");
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Comic not downloaded"),

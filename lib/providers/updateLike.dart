@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 
 Future<void> updateLike(String id) async {
   final isar = Isar.getInstance();
@@ -21,6 +21,7 @@ Future<void> updateLike(String id) async {
   // curl 'http://99.253.1.162:8096/Users/a92cd45eddf843d096a6be47433a7ac4/FavoriteItems/d02d230713ce7a65c6aba68b354fd520' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'X-Emby-Authorization: MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="TW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0OyBydjoxMDcuMCkgR2Vja28vMjAxMDAxMDEgRmlyZWZveC8xMDcuMHwxNjY2NDkwMTI4NTky", Version="10.8.8", Token="0018719ef0094827b15802e4953d02da"' -H 'Origin: http://99.253.1.162:8096' -H 'Connection: keep-alive' -H 'Content-Length: 0'
 
   final dio = Dio();
+  var logger = Logger();
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   final prefs = await SharedPreferences.getInstance();
   final storage = new FlutterSecureStorage();
@@ -47,22 +48,22 @@ Future<void> updateLike(String id) async {
     'Content-Length': '0',
   };
   final data = {};
-  debugPrint(url);
+  logger.d(url);
   if (entries.isFavorited) {
     try {
       final response =
           await dio.post(url, data: data, options: Options(headers: headers));
-      debugPrint(response.data.toString());
+      logger.d(response.data.toString());
     } catch (e) {
-      debugPrint(e.toString());
+      logger.e(e.toString());
     }
   } else {
     try {
       final response =
           await dio.delete(url, data: data, options: Options(headers: headers));
-      debugPrint(response.data.toString());
+      logger.d(response.data.toString());
     } catch (e) {
-      debugPrint(e.toString());
+      logger.e(e.toString());
     }
   }
 }

@@ -8,6 +8,7 @@ import 'package:flutter_star/flutter_star.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:logger/logger.dart';
 
 class collectionScreen extends StatelessWidget {
   final String folderId;
@@ -15,13 +16,14 @@ class collectionScreen extends StatelessWidget {
   final String image;
   final List<String> bookIds;
 
-  const collectionScreen({
+  collectionScreen({
     required this.folderId,
     required this.name,
     required this.image,
     required this.bookIds,
   });
 
+  var logger = Logger();
   // make a list of entries from the the list of bookIds
   Future<List<Map<String, dynamic>>> getEntries() async {
     final isar = Isar.getInstance();
@@ -30,7 +32,7 @@ class collectionScreen extends StatelessWidget {
     // get the entries from the database
     final entryList = await isar!.entrys.where().findAll();
     // var entryList = box.values.toList();
-    debugPrint("bookIds: ${bookIds.length}");
+    logger.d("bookIds: ${bookIds.length}");
     for (int i = 0; i < bookIds.length; i++) {
       // get the first entry that matches the bookId
       var entry = entryList.firstWhere((element) => element.id == bookIds[i]);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jellybook/providers/login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jellybook/screens/homeScreen.dart';
+import 'package:logger/logger.dart';
 
 class LoginScreen extends StatefulWidget {
 // optional inputs of url, username, and password (use empty string if not provided)
@@ -37,6 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
   bool _loading = false;
   String _error = '';
+  var logger = Logger();
 
   @override
   void initState() {
@@ -46,9 +48,9 @@ class _LoginScreenState extends State<LoginScreen> {
     // check if url and username are provided
     if (url != "" && username != "") {
       _loading = true;
-      debugPrint("url: " + url!);
-      debugPrint("username: " + username!);
-      debugPrint("password: " + password!);
+      logger.d("url: " + url!);
+      logger.d("username: " + username!);
+      logger.d("password: " + password!);
       LoginProvider.loginStatic(
         url!,
         username!,
@@ -161,9 +163,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     setState(() {
                       _loading = true;
                     });
-                    debugPrint(_url.text);
-                    debugPrint(_username.text);
-                    debugPrint(_password.text);
+                    logger.d("url: " + _url.text);
+                    logger.d("username: " + _username.text);
+                    logger.d("password: " + _password.text);
                     LoginProvider.loginStatic(
                       _url.text,
                       _username.text,

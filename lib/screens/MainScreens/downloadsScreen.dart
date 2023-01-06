@@ -9,6 +9,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:logger/logger.dart';
 
 class DownloadsScreen extends StatefulWidget {
   @override
@@ -16,6 +17,8 @@ class DownloadsScreen extends StatefulWidget {
 }
 
 class _DownloadsScreenState extends State<DownloadsScreen> {
+  var logger = Logger();
+
   Future<List<Map<String, dynamic>>> getEntries() async {
     final isar = Isar.getInstance();
     // final isar = Isar.openSync([EntrySchema]);
@@ -26,7 +29,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     // get the length of the list
     final length = entryList.length;
     // var entryList = box.values.toList();
-    debugPrint("bookIds: $length");
+    logger.d("bookIds: $length");
 
     for (var entry in entryList) {
       entries.add({
@@ -328,7 +331,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                   ),
                 );
               } else if (snapshot.hasError) {
-                debugPrint(snapshot.error.toString());
+                logger.e(snapshot.error.toString());
                 return Expanded(
                   child: Center(
                     child: Column(

@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/providers/progress.dart';
+import 'package:logger/logger.dart';
 
 // cbr/cbz reader
 class CbrCbzReader extends StatefulWidget {
@@ -35,9 +35,10 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   late String path;
   late List<String> chapters = [];
   late List<String> pages = [];
+  var logger = Logger();
 
   Future<void> createPageList() async {
-    debugPrint("chapters: $chapters");
+    logger.d("chapters: $chapters");
     var formats = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"];
     List<String> pageFiles = [];
     for (var chapter in chapters) {
@@ -95,12 +96,12 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
       await isar.entrys.put(entry);
     });
 
-    debugPrint("saved progress");
-    debugPrint("page num: ${entry.pageNum}");
+    logger.d("saved progress");
+    logger.d("page num: ${entry.pageNum}");
   }
 
   Future<void> getChapters() async {
-    debugPrint("getting chapters");
+    logger.d("getting chapters");
     var status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
@@ -114,37 +115,26 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
     path = entry!.folderPath;
 
     // print the entry
-    debugPrint("title: ${entry.title}");
-    debugPrint("path: ${entry.filePath}");
-    debugPrint("folder path: ${entry.folderPath}");
-    // debugPrint("path: ${entry.path}");
-    debugPrint("page num: ${entry.pageNum}");
-    debugPrint("progress: ${entry.progress}");
-    debugPrint("id: ${entry.id}");
-    debugPrint("downloaded: ${entry.downloaded}");
+    logger.d("title: ${entry.title}");
+    logger.d("path: ${entry.filePath}");
+    logger.d("folder path: ${entry.folderPath}");
+    logger.d("page num: ${entry.pageNum}");
+    logger.d("progress: ${entry.progress}");
+    logger.d("id: ${entry.id}");
+    logger.d("downloaded: ${entry.downloaded}");
     // check if the entry is downloaded
     if (entry.downloaded) {
-      // get the file path
-      // path = entry.folderPath;
       progress = entry.progress;
       pageNum = entry.pageNum;
     }
 
-    debugPrint(path);
+    logger.d(path);
     File file = File(path);
 
-    // get a list of all the files in the folder
-    // var files = Directory(path).listSync();
-
-    // List<FileSystemEntity> files = Directory(path).listSync();
-    // debugPrint(files.toString());
-    // what we want to do is recursively go through the folder and get all the last directories that dont contain any other directories
-    // then we want to add them to the chapters list
-    // max depth of 3
     getChaptersFromDirectory(file);
 
-    debugPrint("Chapters:");
-    debugPrint(chapters.toString());
+    logger.d("Chapters:");
+    logger.d(chapters.toString());
   }
 
   void getChaptersFromDirectory(FileSystemEntity directory) {

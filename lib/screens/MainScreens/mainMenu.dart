@@ -9,6 +9,7 @@ import 'package:jellybook/models/login.dart';
 import 'package:isar/isar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:logger/logger.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -32,13 +33,15 @@ class _MainMenuState extends State<MainMenu> {
                 - a settings section
         */
 
+  var logger = Logger();
+
   Future<void> logout() async {
     final isar = Isar.getInstance();
     var logins = await isar!.logins.where().findAll();
     var loginIds = logins.map((e) => e.isarId).toList();
     await isar.writeTxn(() async {
       isar.logins.deleteAll(loginIds);
-      debugPrint('deleted ${loginIds.length} logins');
+      logger.i('deleted ${loginIds.length} logins');
     });
     Navigator.pushReplacement(
       context,
@@ -86,7 +89,7 @@ class _MainMenuState extends State<MainMenu> {
                 if (snapshot.hasData &&
                     snapshot.data != null &&
                     snapshot.data.isNotEmpty) {
-                  debugPrint("snapshot data: ${snapshot.data}");
+                  logger.i("snapshot data: ${snapshot.data}");
                   return Column(
                     children: [
                       const Align(
@@ -122,7 +125,7 @@ class _MainMenuState extends State<MainMenu> {
                                 ),
                                 child: InkWell(
                                   onTap: () async {
-                                    debugPrint("tapped");
+                                    logger.i("tapped");
                                     await Navigator.push(
                                       context,
                                       PageRouteBuilder(
@@ -300,209 +303,241 @@ class _MainMenuState extends State<MainMenu> {
             future: getServerCategories(context,
                 returnFolders: false, likedFirst: true),
             builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                debugPrint("Working!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                debugPrint("snapshot data: ${snapshot.data}");
-                return GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: InkWell(
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      InfoScreen(
-                                title: snapshot.data![index]['name'] ?? "null",
-                                imageUrl: (snapshot.data![index]['imagePath'] ??
-                                    "Asset"),
-                                description: snapshot.data![index]
-                                        ['description'] ??
-                                    "null",
-                                tags: snapshot.data![index]['tags'] ?? ["null"],
-                                url: snapshot.data![index]['url'] ?? "null",
-                                year: snapshot.data![index]['releaseDate'] ??
-                                    "null",
-                                stars: snapshot.data![index]['rating'] ?? -1,
-                                path: snapshot.data![index]['path'] ?? "null",
-                                comicId: snapshot.data![index]['id'] ?? "null",
-                                isLiked: snapshot.data![index]
-                                        ['isFavourited'] ??
-                                    false,
-                              ),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = const Offset(1.0, 0.0);
-                                var end = Offset.zero;
-                                var curve = Curves.ease;
-
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
-                            ),
-                          );
-                          setState(() {});
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Stack(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height /
-                                      6 *
-                                      0.8,
-                                  width: MediaQuery.of(context).size.width / 5,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Theme.of(context)
-                                              .shadowColor
-                                              .withOpacity(0.4),
-                                          spreadRadius: 5,
-                                          blurRadius: 7,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: snapshot.data![index]
-                                                      ['imagePath'] !=
-                                                  null &&
-                                              snapshot.data![index]
-                                                      ['imagePath'] !=
-                                                  "Asset"
-                                          ? FancyShimmerImage(
-                                              imageUrl: snapshot.data[index]
-                                                  ['imagePath'],
-                                              errorWidget: Image.asset(
-                                                "assets/images/NoCoverArt.png",
-                                                fit: BoxFit.fitWidth,
-                                              ),
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  5,
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height /
-                                                  5,
-                                              boxFit: BoxFit.cover,
-                                            )
-                                          : Image.asset(
-                                              "assets/images/NoCoverArt.png",
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height /
-                                                  6 *
-                                                  0.8,
-                                              fit: BoxFit.fitWidth,
-                                            ),
-                                    ),
-                                  ),
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  return GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount:
+                          MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                    ),
+                    itemBuilder: (context, index) {
+                      return Card(
+                        borderOnForeground: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        InfoScreen(
+                                  title:
+                                      snapshot.data![index]['name'] ?? "null",
+                                  imageUrl: (snapshot.data![index]
+                                          ['imagePath'] ??
+                                      "Asset"),
+                                  description: snapshot.data![index]
+                                          ['description'] ??
+                                      "null",
+                                  tags:
+                                      snapshot.data![index]['tags'] ?? ["null"],
+                                  url: snapshot.data![index]['url'] ?? "null",
+                                  year: snapshot.data![index]['releaseDate'] ??
+                                      "null",
+                                  stars: snapshot.data![index]['rating'] ?? -1,
+                                  path: snapshot.data![index]['path'] ?? "null",
+                                  comicId:
+                                      snapshot.data![index]['id'] ?? "null",
+                                  isLiked: snapshot.data![index]
+                                          ['isFavourited'] ??
+                                      false,
                                 ),
-                                if (snapshot.data![index]['isFavorited'] ==
-                                    true)
-                                  // icon in circle in top right corner
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  var begin = const Offset(1.0, 0.0);
+                                  var end = Offset.zero;
+                                  var curve = Curves.ease;
+
+                                  var tween = Tween(begin: begin, end: end)
+                                      .chain(CurveTween(curve: curve));
+
+                                  return SlideTransition(
+                                    position: animation.drive(tween),
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                            setState(() {});
+                          },
+                          child: Column(
+                            children: <Widget>[
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Stack(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height /
+                                        6 *
+                                        0.8,
+                                    width:
+                                        MediaQuery.of(context).size.width / 5,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .primaryColor
-                                            .withOpacity(0.8),
-                                        borderRadius:
-                                            BorderRadius.circular(100),
+                                        borderRadius: BorderRadius.circular(8),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Theme.of(context)
+                                                .shadowColor
+                                                .withOpacity(0.4),
+                                            spreadRadius: 5,
+                                            blurRadius: 7,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
                                       ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(5),
-                                        child: Icon(
-                                          Icons.favorite,
-                                          color: Colors.red,
-                                        ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: snapshot.data![index]
+                                                        ['imagePath'] !=
+                                                    null &&
+                                                snapshot.data![index]
+                                                        ['imagePath'] !=
+                                                    "Asset"
+                                            ? FancyShimmerImage(
+                                                imageUrl: snapshot.data[index]
+                                                    ['imagePath'],
+                                                errorWidget: Image.asset(
+                                                  "assets/images/NoCoverArt.png",
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    5,
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    5,
+                                                boxFit: BoxFit.fitHeight,
+                                              )
+                                            : Image.asset(
+                                                "assets/images/NoCoverArt.png",
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    6 *
+                                                    0.8,
+                                                fit: BoxFit.fitWidth,
+                                              ),
                                       ),
                                     ),
                                   ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            // auto size text to fit the width of the card (max 2 lines)
-                            Flexible(
-                              // give some padding to the text
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 5, right: 5),
-                                child: AutoSizeText(
-                                  snapshot.data![index]['name'],
-                                  maxLines: 3,
-                                  minFontSize: 10,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                  if (snapshot.data![index]['isFavorited'] ==
+                                      true)
+                                    // icon in circle in top right corner
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .primaryColor
+                                              .withOpacity(0.8),
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(5),
+                                          child: Icon(
+                                            Icons.favorite,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              // auto size text to fit the width of the card (max 2 lines)
 
-                            if (snapshot.data![index]['releaseDate'] != "null")
-                              Flexible(
+                              Expanded(
+                                flex: 2,
                                 // give some padding to the text
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.only(left: 5, right: 5),
                                   child: AutoSizeText(
-                                    snapshot.data![index]['releaseDate'],
-                                    maxLines: 1,
+                                    snapshot.data?[index]['name'] ?? "null",
+                                    maxLines: 3,
                                     minFontSize: 10,
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
                               ),
-                          ],
+                              const SizedBox(
+                                height: 5,
+                              ),
+
+                              if (snapshot.data![index]['releaseDate'] !=
+                                  "null")
+                                Flexible(
+                                  // give some padding to the text
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 5, right: 5),
+                                    child: AutoSizeText(
+                                      snapshot.data![index]['releaseDate'],
+                                      maxLines: 1,
+                                      minFontSize: 10,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  itemCount: snapshot.data!.length,
-                );
-                // if there is no data or an error occured
-              } else if (snapshot.hasError || snapshot.data == null) {
-                debugPrint("Error: ${snapshot.error}");
-                return const Center(
-                  child: Text("Error"),
-                );
+                      );
+                    },
+                    itemCount: snapshot.data!.length,
+                  );
+                } else if (snapshot.hasError) {
+                  logger.e("Error: ${snapshot.error}");
+                  return const Center(
+                    child: Text("Error"),
+                  );
+                  // if theres no books in the database, show a message
+                } else if (snapshot.data == null) {
+                  return const Center(
+                    child: Text(
+                      "No books found",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  );
+                } else {
+                  return const SizedBox(
+                    height: 100,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
               } else {
-                return const SizedBox(
-                  height: 100,
-                  child: Center(
-                    child: CircularProgressIndicator(),
+                // center both horizontally and vertically (the whole screen)
+
+                return const Center(
+                  child: SizedBox(
+                    height: 100,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
                 );
               }

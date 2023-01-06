@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:epub_view/epub_view.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:logger/logger.dart';
 
 class EpubReader extends StatefulWidget {
   final String title;
@@ -36,6 +36,7 @@ class _EpubReaderState extends State<EpubReader> {
   double progress = 0.0;
   String fileType = '';
   final isar = Isar.getInstance();
+  var logger = Logger();
 
   _EpubReaderState({
     required this.title,
@@ -58,8 +59,8 @@ class _EpubReaderState extends State<EpubReader> {
       await isar.entrys.put(entry);
     });
 
-    debugPrint("saved progress");
-    debugPrint("page num: ${entry.pageNum}");
+    logger.d("saved progress");
+    logger.d("page num: ${entry.pageNum}");
   }
 
   Future<void> updateChapter(String epubCfiNum) async {
@@ -69,7 +70,7 @@ class _EpubReaderState extends State<EpubReader> {
     final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
     await isar!.writeTxn(() async {
       entry!.epubCfi = epubCfiNum;
-      debugPrint("entry.pageNum: ${entry.pageNum}");
+      logger.d("entry.pageNum: ${entry.pageNum}");
       await isar!.entrys.put(entry);
     });
   }
@@ -78,7 +79,7 @@ class _EpubReaderState extends State<EpubReader> {
     final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
     var pageCfi = entry!.epubCfi;
     if (pageCfi.isNotEmpty && pageCfi != "") {
-      debugPrint("pageCfi: $pageCfi");
+      logger.d("pageCfi: $pageCfi");
       _epubController.gotoEpubCfi(pageCfi);
     }
   }
@@ -138,16 +139,6 @@ class _EpubReaderState extends State<EpubReader> {
   void initState() {
     super.initState();
     requestPermissions();
-    // openController();
-
-    // debugPrint("filePath: $filePath");
-
-    // var pagesNum = entry.pageNum;
-    // if (pagesNum.toInt() > 0) {
-    //   debugPrint("pagesNum: $pagesNum");
-    //   // jump to the page
-    //   _epubController.jumpTo(index: pagesNum);
-    // }
   }
 
   // request permissions
@@ -191,15 +182,15 @@ class _EpubReaderState extends State<EpubReader> {
               body: EpubView(
                 controller: _epubController,
                 onExternalLinkPressed: (url) {
-                  debugPrint('External link pressed: $url');
+                  logger.d("External link pressed: $url");
                   // open url in browser
                   launchUrl(Uri.parse(url));
                 },
                 onDocumentLoaded: (document) {
-                  debugPrint('Document loaded: $document');
+                  logger.d("Document loaded: ${document.Title}");
                 },
                 onChapterChanged: (chapter) {
-                  debugPrint('Chapter changed: $chapter');
+                  logger.d("Chapter changed: $chapter");
                   updateChapter(_epubController.generateEpubCfi() ?? "error");
                 },
               ),

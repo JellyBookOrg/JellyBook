@@ -1,6 +1,7 @@
 // the purpose of this file is to fetch books from the database to be displayed in the app
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logger/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as Http;
 import 'dart:convert';
@@ -12,7 +13,8 @@ import 'package:isar/isar.dart';
 // get comics
 Future<List<Map<String, dynamic>>> getComics(
     String comicsId, String etag) async {
-  debugPrint("getting comics");
+  var logger = Logger();
+  logger.d('getting comics');
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken');
   final url = prefs.getString('server');
@@ -36,25 +38,25 @@ Future<List<Map<String, dynamic>>> getComics(
   );
   var responseData;
   await response.then((value) {
-    debugPrint(value.body);
-    responseData = json.decode(value.body);
+    logger.d(value.body);
+    responseData = jsonDecode(value.body);
   });
 
-  debugPrint("Now saving comics to database");
+  logger.d("Now saving comics to database");
 
   final isar = Isar.getInstance();
   // get entries from the database
   try {
     final entries = await isar!.entrys.where().idEqualTo(comicsId).findAll();
-    debugPrint("entries: $entries");
-    debugPrint("entries length: ${entries.length}");
+    logger.d("entries: $entries");
+    logger.d("entries length: ${entries.length}");
   } catch (e) {
-    debugPrint(e.toString());
+    logger.e(e.toString());
   }
 
-  debugPrint("got box");
+  logger.d("got box");
   var entries = await isar!.entrys.where().findAll();
-  debugPrint("got entries");
+  logger.d("got entries");
 
   List<Map<String, dynamic>> comics = [];
   for (var i = 0; i < responseData['Items'].length; i++) {
@@ -86,12 +88,12 @@ Future<List<Map<String, dynamic>>> getComics(
         'isFavorited':
             responseData['Items'][i]['UserData']['IsFavorite'] ?? false,
       });
-      debugPrint(responseData['Items'][i]['Name']);
+      logger.d(responseData['Items'][i]['Name']);
     }
   }
 
   // add the entry to the database
-  debugPrint("attempting to add book to database");
+  logger.d("attempting to add book to database");
   for (var i = 0; i < responseData['Items'].length; i++) {
     try {
       List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
@@ -173,7 +175,7 @@ Future<List<Map<String, dynamic>>> getComics(
         await isar.entrys.put(entry);
       });
     } catch (e) {
-      debugPrint(e.toString());
+      logger.e(e.toString());
     }
   }
 
@@ -182,13 +184,14 @@ Future<List<Map<String, dynamic>>> getComics(
 
 Map<String, String> getHeaders(String url, String client, String device,
     String deviceId, String version, String token) {
-  debugPrint("getting headers");
-  debugPrint(url);
-  debugPrint(client);
-  debugPrint(device);
-  debugPrint(deviceId);
-  debugPrint(version);
-  debugPrint(token);
+  var logger = Logger();
+  logger.d("getting headers");
+  logger.d(url);
+  logger.d(client);
+  logger.d(device);
+  logger.d(deviceId);
+  logger.d(version);
+  logger.d(token);
   if (url.contains("https://")) {
     return {
       'Host': url.replaceAll("https://", ""),

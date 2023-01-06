@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
+import 'package:logger/logger.dart';
 
 // reading screens
 import 'package:jellybook/screens/readingScreens/pdfReader.dart';
@@ -41,6 +42,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   double progress = 0.0;
   String fileType = '';
   final isar = Isar.getInstance();
+  final logger = Logger();
   // var isar = Isar.open([EntrySchema], inspector: true);
 
   _ReadingScreenState({
@@ -68,10 +70,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
         // get the entry
         var entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
 
-        debugPrint("entry is not null");
-        debugPrint("entry of checkPermission: $entry");
+        logger.i("entry of checkPermission: $entry");
       } catch (e) {
-        debugPrint("entry in checkPermission: $e");
+        logger.e("entry in checkPermission: $e");
       }
     } else {
       // if the user hasn't given us permission, we want to tell them to do so
@@ -97,16 +98,14 @@ class _ReadingScreenState extends State<ReadingScreen> {
   Future<void> checkDownloaded() async {
     // get it from the database
 
-    debugPrint("comicId: $comicId");
+    logger.i("comicId: $comicId");
     // final isar = await Isar.open([EntrySchema], inspector: true);
 
     final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
 
-    debugPrint("entry: $entry");
-    debugPrint("entry.path: ${entry!.path}");
-    debugPrint("entry.title: ${entry.title}");
-
-    // debugPrint("entry.id: ${entry.id.toString()}");
+    logger.i("entry: $entry");
+    logger.i("entry.path: ${entry!.path}");
+    logger.i("entry.title: ${entry.title}");
 
     // get the entry
     var downloaded = entry.downloaded;
@@ -169,9 +168,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
     String fileExtension = '';
     try {
       fileExtension = entry.filePath.split('.').last;
-      debugPrint("fileExtension: $fileExtension");
+      logger.i("fileExtension: $fileExtension");
     } catch (e) {
-      debugPrint("error getting file extension: $e");
+      logger.e("error getting file extension: $e");
     }
 
     return fileExtension;
@@ -208,7 +207,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
             },
           ),
         );
-        debugPrint("Filetype: $fileExtension");
+        logger.i("Filetype: $fileExtension");
         break;
 
       case 'cbz':
@@ -271,7 +270,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         break;
       default:
         // if the file extension is not supported, tell the user
-        debugPrint('File extension not supported');
+        logger.e('File extension not supported');
         showDialog(
           context: context,
           builder: (context) => AlertDialog(

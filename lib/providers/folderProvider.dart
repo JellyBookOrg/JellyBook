@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 
 // This function takes the list of entries and creates folders if their parentId is not one of the categories
 // It adds the folder to the list of folders in a isar box
@@ -13,6 +13,7 @@ class CreateFolders {
   static Future<void> createFolders(
       List<Entry> entries, List<String> categories) async {
     final isar = Isar.getInstance();
+    var logger = Logger();
 
     final prefs = await SharedPreferences.getInstance();
     var categories = prefs.getString('categories') ?? '';
@@ -32,7 +33,7 @@ class CreateFolders {
             });
             newFolderIds.add(entry.id);
           } catch (e) {
-            debugPrint("error: $e");
+            logger.e("error: $e");
           }
         }
       }
@@ -66,7 +67,7 @@ class CreateFolders {
             ));
           });
         } catch (e) {
-          debugPrint("error: $e");
+          logger.e("error: $e");
         }
       }
     }
@@ -75,12 +76,13 @@ class CreateFolders {
   static Future<List<Folder>> getFolders(
       List<Entry> entries, List<String> categories) async {
     final isar = Isar.getInstance();
+    var logger = Logger();
     final folders2 = await isar!.folders.where().findAll();
     if (folders2.isEmpty) {
       await CreateFolders.createFolders(entries, categories);
     }
     // get a list of folders from the isar database
-    debugPrint("folders: ${folders2.length}");
+    logger.d("folders: ${folders2.length}");
     return folders2;
   }
 }

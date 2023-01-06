@@ -12,6 +12,7 @@ import 'package:jellybook/screens/MainScreens/downloadsScreen.dart';
 import 'package:jellybook/screens/MainScreens/continueReadingScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:logger/logger.dart';
 
 // Cupertino imports
 import 'package:flutter/cupertino.dart';
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 - a search section
                 - a settings section
         */
+  final logger = Logger();
 
   Future<void> logout() async {
     final isar = Isar.getInstance();
@@ -44,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var loginIds = logins.map((e) => e.isarId).toList();
     await isar.writeTxn(() async {
       isar.logins.deleteAll(loginIds);
-      debugPrint('deleted ${loginIds.length} logins');
+      logger.d('deleted ${loginIds.length} logins');
     });
     Navigator.pushReplacement(
       context,

@@ -6,6 +6,7 @@ import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/login.dart';
+import 'package:logger/logger.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,15 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
 
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   final isar = await Isar.open([EntrySchema, FolderSchema, LoginSchema]);
+
+  Logger.level = Level.debug;
+  var logger = Logger();
 
   if (kDebugMode) {
     try {
@@ -30,7 +39,7 @@ Future<void> main() async {
       var entryIds = entries.map((e) => e.isarId).toList();
       await isar.writeTxn(() async {
         isar.entrys.deleteAll(entryIds);
-        debugPrint("deleted ${entryIds.length} entries");
+        logger.d("deleted ${entryIds.length} entries");
       });
       // delete all folders in the database
       // get a list of all the folders ids
@@ -38,20 +47,20 @@ Future<void> main() async {
       var folderIds = folders.map((e) => e.isarId).toList();
       await isar.writeTxn(() async {
         isar.folders.deleteAll(folderIds);
-        debugPrint("deleted ${folderIds.length} folders");
+        logger.d("deleted ${folderIds.length} folders");
       });
     } catch (e) {
-      debugPrint(e.toString());
+      logger.e(e);
     }
-    debugPrint("cleared Isar boxes");
+    logger.d("cleared Isar boxes");
   }
 
   // check if there are any logins in the database
   var logins = await isar.logins.where().findAll();
   if (logins.isNotEmpty) {
-    debugPrint("login url: " + logins[0].serverUrl);
-    debugPrint("login username: " + logins[0].username);
-    debugPrint("login password: " + logins[0].password);
+    logger.d("login url: " + logins[0].serverUrl);
+    logger.d("login username: " + logins[0].username);
+    logger.d("login password: " + logins[0].password);
     runApp(MyApp(
         url: logins[0].serverUrl,
         username: logins[0].username,

@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/login.dart';
+import 'package:logger/logger.dart';
 
 class LoginProvider {
   final String url;
@@ -30,7 +31,8 @@ class LoginProvider {
   // make a static version of the above class
   static Future<String> loginStatic(String url, String username,
       [String password = ""]) async {
-    debugPrint("LoginStatic called");
+    var logger = Logger();
+    logger.d("LoginStatic called");
     final storage = FlutterSecureStorage();
     String _url = "$url/Users/authenticatebyname";
     const _client = "JellyBook";
@@ -42,7 +44,7 @@ class LoginProvider {
     _version = packageInfo.version;
 
     if ((!url.contains("http://") || !url.contains("https://")) == false) {
-      debugPrint("URL does not contain http:// or https://");
+      logger.d("URL does not contain http:// or https://");
       return "Plase add http:// or https:// to the url";
     }
 
@@ -50,14 +52,14 @@ class LoginProvider {
 
     final Map<String, String> headers =
         getHeaders(url, _client, _device, _deviceId, _version);
-    debugPrint("Headers: $headers");
+    logger.d("Headers: $headers");
 
     final Map<String, String> body = {
       "Username": username,
       "Pw": password,
     };
 
-    debugPrint("Attempting to login to $url");
+    logger.d("Attempting to login to $url");
     if (!_url.contains("http")) {
       _url = "http://$_url";
     }
@@ -69,7 +71,7 @@ class LoginProvider {
     final RegExp urlTest = RegExp(
         r"^(http|https)://[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$");
     if (!urlTest.hasMatch(_url)) {
-      debugPrint("URL is not valid");
+      logger.e("URL is not valid");
       // tell why it is not valid
       if (!_url.contains("http")) {
         return "URL does not contain http:// or https://";
@@ -96,26 +98,26 @@ class LoginProvider {
         headers: headers,
       ),
     );
-    debugPrint("Response: ${response.statusCode}");
-    // debugPrint("Response: ${response.data}");
+    logger.d("Response: ${response.statusCode}");
+    // logger.d("Response: ${response.data}");
 
     if (response.statusCode == 200) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      debugPrint("saving data to cache");
+      logger.d("saving data to cache");
       prefs.setString("server", url);
       prefs.setString("accessToken", response.data["AccessToken"]);
       prefs.setString("ServerId", response.data["ServerId"]);
       prefs.setString("UserId", response.data["SessionInfo"]["UserId"]);
 
       // now for the stuff that is not needed for all sessions
-      debugPrint("saving data part 2");
+      logger.d("saving data part 2");
       prefs.setString("client", _client);
       prefs.setString("device", _device);
       prefs.setString("deviceId", _deviceId);
       prefs.setString("version", _version);
 
       // now save the username and password to the secure storage
-      debugPrint("saving data part 3");
+      logger.d("saving data part 3");
       await storage.write(key: "server", value: url);
       await storage.write(key: "username", value: username);
       await storage.write(key: "password", value: password);
@@ -128,10 +130,10 @@ class LoginProvider {
       await storage.write(key: "device", value: _device);
       await storage.write(key: "deviceId", value: _deviceId);
       await storage.write(key: "version", value: _version);
-      debugPrint("saved data");
+      logger.d("saved data");
 
       // now save the data to the isar database
-      debugPrint("saving data to isar");
+      logger.d("saving data to isar");
       final isar = Isar.getInstance();
       // check if the user already exists
       final entry =
@@ -152,13 +154,13 @@ class LoginProvider {
       return "true";
     } else {
       if (response.statusCode == 401) {
-        debugPrint("401");
+        logger.e("401");
         return "Incorrect username or password";
       } else if (response.statusCode == 404) {
-        debugPrint("404");
+        logger.e("404");
         return "Server not found";
       } else {
-        debugPrint("other");
+        logger.e("other");
         return "Error: ${response.statusCode}";
       }
     }

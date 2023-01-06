@@ -11,6 +11,7 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:jellybook/providers/updateLike.dart';
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
+import 'package:logger/logger.dart';
 
 class InfoScreen extends StatelessWidget {
   final String title;
@@ -35,6 +36,8 @@ class InfoScreen extends StatelessWidget {
       required this.path,
       required this.year,
       required this.isLiked});
+
+  var logger = Logger();
 
 // check if it is liked or not by checking the database
   Future<bool> checkLiked(String id) async {
@@ -250,7 +253,7 @@ class InfoScreen extends StatelessWidget {
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 isLiked = snapshot.data as bool;
-                                debugPrint("isLiked: $isLiked");
+                                logger.i("isLiked: $isLiked");
                                 return LikeButton(
                                   isLiked: isLiked,
                                   circleColor: const CircleColor(
@@ -330,11 +333,14 @@ class InfoScreen extends StatelessWidget {
                 },
               ),
             ),
+            // make the year at the very bottom of the screen
             if (year != "null")
               Container(
                 padding: const EdgeInsets.all(5),
+                // use auto size text to make the text responsive
                 child: Text(
                   year,
+                  // autosize the text
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,

@@ -62,6 +62,7 @@ dependencies:
   google_nav_bar: ^5.0.6
   cached_network_image: ^3.2.3
   fancy_shimmer_image: ^2.0.2
+  logger: ^1.1.0
 
 dev_dependencies:
   flutter_test:

@@ -2,14 +2,15 @@
 
 // import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isar/isar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:jellybook/models/entry.dart';
+import 'package:logger/logger.dart';
 
 Future<void> saveProgress({
   required int page,
   required String comicId,
   List<String> pages = const [],
 }) async {
+  var logger = Logger();
   // open the database
   final isar = Isar.getInstance();
 
@@ -29,11 +30,12 @@ Future<void> saveProgress({
     await isar.entrys.put(entry);
   });
 
-  debugPrint("saved progress");
-  debugPrint("page num: ${entry.pageNum}");
+  logger.d("saved progress");
+  logger.d("page num: ${entry.pageNum}");
 }
 
 Future<void> getProgress(String comicId) async {
+  var logger = Logger();
   // open the database
   final isar = Isar.openSync([EntrySchema]);
 
@@ -46,6 +48,6 @@ Future<void> getProgress(String comicId) async {
   // get the page number
   var pageNum = entry.pageNum;
 
-  debugPrint("progress: $progress");
-  debugPrint("page num: $pageNum");
+  logger.d("progress: $progress");
+  logger.d("page num: $pageNum");
 }

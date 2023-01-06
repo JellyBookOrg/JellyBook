@@ -6,12 +6,10 @@ import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:isar/isar.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jellybook/models/entry.dart';
-// import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:jellybook/providers/progress.dart';
-// import 'package:open_filex/open_filex.dart';
+import 'package:logger/logger.dart';
 
 class PdfReader extends StatefulWidget {
   final String comicId;
@@ -35,8 +33,6 @@ class _PdfReaderState extends State<PdfReader> {
   List<String> chapters = [];
   String folderName = '';
   String comicFolder = '';
-  // int pageNums = 0;
-  // int pageNum = 0;
   double progress = 0.0;
   String fileType = '';
   final isar = Isar.getInstance();
@@ -47,6 +43,8 @@ class _PdfReaderState extends State<PdfReader> {
   // pages
   int _totalPages = 0;
   late PdfController pdfController;
+
+  var logger = Logger();
 
   _PdfReaderState({
     required this.comicId,
@@ -60,8 +58,6 @@ class _PdfReaderState extends State<PdfReader> {
   @override
   void initState() {
     super.initState();
-    // getPath();
-    // loadBook();
   }
 
   // get the path to the comic
@@ -70,7 +66,7 @@ class _PdfReaderState extends State<PdfReader> {
     final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
     // get the path to the comic
     path = entry!.filePath;
-    debugPrint('path: $path');
+    logger.d('path: $path');
 
     // get current page
     page = entry.pageNum;
@@ -117,7 +113,7 @@ class _PdfReaderState extends State<PdfReader> {
                       saveProgress(page: page, comicId: comicId);
                     },
                     onDocumentError: (error) {
-                      debugPrint('error: $error');
+                      logger.e('error: $error');
                     },
                     pageSnapping: true,
                   ),
@@ -133,32 +129,5 @@ class _PdfReaderState extends State<PdfReader> {
         }
       },
     );
-    // getPath();
-    // child: PDFView(
-    //   defaultPage: page,
-    //   filePath: path,
-    //   autoSpacing: true,
-    //   enableSwipe: true,
-    //   // pageSnap: true,
-    //   pageFling: true,
-    //   swipeHorizontal: true,
-    //   nightMode: false,
-    //   onError: (error) {
-    //     debugPrint(error.toString());
-    //   },
-    //   onPageError: (page, error) {
-    //     debugPrint('$page: ${error.toString()}');
-    //   },
-    //   onViewCreated: (PDFViewController pdfViewController) {
-    //     // _controller.complete(pdfViewController);
-    //   },
-    //   onPageChanged: (int? page, int? total) {
-    //     debugPrint('page change: $page/$total');
-    //     saveProgress(page: page ?? 0, comicId: comicId);
-    //   },
-    // ),
-    //     ),
-    //   ),
-    // );
   }
 }
