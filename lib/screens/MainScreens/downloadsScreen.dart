@@ -44,6 +44,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         'tags': entry.tags,
         'url': entry.url,
         'downloaded': entry.downloaded,
+        'isFavorited': entry.isFavorited,
       });
     }
     return entries;

@@ -344,7 +344,7 @@ class _MainMenuState extends State<MainMenu> {
                                   comicId:
                                       snapshot.data![index]['id'] ?? "null",
                                   isLiked: snapshot.data![index]
-                                          ['isFavourited'] ??
+                                          ['isFavorited'] ??
                                       false,
                                 ),
                                 transitionsBuilder: (context, animation,
