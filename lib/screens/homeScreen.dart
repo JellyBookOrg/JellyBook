@@ -139,9 +139,12 @@ class _HomeScreenState extends State<HomeScreen> {
       // use the cupertino bottom navigation bar if the user is on ios
       bottomNavigationBar: Theme.of(context).platform == TargetPlatform.iOS
           ? CupertinoTabBar(
-              backgroundColor: Theme.of(context).primaryColor,
-              activeColor: Theme.of(context).colorScheme.secondary,
-              inactiveColor: Theme.of(context).colorScheme.onPrimary,
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? Theme.of(context).primaryColor
+                  : CupertinoTheme.of(context).barBackgroundColor,
+
+              // activeColor: Theme.of(context).colorScheme.onPrimary,
+              // inactiveColor: Theme.of(context).colorScheme.onSecondary,
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
