@@ -12,11 +12,11 @@ import 'package:jellybook/models/folder.dart';
 import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:logger/logger.dart';
+import 'package:jellybook/providers/pair.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
 
 // have optional perameter to have the function return the list of folders
-Future<List<Map<String, dynamic>>> getServerCategories(context,
-    {bool returnFolders = false, bool likedFirst = false}) async {
+Future<Pair> getServerCategories(context) async {
   var logger = Logger();
   logger.d("getting server categories");
   final PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -113,61 +113,54 @@ Future<List<Map<String, dynamic>>> getServerCategories(context,
       comics.add(comic);
     }
 
-    removeEntriesFromDatabase(comicsArray);
-
     prefs.setStringList('comicsIds', comicsIds);
 
-    if (likedFirst) {
-      // if liked then bring them to the top of the list
-      List<Map<String, dynamic>> likedComics = [];
-      List<Map<String, dynamic>> unlikedComics = [];
-      logger.d(comics.length.toString());
-      for (int i = 0; i < comics.length; i++) {
-        if (comics[i]['isFavorited'].toString() == 'true') {
-          likedComics.add(comics[i]);
-        } else {
-          unlikedComics.add(comics[i]);
-        }
+    List<Map<String, dynamic>> likedComics = [];
+    List<Map<String, dynamic>> unlikedComics = [];
+    logger.d(comics.length.toString());
+    for (int i = 0; i < comics.length; i++) {
+      if (comics[i]['isFavorited'].toString() == 'true') {
+        likedComics.add(comics[i]);
+      } else {
+        unlikedComics.add(comics[i]);
       }
-
-      comics = likedComics + unlikedComics;
     }
 
-    if (returnFolders) {
-      final isar = Isar.getInstance();
-      List<String> categoriesList = [];
-      for (int i = 0; i < selected.length; i++) {
-        categoriesList.add(selected[i]);
-      }
-      logger.i("categoriesList: $categoriesList");
-      List<Entry> entries = await isar!.entrys.where().findAll();
+    comics = likedComics + unlikedComics;
 
-      List<Folder> folders = [];
-      await CreateFolders.getFolders(entries, categoriesList);
-      folders = await isar.folders.where().findAll();
-
-      // convert the folders to a list of maps
-      List<Map<String, dynamic>> foldersList = [];
-      for (int i = 0; i < folders.length; i++) {
-        Map<String, dynamic> folderMap = {
-          'id': folders[i].id,
-          'name': folders[i].name,
-          'bookIds': folders[i].bookIds,
-          'image': folders[i].image,
-        };
-        foldersList.add(folderMap);
-      }
-
-      return foldersList;
-    } else {
-      return comics;
+    final isar = Isar.getInstance();
+    List<String> categoriesList = [];
+    for (int i = 0; i < selected.length; i++) {
+      categoriesList.add(selected[i]);
     }
+    logger.i("categoriesList: $categoriesList");
+    List<Entry> entries = await isar!.entrys.where().findAll();
+
+    List<Folder> folders = [];
+    await CreateFolders.getFolders(entries, categoriesList);
+    folders = await isar.folders.where().findAll();
+
+    // convert the folders to a list of maps
+    List<Map<String, dynamic>> foldersList = [];
+    for (int i = 0; i < folders.length; i++) {
+      Map<String, dynamic> folderMap = {
+        'id': folders[i].id,
+        'name': folders[i].name,
+        'bookIds': folders[i].bookIds,
+        'image': folders[i].image,
+      };
+      foldersList.add(folderMap);
+    }
+
+    removeEntriesFromDatabase(comicsArray);
+
+    return Pair(comics, foldersList);
     // logger.d("Returning comics");
     // return comics;
   } else {
     logger.e('No comics found');
   }
-  return [];
+  return Pair([], []);
 }
 
 // function to remove entries from the database that are not in the server
@@ -181,8 +174,8 @@ Future<void> removeEntriesFromDatabase(
   final isar = Isar.getInstance();
   final entries = await isar!.entrys.where().findAll();
   final folders = await isar.folders.where().findAll();
-  List<String> entryIds = [];
-  List<String> folderIds = [];
+  List<String> entryIds = entries.map((entry) => entry.id).toList();
+  List<String> folderIds = folders.map((folder) => folder.id).toList();
   List<String> serverIds = [];
   List<int> entriesToRemove = [];
   List<int> foldersToRemove = [];
@@ -195,24 +188,14 @@ Future<void> removeEntriesFromDatabase(
     }
   }
 
-  // get all the ids from the database
-  for (int i = 0; i < entries.length; i++) {
-    entryIds.add(entries[i].id);
-  }
-
-  // get all the ids from the database
-  for (int i = 0; i < folders.length; i++) {
-    folderIds.add(folders[i].id);
-  }
-
-  // find the ids that are in the database but not in the server
+  // check if the database has any ids that are not in the server
   for (int i = 0; i < entryIds.length; i++) {
     if (!serverIds.contains(entryIds[i])) {
       entriesToRemove.add(i);
     }
   }
 
-  // find the ids that are in the database but not in the server
+  // check if the database has any ids that are not in the server
   for (int i = 0; i < folderIds.length; i++) {
     if (!serverIds.contains(folderIds[i])) {
       foldersToRemove.add(i);
