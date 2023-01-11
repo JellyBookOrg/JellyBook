@@ -11,7 +11,7 @@ import 'package:logger/logger.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky, overlays: [
     SystemUiOverlay.top,
   ]);
 
