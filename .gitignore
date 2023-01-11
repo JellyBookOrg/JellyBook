@@ -47,3 +47,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 libisar.so
+android/app/build.gradle
+android/app/src/main/AndroidManifest.xml
