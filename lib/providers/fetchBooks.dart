@@ -2,7 +2,6 @@
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as Http;
 import 'dart:convert';
 
@@ -11,8 +10,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
 
 // get comics
-Future<List<Map<String, dynamic>>> getComics(
-    String comicsId, String etag) async {
+Future<List<Map<String, dynamic>>> getComics(String comicsId, String etag) async {
   var logger = Logger();
   logger.d('getting comics');
   final prefs = await SharedPreferences.getInstance();
@@ -66,8 +64,7 @@ Future<List<Map<String, dynamic>>> getComics(
         'name': responseData['Items'][i]['Name'] ?? '',
         'imagePath':
             "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
-        if (responseData['Items'][i]['ImageTags']['Primary'] == null)
-          'imagePath': 'Asset',
+        if (responseData['Items'][i]['ImageTags']['Primary'] == null) 'imagePath': 'Asset',
         'releaseDate': responseData['Items'][i]['ProductionYear'].toString(),
         'path': responseData['Items'][i]['Path'] ?? '',
         'description': responseData['Items'][i]['Overview'] ?? '',
@@ -77,16 +74,11 @@ Future<List<Map<String, dynamic>>> getComics(
         // type
         if (responseData['Items'][i]['Type'] == 'Folder') 'type': 'folder',
         if (responseData['Items'][i]['Type'] == 'Book')
-          'type': responseData['Items'][i]['Path']
-              .toString()
-              .split('.')
-              .last
-              .toLowerCase(),
+          'type': responseData['Items'][i]['Path'].toString().split('.').last.toLowerCase(),
 
         "tags": responseData['Items'][i]['Tags'] ?? [],
         'parentId': responseData['Items'][i]['ParentId'] ?? '',
-        'isFavorited':
-            responseData['Items'][i]['UserData']['IsFavorite'] ?? false,
+        'isFavorited': responseData['Items'][i]['UserData']['IsFavorite'] ?? false,
       });
       logger.d(responseData['Items'][i]['Name']);
     }
@@ -105,8 +97,7 @@ Future<List<Map<String, dynamic>>> getComics(
       if (responseData['Items'][i]['ImageTags']['Primary'] == null) {
         imagePath = 'Asset';
       }
-      String releaseDate =
-          responseData['Items'][i]['ProductionYear'].toString();
+      String releaseDate = responseData['Items'][i]['ProductionYear'].toString();
       String path = responseData['Items'][i]['Path'] ?? '';
       String description = responseData['Items'][i]['Overview'] ?? '';
       String url1 = url ?? '';
@@ -117,22 +108,13 @@ Future<List<Map<String, dynamic>>> getComics(
       List<dynamic> tags1 = responseData['Items'][i]['Tags'] ?? [];
       String parentId = responseData['Items'][i]['ParentId'] ?? '';
       String type = "Book";
-      bool isFavorited =
-          responseData['Items'][i]['UserData']['IsFavorite'] ?? false;
+      bool isFavorited = responseData['Items'][i]['UserData']['IsFavorite'] ?? false;
       if (responseData['Items'][i]['Type'] == 'Folder') {
         type = 'Folder';
       } else if (responseData['Items'][i]['Type'] == 'Book') {
-        if (bookFileTypes.contains(responseData['Items'][i]['Path']
-            .toString()
-            .split('.')
-            .last
-            .toLowerCase())) {
+        if (bookFileTypes.contains(responseData['Items'][i]['Path'].toString().split('.').last.toLowerCase())) {
           type = "Book";
-        } else if (comicFileTypes.contains(responseData['Items'][i]['Path']
-            .toString()
-            .split('.')
-            .last
-            .toLowerCase())) {
+        } else if (comicFileTypes.contains(responseData['Items'][i]['Path'].toString().split('.').last.toLowerCase())) {
           type = "Comic";
         }
       }
@@ -182,8 +164,8 @@ Future<List<Map<String, dynamic>>> getComics(
   return comics;
 }
 
-Map<String, String> getHeaders(String url, String client, String device,
-    String deviceId, String version, String token) {
+Map<String, String> getHeaders(
+    String url, String client, String device, String deviceId, String version, String token) {
   var logger = Logger();
   logger.d("getting headers");
   logger.d(url);
@@ -192,21 +174,8 @@ Map<String, String> getHeaders(String url, String client, String device,
   logger.d(deviceId);
   logger.d(version);
   logger.d(token);
-  if (url.contains("https://")) {
-    return {
-      'Host': url.replaceAll("https://", ""),
-      'Accept': 'application/json',
-      'Accept-Language': 'en-US,en;q=0.5',
-      'Accept-Encoding': 'gzip, deflate',
-      'X-Emby-Authorization':
-          'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
-      'Connection': 'keep-alive',
-      'Sec-Fetch-Dest': 'empty',
-      'Sec-Fetch-Mode': 'cors',
-      'Sec-Fetch-Site': 'same-origin',
-    };
-  }
-  return {
+  var uri = Uri.parse(url);
+  var headers = {
     'Accept': 'application/json',
     'Accept-Language': 'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate',
@@ -214,4 +183,15 @@ Map<String, String> getHeaders(String url, String client, String device,
         'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
     'Connection': 'keep-alive',
   };
+
+  if (uri.scheme == "https") {
+    headers.addAll({
+      'Host': uri.host,
+      'Sec-Fetch-Dest': 'empty',
+      'Sec-Fetch-Mode': 'cors',
+      'Sec-Fetch-Site': 'same-origin',
+    });
+  }
+
+  return headers;
 }
