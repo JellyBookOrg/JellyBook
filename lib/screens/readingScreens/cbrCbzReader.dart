@@ -38,17 +38,17 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   var logger = Logger();
 
   Future<void> createPageList() async {
+    // create a list of chapters
+    // call getChaptersFromDirectory with path as a FileSystemEntity
+    await getChaptersFromDirectory(Directory(path));
     logger.d("chapters: $chapters");
-    var formats = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"];
+    List<String> formats = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"];
     List<String> pageFiles = [];
     for (var chapter in chapters) {
-      List<FileSystemEntity> files = Directory(chapter).listSync();
-      if (formats.any((element) => chapter.endsWith(element))) {
-        pageFiles.add(chapter);
-      } else {
-        List<FileSystemEntity> files = Directory(chapter).listSync();
-        for (var file in files) {
-          getChaptersFromDirectory(file);
+      List<String> files = Directory(chapter).listSync().map((e) => e.path).toList();
+      for (var file in files) {
+        if (formats.any((element) => file.endsWith(element))) {
+          pageFiles.add(file);
         }
       }
     }
@@ -137,7 +137,7 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
     logger.d(chapters.toString());
   }
 
-  void getChaptersFromDirectory(FileSystemEntity directory) {
+  Future<void> getChaptersFromDirectory(FileSystemEntity directory) async {
     // Create a list of file types to check against
     List<String> fileTypes = [
       '.jpg',
@@ -154,6 +154,7 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
       // If it does, add the parent directory to the chapters list if it's not already there
       if (!chapters.contains(directory.parent.path)) {
         chapters.add(directory.parent.path);
+        logger.d("added ${directory.parent.path} to chapters");
       }
     } else {
       // If it doesn't, recursively check the files in the directory
