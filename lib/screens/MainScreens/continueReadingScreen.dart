@@ -126,6 +126,8 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                             ? Positioned(
                                 top: 0,
                                 left: 0,
+                                right: 0,
+                                bottom: 0,
                                 child: Container(
                                   width:
                                       MediaQuery.of(context).size.width * 0.1,
@@ -142,9 +144,21 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                     ),
                                   ),
                                   child: Center(
-                                    child: Text(
+                                    child: AutoSizeText(
+                                      maxLines: 1,
                                       snapshot.data![index].progress
-                                              .toString() +
+                                              .toString()
+                                              .substring(
+                                                  0,
+                                                  snapshot.data![index].progress
+                                                              .toString()
+                                                              .length >
+                                                          4
+                                                      ? 4
+                                                      : snapshot.data![index]
+                                                          .progress
+                                                          .toString()
+                                                          .length) +
                                           "%",
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
@@ -153,6 +167,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                             : Colors.black,
                                         fontSize: 20,
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
