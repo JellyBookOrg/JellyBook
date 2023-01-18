@@ -37,6 +37,9 @@ As time goes on I will add more support and more features
  - Discord: `kmp3e#9430`
  - Matrix: `@kmp3e:matrix.org`
  - Feel free to submit a issue on GitHub
+ 
+## Contributing:
+ - Check out our wiki: [Here](https://github.com/Kara-Zor-El/JellyBook/wiki)
 
 ## Special Thanks
  - Thank you to u/anekdotos on Reddit for donating to the project so it could be published on iOS
