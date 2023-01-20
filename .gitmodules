@@ -1,0 +1,3 @@
+[submodule "submodules/jellyfin_api"]
+	path = submodules/jellyfin_api
+	url = https://github.com/Kara-Zor-El/jellyfin_api

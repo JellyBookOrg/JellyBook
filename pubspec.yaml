@@ -64,7 +64,7 @@ dependencies:
   fancy_shimmer_image: ^2.0.2
   logger: ^1.1.0
   openapi:
-    git: https://github.com/Kara-Zor-El/jellyfin_api
+    path: ./submodules/jellyfin_api
 
 dev_dependencies:
   flutter_test:

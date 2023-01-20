@@ -642,11 +642,9 @@ packages:
   openapi:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "3754d6fa3acd453e05a58629b45b95cf982b344f"
-      url: "https://github.com/Kara-Zor-El/jellyfin_api"
-    source: git
+      path: "submodules/jellyfin_api"
+      relative: true
+    source: path
     version: "1.0.0"
   package_config:
     dependency: transitive
