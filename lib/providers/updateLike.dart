@@ -3,9 +3,10 @@
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:dio/dio.dart';
+import 'package:openapi/openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:logger/logger.dart';
 
 Future<void> updateLike(String id) async {
@@ -18,13 +19,13 @@ Future<void> updateLike(String id) async {
   });
   // update the entry on the server
   // example of curl for making it favorite
-  // curl 'http://99.253.1.162:8096/Users/a92cd45eddf843d096a6be47433a7ac4/FavoriteItems/d02d230713ce7a65c6aba68b354fd520' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'X-Emby-Authorization: MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="TW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0OyBydjoxMDcuMCkgR2Vja28vMjAxMDAxMDEgRmlyZWZveC8xMDcuMHwxNjY2NDkwMTI4NTky", Version="10.8.8", Token="0018719ef0094827b15802e4953d02da"' -H 'Origin: http://99.253.1.162:8096' -H 'Connection: keep-alive' -H 'Content-Length: 0'
+  // curl 'http://[REDACTED]/Users/[REDACTED]/FavoriteItems/[REDACTED]' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'X-Emby-Authorization: MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="[REDACTED]", Version="10.8.8", Token="[REDACTED]"' -H 'Origin: http://99.253.1.162:8096' -H 'Connection: keep-alive' -H 'Content-Length: 0'
 
   final dio = Dio();
   var logger = Logger();
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  p_info.PackageInfo packageInfo = await p_info.PackageInfo.fromPlatform();
   final prefs = await SharedPreferences.getInstance();
-  final storage = new FlutterSecureStorage();
+  final storage = FlutterSecureStorage();
   final server = prefs.getString('server')!;
   final userId = prefs.getString('UserId')!;
   final token = prefs.getString('accessToken')!;
@@ -43,24 +44,23 @@ Future<void> updateLike(String id) async {
         "MediaBrowser Client=\"$_client\", Device=\"$_device\", DeviceId=\"$_deviceId\", Version=\"$version\", Token=\"$token\"",
     'Connection': 'keep-alive',
     'Origin': server,
-    'Host': // should be server minus the http://
-        server.substring(server.indexOf("//") + 2, server.length),
+    'Host': server.substring(server.indexOf("//") + 2, server.length),
     'Content-Length': '0',
   };
-  final data = {};
+  final api = Openapi(basePathOverride: server, dio: dio).getUserLibraryApi();
   logger.d(url);
-  if (entries.isFavorited) {
+  if (entries.isFavorited == false) {
     try {
-      final response =
-          await dio.post(url, data: data, options: Options(headers: headers));
+      final response = await api.unmarkFavoriteItem(
+          userId: userId, itemId: id, headers: headers, url: server);
       logger.d(response.data.toString());
     } catch (e) {
       logger.e(e.toString());
     }
   } else {
     try {
-      final response =
-          await dio.delete(url, data: data, options: Options(headers: headers));
+      final response = await api.markFavoriteItem(
+          userId: userId, itemId: id, headers: headers, url: server);
       logger.d(response.data.toString());
     } catch (e) {
       logger.e(e.toString());
