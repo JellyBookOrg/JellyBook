@@ -618,6 +618,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  one_of:
+    dependency: transitive
+    description:
+      name: one_of
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.0"
+  one_of_serializer:
+    dependency: transitive
+    description:
+      name: one_of_serializer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.0"
   open_filex:
     dependency: "direct main"
     description:
@@ -625,6 +639,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.3.2"
+  openapi:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "3754d6fa3acd453e05a58629b45b95cf982b344f"
+      url: "https://github.com/Kara-Zor-El/jellyfin_api"
+    source: git
+    version: "1.0.0"
   package_config:
     dependency: transitive
     description:
