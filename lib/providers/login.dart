@@ -1,16 +1,17 @@
 // This files purpose is to attempt to login to the server
 // this is not the screen, it is just the request and response
 
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:dio/dio.dart';
-import 'package:dio/adapter.dart';
+// import 'package:dio/dio.dart';
+// import 'package:dio/adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'package:package_info_plus/package_info_plus.dart';
+// import 'dart:convert';
+import 'package:package_info_plus/package_info_plus.dart' as package_info;
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:logger/logger.dart';
+import 'package:openapi/openapi.dart';
 
 class LoginProvider {
   final String url;
@@ -34,25 +35,22 @@ class LoginProvider {
     var logger = Logger();
     logger.d("LoginStatic called");
     final storage = FlutterSecureStorage();
-    String _url = "$url/Users/authenticatebyname";
+    // String _url = "$url/Users/authenticatebyname";
+    String _url = url;
     const _client = "JellyBook";
     const _device = "Unknown Device";
     const _deviceId = "Unknown Device id";
     late String _version;
 
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    package_info.PackageInfo packageInfo =
+        await package_info.PackageInfo.fromPlatform();
+
     _version = packageInfo.version;
 
     if ((!url.contains("http://") || !url.contains("https://")) == false) {
       logger.d("URL does not contain http:// or https://");
       return "Plase add http:// or https:// to the url";
     }
-
-    // make a request with different headers depending on if http or https
-
-    final Map<String, String> headers =
-        getHeaders(url, _client, _device, _deviceId, _version);
-    logger.d("Headers: $headers");
 
     final Map<String, String> body = {
       "Username": username,
@@ -91,23 +89,36 @@ class LoginProvider {
       return "URL is not valid";
     }
 
-    var response = await Dio().post(
-      _url,
-      data: body,
-      options: Options(
-        headers: headers,
-      ),
-    );
+    final api = Openapi(basePathOverride: _url);
+    final apiInstance = api.getUserApi();
+    var response;
+
+    try {
+      // use the authenticateUserByNameRequest from openapi/lib/src/model/authenticate_user_by_name_request.g.dart
+      var authenticateUserByNameRequest = AuthenticateUserByNameRequest((b) => b
+        ..username = username
+        ..pw = password);
+      // set the headers
+      final headers = getHeaders(url, _client, _device, _deviceId, _version);
+      response = await apiInstance.authenticateUserByName(
+          authenticateUserByNameRequest: authenticateUserByNameRequest,
+          headers: headers);
+      logger.d("Status Code: ${response.statusCode}");
+    } catch (e) {
+      logger.e("Error:\n$e");
+      // logger.e('Exception when calling UserApi->authenticateUserByName: $e\n');
+    }
+
     logger.d("Response: ${response.statusCode}");
-    // logger.d("Response: ${response.data}");
+    logger.d("Response: ${response.data}");
 
     if (response.statusCode == 200) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       logger.d("saving data to cache");
       prefs.setString("server", url);
-      prefs.setString("accessToken", response.data["AccessToken"]);
-      prefs.setString("ServerId", response.data["ServerId"]);
-      prefs.setString("UserId", response.data["SessionInfo"]["UserId"]);
+      prefs.setString("accessToken", response.data.accessToken);
+      prefs.setString("UserId", response.data.user.id);
+      prefs.setString("ServerId", response.data.serverId);
 
       // now for the stuff that is not needed for all sessions
       logger.d("saving data part 2");
@@ -121,11 +132,10 @@ class LoginProvider {
       await storage.write(key: "server", value: url);
       await storage.write(key: "username", value: username);
       await storage.write(key: "password", value: password);
+      await storage.write(key: "accessToken", value: response.data.accessToken);
+      await storage.write(key: "ServerId", value: response.data.serverId);
       await storage.write(
-          key: "AccessToken", value: response.data["AccessToken"]);
-      await storage.write(key: "ServerId", value: response.data["ServerId"]);
-      await storage.write(
-          key: "UserId", value: response.data["SessionInfo"]["UserId"]);
+          key: "UserId", value: response.data.sessionInfo.userId);
       await storage.write(key: "client", value: _client);
       await storage.write(key: "device", value: _device);
       await storage.write(key: "deviceId", value: _deviceId);
@@ -159,8 +169,11 @@ class LoginProvider {
       } else if (response.statusCode == 404) {
         logger.e("404");
         return "Server not found";
+      } else if (response.statusCode == 500) {
+        logger.e("500");
+        return "Server error";
       } else {
-        logger.e("other");
+        logger.e("Unknown error");
         return "Error: ${response.statusCode}";
       }
     }
@@ -168,6 +181,7 @@ class LoginProvider {
 }
 
 // getHeaders returns the headers depending on if the url is http or https
+
 Map<String, String> getHeaders(
     String url, String client, String device, String deviceId, String version) {
   if (url.contains("https://")) {
