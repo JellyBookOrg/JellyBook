@@ -90,7 +90,7 @@ class _MainMenuState extends State<MainMenu> {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {
                   logger.i("Snapshot Data");
-                  // logger.i("Collections: ${snapshot.data.right}");
+                  // logger.i("Collections: ${snapshot.data.left}");
                   List<Widget> collectionChildren = [
                     const Align(
                       alignment: Alignment.centerLeft,
@@ -330,7 +330,7 @@ class _MainMenuState extends State<MainMenu> {
                                     comicId: snapshot.data.left![index]['id'] ??
                                         "null",
                                     isLiked: snapshot.data.left![index]
-                                            ['isFavorited'] ??
+                                            ['isFavorite'] ??
                                         false,
                                   ),
                                   transitionsBuilder: (context, animation,
@@ -419,9 +419,10 @@ class _MainMenuState extends State<MainMenu> {
                                       ),
                                     ),
                                     if (snapshot.data.left![index]
-                                            ['isFavorited'] ==
+                                            ['isFavorite'] ==
                                         true)
-                                      // icon in circle in top right corner
+                                      // icon in circle in bottom right corner
+                                      // allow it to be off the image without being cut off
                                       Positioned(
                                         bottom: 0,
                                         right: 0,

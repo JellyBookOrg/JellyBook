@@ -123,9 +123,9 @@ Future<Pair> getServerCategories(context) async {
     List<Map<String, dynamic>> unlikedComics = [];
     logger.d(comics.length.toString());
     for (int i = 0; i < comics.length; i++) {
-      if (comics[i]['isFavorited'].toString() == 'true') {
+      if (comics[i]['isFavorite'].toString() == 'true') {
         likedComics.add(comics[i]);
-        logger.d("added comic to likedComics");
+        logger.d("added comic '${comics[i]['name']}' to likedComics");
       } else {
         unlikedComics.add(comics[i]);
       }
