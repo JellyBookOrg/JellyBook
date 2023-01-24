@@ -107,10 +107,6 @@ Future<Pair> getServerCategories(context) async {
     Stream<Map<String, dynamic>> comicsStream = Stream.fromFutures(comicsArray)
         .asyncMap((comicsList) => comicsList)
         .expand((comicsList) => comicsList);
-    // once all the comics are fetched, combine them into one list
-    // for (int i = 0; i < comicsArray.length; i++) {
-    //   comics.addAll(await comicsArray[i]);
-    // }
 
     await for (Map<String, dynamic> comic in comicsStream) {
       // logger.i("adding comic '${comic['name']}' to comics list");
@@ -140,15 +136,10 @@ Future<Pair> getServerCategories(context) async {
     }
     logger.i("categoriesList: $categoriesList");
     prefs.setStringList('categories', categoriesList);
-    List<Entry> entries = await isar!.entrys.where().findAll();
+    // List<Entry> entries = await isar!.entrys.where().findAll();
 
     await CreateFolders.getFolders(categoriesList);
-    List<Folder> folders = await isar.folders.where().findAll();
-    folders.forEach((element) {
-      logger.d("folder name: " + element.name);
-    });
-    logger.d("folderSize: " + folders.length.toString());
-    // await CreateFolders.getFolders(entries, categoriesList);
+    List<Folder> folders = await isar!.folders.where().findAll();
 
     // turn into a map
     List<Map<String, dynamic>> folderMap = [];
@@ -161,12 +152,10 @@ Future<Pair> getServerCategories(context) async {
       });
     }
     // await removeEntriesFromDatabase(comicsArray);
+    logger.d("folderMap: " + folderMap.toString());
 
     return Pair(comics, folderMap);
-  } else {
-    logger.e('No comics found');
   }
-  return Pair([], []);
 }
 
 // function to remove entries from the database that are not in the server

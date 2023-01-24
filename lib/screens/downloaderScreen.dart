@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:archive/archive.dart';
 import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
+import 'package:openapi/openapi.dart';
 
 // import the database
 import 'package:jellybook/models/entry.dart';
@@ -51,6 +53,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
   String comicFolder = 'Error';
 
   var logger = Logger();
+  final isar = Isar.getInstance();
+  String dirLocation = '';
+  late Entry entry;
 
   @override
   void initState() {
@@ -59,21 +64,19 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> downloadFile(bool forceDown) async {
-    final isar = Isar.getInstance();
     // var isar = await Isar.open([EntrySchema]);
 
     // get the entry that matches the comicId
-    var entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+    entry = await isar!.entrys.where().idEqualTo(comicId).findFirst() as Entry;
 
     final storage = FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
-    Dio dio = Dio();
     bool checkPermission1 = await Permission.storage.request().isGranted;
     if (checkPermission1 == false) {
       checkPermission1 = await Permission.storage.request().isGranted;
     }
 
-    if (entry!.folderPath.toString() != '') {
+    if (entry.folderPath.toString() != '') {
       // set the path to the comic folder
       path = entry.folderPath;
       await Directory(path).create(recursive: true);
@@ -92,8 +95,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
       token = await storage.read(key: 'AccessToken') ??
           prefs.getString('accessToken') ??
           '';
+      final device = prefs.getString('device') ?? '';
+      final deviceId = prefs.getString('deviceId');
+      final version = prefs.getString('version') ?? '';
       fileName = await fileNameFromTitle(entry.path.split('/').last);
-      String dirLocation =
+      dirLocation =
           await getApplicationDocumentsDirectory().then((value) => value.path);
       Map<String, String> headers = {
         'Accept':
@@ -102,139 +108,42 @@ class _DownloadScreenState extends State<DownloadScreen> {
         'Accept-Language': 'en-US,en;q=0.5',
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
+        'X-Emby-Authorization':
+            'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
       };
-      url = url + '/Items/' + comicId + '/Download?api_key=' + token;
+      // url = url + '/Items/' + comicId + '/Download?api_key=' + token;
       var files = await Directory(dirLocation).list().toList();
       logger.d(files.toString());
       String dir = dirLocation + '/' + fileName;
       logger.d(dir);
       logger.d('Folder does not exist');
-      try {
-        // make directory
-        await Directory(dirLocation).create(recursive: true);
-        logger.d('Directory created');
-        // set the location of the folder
-        dir = dirLocation + '/' + fileName;
-        // set the comic file
-        entry.filePath = dir;
-        logger.d('Directory created');
-        logger.d('Attempting to download file');
-        await dio.download(url, dir,
-            options: Options(
-              headers: headers,
-            ), onReceiveProgress: (receivedBytes, totalBytes) {
+      // try {
+      // make directory
+      await Directory(dirLocation).create(recursive: true);
+      logger.d('Directory created');
+      // set the location of the folder
+      dir = dirLocation + '/' + fileName;
+      // set the comic file
+      entry.filePath = dir;
+      logger.d('Directory created');
+      logger.d('Attempting to download file');
+      final api = Openapi(basePathOverride: url).getLibraryApi();
+      Response<Uint8List> download;
+      download = await api.getDownload(
+        itemId: id,
+        headers: headers,
+        onReceiveProgress: (received, total) {
           setState(() {
             downloading = true;
-            progress = (receivedBytes / totalBytes * 100);
+            progress = (received / total * 100);
           });
-        });
-        logger.d('File downloaded');
-      } catch (e) {
-        logger.d(e.toString());
-      }
+        },
+      );
+      logger.d('File downloaded');
+      // update to say writing file
+      await writeToFile(download, dir);
 
-      String fileName2 = await fileNameFromTitle(entry.title);
-      // make directory
-      try {
-        await Directory(dirLocation).create(recursive: true);
-      } catch (e) {
-        logger.d(e.toString());
-      }
-      logger.d('Comic folder created');
-      logger.d('$dirLocation/$fileName2');
-
-      try {
-        await Directory(dirLocation + '/' + fileName2).create(recursive: true);
-      } catch (e) {
-        logger.d(e.toString());
-      }
-      comicFolder = dirLocation + '/' + fileName2;
-      if (dir.contains('.zip') || dir.contains('.cbz')) {
-        var bytes = File(dirLocation + '/' + fileName).readAsBytesSync();
-
-        // extract the zip file
-        var archive = ZipDecoder().decodeBytes(bytes);
-        for (var file in archive) {
-          var filename = file.name;
-          if (file.isFile) {
-            var data = file.content as List<int>;
-            File(dirLocation + '/' + fileName2 + '/' + filename)
-              ..createSync(recursive: true)
-              ..writeAsBytesSync(data);
-          } else {
-            try {
-              await Directory(dirLocation + '/' + fileName2 + '/' + filename)
-                  .create(recursive: true);
-            } catch (e) {
-              logger.d(e.toString());
-            }
-          }
-        }
-        logger.d('Unzipped');
-        File(dirLocation + '/' + fileName).deleteSync();
-
-        entry.downloaded = true;
-
-        entry.folderPath = dirLocation + '/' + fileName2;
-
-        logger.d('Zip file extracted');
-      } else if (dir.contains('.rar') || dir.contains('.cbr')) {
-        try {
-          await UnrarFile.extract_rar(dirLocation + '/' + fileName,
-              dirLocation + '/' + fileName2 + '/');
-          logger.d('Rar file extracted');
-          logger.d('Unzipped');
-          File(dirLocation + '/' + fileName).deleteSync();
-          entry.downloaded = true;
-          entry.folderPath = dirLocation + '/' + fileName2;
-        } catch (e) {
-          logger.d(e.toString());
-        }
-      } else if (entry.path.contains('.pdf')) {
-        logger.d('PDF file');
-
-        try {
-          var file = File(dirLocation + '/' + fileName);
-          try {
-            await Directory('$dirLocation/$fileName2').create(recursive: true);
-          } catch (e) {
-            logger.d(e.toString());
-          }
-          file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
-          entry.folderPath = dirLocation + '/' + fileName2;
-          entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
-          logger.d('PDF file moved');
-          entry.downloaded = true;
-          entry.folderPath = dirLocation + '/' + fileName2;
-        } catch (e) {
-          logger.d(e.toString());
-        }
-
-        logger.d('PDF file extracted to folder');
-        logger.d('PDF file extracted');
-      } else if (dir.contains('.epub')) {
-        logger.d('EPUB file');
-        try {
-          var file = File(dirLocation + '/' + fileName);
-          try {
-            await Directory('$dirLocation/$fileName2').create(recursive: true);
-          } catch (e) {
-            logger.d(e.toString());
-          }
-          file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
-          entry.folderPath = dirLocation + '/' + fileName2;
-          entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
-          logger.d('EPUB file moved');
-          entry.downloaded = true;
-          entry.folderPath = dirLocation + '/' + fileName2;
-        } catch (e) {
-          logger.e(e.toString());
-        }
-
-        logger.d('EPUB file extracted');
-      } else {
-        logger.e('Error');
-      }
+      await extractFile(dir);
 
       setState(() {
         downloading = true;
@@ -247,10 +156,15 @@ class _DownloadScreenState extends State<DownloadScreen> {
     logger.d('comicFolder: ' + comicFolder);
 
     // save the comic to the database
-    await isar.writeTxn(() async {
-      await isar.entrys.put(entry);
+    await isar!.writeTxn(() async {
+      await isar!.entrys.put(entry);
     });
     // prefs.setString(title, comicFolder);
+  }
+
+  Future<void> writeToFile(Response<Uint8List> data, String dir) async {
+    final file = File(dir);
+    await file.writeAsBytes(data.data!);
   }
 
   // now we will build the UI
@@ -357,5 +271,114 @@ class _DownloadScreenState extends State<DownloadScreen> {
               ),
       ),
     );
+  }
+
+  Future<void> extractFile(String dir) async {
+    String fileName2 = await fileNameFromTitle(entry.title);
+    // make directory
+    try {
+      await Directory(dirLocation).create(recursive: true);
+    } catch (e) {
+      logger.d(e.toString());
+    }
+    logger.d('Comic folder created');
+    logger.d('$dirLocation/$fileName2');
+
+    try {
+      await Directory(dirLocation + '/' + fileName2).create(recursive: true);
+    } catch (e) {
+      logger.d(e.toString());
+    }
+    comicFolder = dirLocation + '/' + fileName2;
+    if (dir.contains('.zip') || dir.contains('.cbz')) {
+      var bytes = File(dirLocation + '/' + fileName).readAsBytesSync();
+
+      // extract the zip file
+      var archive = ZipDecoder().decodeBytes(bytes);
+      for (var file in archive) {
+        var filename = file.name;
+        if (file.isFile) {
+          var data = file.content as List<int>;
+          File(dirLocation + '/' + fileName2 + '/' + filename)
+            ..createSync(recursive: true)
+            ..writeAsBytesSync(data);
+        } else {
+          try {
+            await Directory(dirLocation + '/' + fileName2 + '/' + filename)
+                .create(recursive: true);
+          } catch (e) {
+            logger.d(e.toString());
+          }
+        }
+      }
+      logger.d('Unzipped');
+      File(dirLocation + '/' + fileName).deleteSync();
+
+      entry.downloaded = true;
+
+      entry.folderPath = dirLocation + '/' + fileName2;
+
+      logger.d('Zip file extracted');
+    } else if (dir.contains('.rar') || dir.contains('.cbr')) {
+      try {
+        await UnrarFile.extract_rar(
+            dirLocation + '/' + fileName, dirLocation + '/' + fileName2 + '/');
+        logger.d('Rar file extracted');
+        logger.d('Unzipped');
+        File(dirLocation + '/' + fileName).deleteSync();
+        entry.downloaded = true;
+        entry.folderPath = dirLocation + '/' + fileName2;
+      } catch (e) {
+        logger.d(e.toString());
+      }
+    } else if (entry.path.contains('.pdf')) {
+      logger.d('PDF file');
+
+      try {
+        var file = File(dirLocation + '/' + fileName);
+        try {
+          await Directory('$dirLocation/$fileName2').create(recursive: true);
+        } catch (e) {
+          logger.d(e.toString());
+        }
+        file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
+        entry.folderPath = dirLocation + '/' + fileName2;
+        entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
+        logger.d('PDF file moved');
+        entry.downloaded = true;
+        entry.folderPath = dirLocation + '/' + fileName2;
+      } catch (e) {
+        logger.d(e.toString());
+      }
+
+      logger.d('PDF file extracted to folder');
+      logger.d('PDF file extracted');
+    } else if (dir.contains('.epub')) {
+      logger.d('EPUB file');
+      try {
+        var file = File(dirLocation + '/' + fileName);
+        try {
+          await Directory('$dirLocation/$fileName2').create(recursive: true);
+        } catch (e) {
+          logger.d(e.toString());
+        }
+        file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
+        entry.folderPath = dirLocation + '/' + fileName2;
+        entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
+        logger.d('EPUB file moved');
+        entry.downloaded = true;
+        entry.folderPath = dirLocation + '/' + fileName2;
+      } catch (e) {
+        logger.e(e.toString());
+      }
+
+      logger.d('EPUB file extracted');
+    } else {
+      logger.e('Error');
+    }
+
+    await isar!.writeTxn(() async {
+      await isar!.entrys.put(entry);
+    });
   }
 }
