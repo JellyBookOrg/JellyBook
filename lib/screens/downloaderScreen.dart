@@ -1,8 +1,10 @@
 // The purpose of this file is to create a screen that will download books
 
 import 'dart:io';
-import 'package:dio/dio.dart';
+// import 'package:dio/dio.dart';
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:dio/dio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:archive/archive.dart';
 import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
+import 'package:openapi/openapi.dart';
 
 // import the database
 import 'package:jellybook/models/entry.dart';
@@ -89,10 +92,19 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
       // get stuff from the secure storage
       String client = await storage.read(key: 'client') ?? '';
-      token = await storage.read(key: 'AccessToken') ?? '';
+      token = await storage.read(key: 'accessToken') ??
+          prefs.getString('AccessToken') ??
+          '';
       fileName = await fileNameFromTitle(entry.path.split('/').last);
+      final device = prefs.getString('device');
+      final deviceId = prefs.getString('deviceId');
+      final version = prefs.getString('version');
       String dirLocation =
           await getApplicationDocumentsDirectory().then((value) => value.path);
+
+      // example curl command
+      // curl '[url]/Items/[id]/Download?api_key=[api key]' -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-GPC: 1'
+
       Map<String, String> headers = {
         'Accept':
             'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -100,10 +112,17 @@ class _DownloadScreenState extends State<DownloadScreen> {
         'Accept-Language': 'en-US,en;q=0.5',
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+        'X-Emby-Token': token,
+        // 'X-Emby-Authorization':
+        //     'MediaBrowser Client="JellyBook", Device="$device", DeviceId="$deviceId", Version="$version", "Token"="$token"',
       };
-      url = url + '/Items/' + comicId + '/Download?api_key=' + token;
+      logger.d('headers: $headers');
+      // url = url + '/Items/' + id + '/Download' + '?api_key=' + token;
+      // url = url + '/Items/' + comicId + '/Download?api_key=' + token;
+
+      logger.e('url: $url');
+      final api = Openapi(basePathOverride: url).getLibraryApi();
+
       var files = await Directory(dirLocation).list().toList();
       logger.d(files.toString());
       String dir = dirLocation + '/' + fileName;
@@ -119,18 +138,43 @@ class _DownloadScreenState extends State<DownloadScreen> {
         entry.filePath = dir;
         logger.d('Directory created');
         logger.d('Attempting to download file');
+
+        // await api.getDownload(
+        //   itemId: id,
+        //   headers: headers,
+        //   onReceiveProgress: (received, total) {
+        //     if (total != -1) {
+        //       setState(() {
+        //         progress = (received / total * 100).toDouble();
+        //       });
+        //     }
+        //   },
+        // );
+        // } catch (e) {
+        //   logger.e(e);
+        // }
+
+        // turn the response into a file
+
         await dio.download(url, dir,
             options: Options(
               headers: headers,
             ), onReceiveProgress: (receivedBytes, totalBytes) {
           setState(() {
+            logger.d('receivedBytes: $receivedBytes');
             downloading = true;
             progress = (receivedBytes / totalBytes * 100);
           });
+        }).onError(// takes FutureOr<dynamic> Function(e, stackTrace)
+            (error, stackTrace) {
+          logger.e(error);
+          logger.e(stackTrace);
+          return Future.error(error!);
         });
+
         logger.d('File downloaded');
       } catch (e) {
-        logger.d(e.toString());
+        logger.e(e.toString());
       }
 
       String fileName2 = await fileNameFromTitle(entry.title);
