@@ -2,7 +2,6 @@
 
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:dio/dio.dart';
 import 'package:openapi/openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -21,7 +20,6 @@ Future<void> updateLike(String id) async {
   // example of curl for making it favorite
   // curl 'http://[REDACTED]/Users/[REDACTED]/FavoriteItems/[REDACTED]' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'X-Emby-Authorization: MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="[REDACTED]", Version="10.8.8", Token="[REDACTED]"' -H 'Origin: http://99.253.1.162:8096' -H 'Connection: keep-alive' -H 'Content-Length: 0'
 
-  final dio = Dio();
   var logger = Logger();
   p_info.PackageInfo packageInfo = await p_info.PackageInfo.fromPlatform();
   final prefs = await SharedPreferences.getInstance();
@@ -47,7 +45,7 @@ Future<void> updateLike(String id) async {
     'Host': server.substring(server.indexOf("//") + 2, server.length),
     'Content-Length': '0',
   };
-  final api = Openapi(basePathOverride: server, dio: dio).getUserLibraryApi();
+  final api = Openapi(basePathOverride: server).getUserLibraryApi();
   logger.d(url);
   if (entries.isFavorited == false) {
     try {

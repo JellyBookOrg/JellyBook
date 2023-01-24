@@ -16,73 +16,48 @@ class CreateFolders {
     var logger = Logger();
 
     final prefs = await SharedPreferences.getInstance();
-    var categories = prefs.getString('categories') ?? '';
-    List<Map<String, dynamic>> newFolders = [];
-    // List<Folder> newFolders = [];
-    List<String> newFolderIds = [];
-    // for id in entries
-    for (var entry in entries) {
-      if (entry.type == 'Folder') {
-        if (!categories.contains(entry.id)) {
-          try {
-            newFolders.add({
-              'id': entry.id,
-              'name': entry.title,
-              'image': entry.imagePath,
-              'bookIds': [],
-            });
-            newFolderIds.add(entry.id);
-          } catch (e) {
-            logger.e("error: $e");
-          }
-        }
+    List<String> categories = prefs.getStringList('categories') ?? [];
+    List<Folder> newFolders = [];
+    entries.forEach((entry) {
+      List<Entry> bookEntries =
+          isar!.entrys.filter().parentIdEqualTo(entry.id).findAllSync();
+      // get the ids of all bookEntries
+      List<String> bookEntryIds = bookEntries.map((entry) => entry.id).toList();
+      // write the ids to the folder
+      // if the parentId is not in the categories list
+      if (!categories.contains(entry.parentId)) {
+        // create a new folder
+        Folder newFolder = Folder(
+          id: entry.id,
+          name: entry.title,
+          bookIds: bookEntryIds,
+          image: entry.imagePath,
+        );
+        // add the folder to the list of folders
+        newFolders.add(newFolder);
       }
-    }
-
-    // now add the entries to the folders
-    for (var entry in entries) {
-      if (newFolderIds.contains(entry.parentId)) {
-        for (var folder in newFolders) {
-          if (folder['id'] == entry.parentId) {
-            // ensure that the book is not already in the folder
-            if (!folder['bookIds'].contains(entry.id)) {
-              folder['bookIds'].add(entry.id);
-            }
-          }
-        }
-      }
-    }
-
-    // now we have a list of folders, we need to add them to the isar box
+    });
     for (int i = 0; i < newFolders.length; i++) {
-      if (await isar!.folders.filter().idEqualTo(newFolders[i]['id']).count() ==
-          0) {
-        try {
-          await isar.writeTxn(() async {
-            await isar.folders.put(Folder(
-              id: newFolders[i]['id'],
-              name: newFolders[i]['name'],
-              image: newFolders[i]['image'],
-              bookIds: newFolders[i]['bookIds'].cast<String>(),
-            ));
-          });
-        } catch (e) {
-          logger.e("error: $e");
-        }
+      var folder =
+          isar!.folders.filter().idEqualTo(newFolders[i].id).findFirstSync();
+      if (folder != null) {
+        final folderIsarId = folder.isarId;
+        newFolders[i].isarId = folderIsarId;
+        await isar.writeTxn(() async {
+          await isar.folders.put(newFolders[i]);
+        });
+      } else {
+        // if it doesn't, add the folder to the database
+        await isar.writeTxn(() async {
+          await isar.folders.put(newFolders[i]);
+        });
       }
     }
   }
 
-  static Future<List<Folder>> getFolders(
-      List<Entry> entries, List<String> categories) async {
+  static Future<void> getFolders(List<String> categories) async {
     final isar = Isar.getInstance();
-    var logger = Logger();
-    final folders2 = await isar!.folders.where().findAll();
-    if (folders2.isEmpty) {
-      await CreateFolders.createFolders(entries, categories);
-    }
-    // get a list of folders from the isar database
-    logger.d("folders: ${folders2.length}");
-    return folders2;
+    final entries = await isar!.entrys.filter().typeEqualTo('folder').findAll();
+    await CreateFolders.createFolders(entries, categories);
   }
 }

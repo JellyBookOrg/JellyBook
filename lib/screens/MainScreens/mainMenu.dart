@@ -63,13 +63,18 @@ class _MainMenuState extends State<MainMenu> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.home),
-          onPressed: () {},
+          // icon: const Icon(Icons.home),
+          icon: const Icon(Icons.refresh_rounded),
+          tooltip: 'Refresh',
+          onPressed: () {
+            setState(() {});
+          },
         ),
         title: const Text('Home'),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout_rounded),
+            tooltip: 'Logout',
             onPressed: () {
               logout();
             },
@@ -85,7 +90,7 @@ class _MainMenuState extends State<MainMenu> {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {
                   logger.i("Snapshot Data");
-                  logger.i(snapshot.data);
+                  // logger.i("Collections: ${snapshot.data.right}");
                   List<Widget> collectionChildren = [
                     const Align(
                       alignment: Alignment.centerLeft,
@@ -134,7 +139,7 @@ class _MainMenuState extends State<MainMenu> {
                                         image: snapshot.data.right[index]
                                             ['image'],
                                         bookIds: snapshot.data.right[index]
-                                            ['bookIds'],
+                                            ['entries'],
                                       ),
                                       transitionsBuilder: (context, animation,
                                           secondaryAnimation, child) {
@@ -220,7 +225,7 @@ class _MainMenuState extends State<MainMenu> {
                                                     imageUrl: snapshot.data
                                                         .right[index]['image'],
                                                     errorWidget: Image.asset(
-                                                        'assets/images/placeholder.png',
+                                                        'assets/images/NoCoverArt.png',
                                                         fit: BoxFit.cover),
                                                     boxFit: BoxFit.cover,
                                                     width:
@@ -498,259 +503,19 @@ class _MainMenuState extends State<MainMenu> {
                   ];
                   return Column(
                     children: [
-                      if (snapshot.data.right.toString().isNotEmpty)
+                      if (snapshot.data.right.toString().isNotEmpty &&
+                          snapshot.data.right != null)
                         ...collectionChildren,
                       if (snapshot.data.left.toString().isNotEmpty)
                         ...libraryChildren,
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text(
-                            "Library",
-                            style: TextStyle(
-                              // size is the size of a title
-                              fontSize: 30,
-                              // decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount:
-                              MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                        ),
-                        itemBuilder: (context, index) {
-                          return Card(
-                            borderOnForeground: true,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: InkWell(
-                              onTap: () async {
-                                await Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation,
-                                            secondaryAnimation) =>
-                                        InfoScreen(
-                                      title: snapshot.data.left![index]
-                                              ['name'] ??
-                                          "null",
-                                      imageUrl: (snapshot.data.left![index]
-                                              ['imagePath'] ??
-                                          "Asset"),
-                                      description: snapshot.data.left![index]
-                                              ['description'] ??
-                                          "null",
-                                      tags: snapshot.data.left![index]
-                                              ['tags'] ??
-                                          ["null"],
-                                      url: snapshot.data.left![index]['url'] ??
-                                          "null",
-                                      year: snapshot.data.left![index]
-                                              ['releaseDate'] ??
-                                          "null",
-                                      stars: snapshot.data.left![index]
-                                              ['rating'] ??
-                                          -1,
-                                      path: snapshot.data.left![index]
-                                              ['path'] ??
-                                          "null",
-                                      comicId: snapshot.data.left![index]
-                                              ['id'] ??
-                                          "null",
-                                      isLiked: snapshot.data.left![index]
-                                              ['isFavorited'] ??
-                                          false,
-                                    ),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      var begin = const Offset(1.0, 0.0);
-                                      var end = Offset.zero;
-                                      var curve = Curves.ease;
-
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-
-                                      return SlideTransition(
-                                        position: animation.drive(tween),
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                                setState(() {});
-                              },
-                              child: Column(
-                                children: <Widget>[
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Stack(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                6 *
-                                                0.8,
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                5,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Theme.of(context)
-                                                    .shadowColor
-                                                    .withOpacity(0.4),
-                                                spreadRadius: 5,
-                                                blurRadius: 7,
-                                                offset: const Offset(0, 3),
-                                              ),
-                                            ],
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: snapshot.data.left![index]
-                                                            ['imagePath'] !=
-                                                        null &&
-                                                    snapshot.data.left![index]
-                                                            ['imagePath'] !=
-                                                        "Asset"
-                                                ? FancyShimmerImage(
-                                                    imageUrl: snapshot
-                                                            .data.left[index]
-                                                        ['imagePath'],
-                                                    errorWidget: Image.asset(
-                                                      "assets/images/NoCoverArt.png",
-                                                      fit: BoxFit.fitWidth,
-                                                    ),
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            5,
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height /
-                                                            5,
-                                                    boxFit: BoxFit.fitHeight,
-                                                  )
-                                                : Image.asset(
-                                                    "assets/images/NoCoverArt.png",
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height /
-                                                            6 *
-                                                            0.8,
-                                                    fit: BoxFit.fitWidth,
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                      if (snapshot.data.left![index]
-                                              ['isFavorited'] ==
-                                          true)
-                                        // icon in circle in top right corner
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.8),
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(5),
-                                              child: Icon(
-                                                Icons.favorite,
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  // auto size text to fit the width of the card (max 2 lines)
-
-                                  Expanded(
-                                    flex: 3,
-                                    // give some padding to the text
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 5, right: 5),
-                                      child: AutoSizeText(
-                                        snapshot.data.left?[index]['name'] ??
-                                            "null",
-                                        maxLines: 3,
-                                        minFontSize: 10,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-
-                                  if (snapshot.data.left![index]
-                                          ['releaseDate'] !=
-                                      "null")
-                                    Flexible(
-                                      // give some padding to the text
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 5, right: 5),
-                                        child: AutoSizeText(
-                                          snapshot.data.left![index]
-                                              ['releaseDate'],
-                                          maxLines: 1,
-                                          minFontSize: 10,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        itemCount: snapshot.data.left!.length,
-                      ),
+                      // const SizedBox(
+                      //   height: 10,
+                      // ),
                     ],
                   );
                 } else if (snapshot.hasError) {
-                  logger.e("Error: ${snapshot.error}");
+                  logger.e("Error: ${snapshot.error!}");
+                  logger.e("Stack Trace: ${snapshot.stackTrace}");
                   return Center(
                     // return error message if there is an error
                     child: Text(

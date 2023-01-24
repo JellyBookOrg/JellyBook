@@ -3,10 +3,7 @@
 
 // import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-// import 'package:dio/dio.dart';
-// import 'package:dio/adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart' as package_info;
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/login.dart';
@@ -110,7 +107,7 @@ class LoginProvider {
     }
 
     logger.d("Response: ${response.statusCode}");
-    logger.d("Response: ${response.data}");
+    // logger.d("Response: ${response.data}");
 
     if (response.statusCode == 200) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -1,25 +1,24 @@
 // The purpose of this file is to fetch the categories from the database
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as Http;
+import 'package:openapi/openapi.dart';
 import 'dart:convert';
 import 'package:jellybook/providers/fetchBooks.dart';
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jellybook/providers/folderProvider.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:isar/isar.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:logger/logger.dart';
 import 'package:jellybook/providers/pair.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
 
 // have optional perameter to have the function return the list of folders
 Future<Pair> getServerCategories(context) async {
   var logger = Logger();
   logger.d("getting server categories");
-  final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  final p_info.PackageInfo packageInfo =
+      await p_info.PackageInfo.fromPlatform();
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken') ?? "";
   final url = prefs.getString('server') ?? "";
@@ -36,14 +35,19 @@ Future<Pair> getServerCategories(context) async {
   logger.d("got prefs");
   Map<String, String> headers =
       getHeaders(url, client, device, deviceId, version, token);
-  final response = await Http.get(
-    Uri.parse(url + "/Users/" + userId + "/Views"),
-    headers: headers,
-  );
+  final api = Openapi(basePathOverride: url).getUserViewsApi();
+  var response;
+  try {
+    response = await api.getUserViews(
+        userId: userId, headers: headers, includeHidden: true);
+    // logger.d(response);
+  } catch (e) {
+    logger.e(e);
+  }
 
   logger.d("got response");
   logger.d(response.statusCode.toString());
-  final data = await jsonDecode(response.body);
+  final data = response.data.items;
 
   bool hasComics = true;
   if (hasComics) {
@@ -51,8 +55,8 @@ Future<Pair> getServerCategories(context) async {
     String etag = '';
     List<String> categories = [];
     // add all data['Items'] to categories
-    data['Items'].forEach((item) {
-      categories.add(item['Name']);
+    data.forEach((element) {
+      categories.add(element.name);
     });
 
     categories.remove('Shows');
@@ -90,14 +94,14 @@ Future<Pair> getServerCategories(context) async {
     List<Future<List<Map<String, dynamic>>>> comicsArray = [];
     List<String> comicsIds = [];
     logger.d("selected: " + selected.toString());
-    for (int i = 0; i < data['Items'].length; i++) {
-      if (selected.contains(data['Items'][i]['Name'])) {
-        comicsId = data['Items'][i]['Id'];
+    data.forEach((element) {
+      if (selected.contains(element.name)) {
+        comicsId = element.id;
         comicsIds.add(comicsId);
-        etag = data['Items'][i]['Etag'];
+        etag = element.etag;
         comicsArray.add(getComics(comicsId, etag));
       }
-    }
+    });
 
     List<Map<String, dynamic>> comics = [];
     Stream<Map<String, dynamic>> comicsStream = Stream.fromFutures(comicsArray)
@@ -109,7 +113,7 @@ Future<Pair> getServerCategories(context) async {
     // }
 
     await for (Map<String, dynamic> comic in comicsStream) {
-      logger.i("adding comic '${comic['name']}' to comics list");
+      // logger.i("adding comic '${comic['name']}' to comics list");
       comics.add(comic);
     }
 
@@ -121,6 +125,7 @@ Future<Pair> getServerCategories(context) async {
     for (int i = 0; i < comics.length; i++) {
       if (comics[i]['isFavorited'].toString() == 'true') {
         likedComics.add(comics[i]);
+        logger.d("added comic to likedComics");
       } else {
         unlikedComics.add(comics[i]);
       }
@@ -134,29 +139,30 @@ Future<Pair> getServerCategories(context) async {
       categoriesList.add(selected[i]);
     }
     logger.i("categoriesList: $categoriesList");
+    prefs.setStringList('categories', categoriesList);
     List<Entry> entries = await isar!.entrys.where().findAll();
 
-    List<Folder> folders = [];
-    await CreateFolders.getFolders(entries, categoriesList);
-    folders = await isar.folders.where().findAll();
+    await CreateFolders.getFolders(categoriesList);
+    List<Folder> folders = await isar.folders.where().findAll();
+    folders.forEach((element) {
+      logger.d("folder name: " + element.name);
+    });
+    logger.d("folderSize: " + folders.length.toString());
+    // await CreateFolders.getFolders(entries, categoriesList);
 
-    // convert the folders to a list of maps
-    List<Map<String, dynamic>> foldersList = [];
+    // turn into a map
+    List<Map<String, dynamic>> folderMap = [];
     for (int i = 0; i < folders.length; i++) {
-      Map<String, dynamic> folderMap = {
-        'id': folders[i].id,
+      folderMap.add({
         'name': folders[i].name,
-        'bookIds': folders[i].bookIds,
+        'id': folders[i].id,
+        'entries': folders[i].bookIds,
         'image': folders[i].image,
-      };
-      foldersList.add(folderMap);
+      });
     }
+    // await removeEntriesFromDatabase(comicsArray);
 
-    removeEntriesFromDatabase(comicsArray);
-
-    return Pair(comics, foldersList);
-    // logger.d("Returning comics");
-    // return comics;
+    return Pair(comics, folderMap);
   } else {
     logger.e('No comics found');
   }

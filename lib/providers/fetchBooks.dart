@@ -2,15 +2,17 @@
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
-import 'package:http/http.dart' as Http;
+import 'package:openapi/openapi.dart';
 import 'dart:convert';
+import 'package:built_collection/built_collection.dart';
 
 // database imports
 import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
 
 // get comics
-Future<List<Map<String, dynamic>>> getComics(String comicsId, String etag) async {
+Future<List<Map<String, dynamic>>> getComics(
+    String comicsId, String etag) async {
   var logger = Logger();
   logger.d('getting comics');
   final prefs = await SharedPreferences.getInstance();
@@ -22,23 +24,53 @@ Future<List<Map<String, dynamic>>> getComics(String comicsId, String etag) async
   final deviceId = prefs.getString('deviceId');
   final version = prefs.getString('version');
   prefs.setString('comicsId', comicsId);
-  final response = Http.get(
-    Uri.parse(
-        '$url/Users/$userId/Items?StartIndex=0&Fields=PrimaryImageAspectRatio,SortName,Path,SongCount,ChildCount,MediaSourceCount,Tags,Overview,ParentId&ImageTypeLimit=1&ParentId=$comicsId&Recursive=true&SortBy=SortName&SortOrder=Ascending'),
-    headers: {
-      'Accept': 'application/json',
-      'Connection': 'keep-alive',
-      'Accept-Language': 'en-US,en;q=0.5',
-      'Accept-Encoding': 'gzip, deflate',
-      'X-Emby-Authorization':
-          'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
-    },
-  );
+  // '$url/Users/$userId/Items?StartIndex=0&Fields=PrimaryImageAspectRatio,SortName,Path,SongCount,ChildCount,MediaSourceCount,Tags,Overview,ParentId&ImageTypeLimit=1&ParentId=$comicsId&Recursive=true&SortBy=SortName&SortOrder=Ascending'),
+  var headers = {
+    'Accept': 'application/json',
+    'Connection': 'keep-alive',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate',
+    'X-Emby-Authorization':
+        'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
+  };
+  // make a built list of the fields
+
+  List<ItemFields> fieldsList = ([
+    ItemFields.primaryImageAspectRatio,
+    ItemFields.sortName,
+    ItemFields.path,
+    ItemFields.childCount,
+    ItemFields.mediaSourceCount,
+    ItemFields.tags,
+    ItemFields.overview,
+    ItemFields.parentId
+  ]);
+  // turn into built list
+  final fields = BuiltList<ItemFields>(fieldsList);
+  final api = Openapi(basePathOverride: url).getItemsApi();
+  var response;
+  try {
+    response = await api.getItemsByUserId(
+      userId: userId!,
+      headers: headers,
+      startIndex: 0,
+      fields: fields,
+      imageTypeLimit: 1,
+      parentId: comicsId,
+      recursive: true,
+      sortBy: BuiltList<String>(["IsFolder", "SortName"]),
+      sortOrder: BuiltList<SortOrder>([SortOrder.ascending]),
+    );
+    // logger.d(response.data);
+  } catch (e) {
+    logger.e(e);
+  }
   var responseData;
-  await response.then((value) {
-    logger.d(value.body);
-    responseData = jsonDecode(value.body);
-  });
+  // await response.then((value) {
+  responseData = response.data.items;
+  //   logger.d(value.body);
+  //   responseData = jsonDecode(value.body);
+  // });
 
   logger.d("Now saving comics to database");
 
@@ -57,73 +89,75 @@ Future<List<Map<String, dynamic>>> getComics(String comicsId, String etag) async
   logger.d("got entries");
 
   List<Map<String, dynamic>> comics = [];
-  for (var i = 0; i < responseData['Items'].length; i++) {
-    if (responseData['Items'][i]['Type'] == 'Book') {
+  responseData.forEach((element) {
+    if (element.type.toString() == "book") {
       comics.add({
-        'id': responseData['Items'][i]['Id'] ?? '',
-        'name': responseData['Items'][i]['Name'] ?? '',
-        'imagePath':
-            "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}",
-        if (responseData['Items'][i]['ImageTags']['Primary'] == null) 'imagePath': 'Asset',
-        'releaseDate': responseData['Items'][i]['ProductionYear'].toString(),
-        'path': responseData['Items'][i]['Path'] ?? '',
-        'description': responseData['Items'][i]['Overview'] ?? '',
+        'id': element.id ?? '',
+        'name': element.name ?? '',
+        // 'imagePath':
+        //     '$url/Items/${element.id}/Images/Primary?&quality=90&Tag=${element.imageTags!['Primary']}',
+        // // if the imageTags!['Primary'] is null then we use 'Asset' instead
+        'imagePath': element.imageTags!['Primary'] != null
+            ? '$url/Items/${element.id}/Images/Primary?&quality=90&Tag=${element.imageTags!['Primary']}'
+            : 'Asset',
+        'releaseDate': element.productionYear.toString(),
+        'path': element.path ?? '',
+        'description': element.overview ?? '',
         'url': url ?? '',
-        if (responseData['Items'][i]['CommunityRating'] != null)
-          'rating': responseData['Items'][i]['CommunityRating'].toDouble(),
-        // type
-        if (responseData['Items'][i]['Type'] == 'Folder') 'type': 'folder',
-        if (responseData['Items'][i]['Type'] == 'Book')
-          'type': responseData['Items'][i]['Path'].toString().split('.').last.toLowerCase(),
-
-        "tags": responseData['Items'][i]['Tags'] ?? [],
-        'parentId': responseData['Items'][i]['ParentId'] ?? '',
-        'isFavorited': responseData['Items'][i]['UserData']['IsFavorite'] ?? false,
+        if (element.communityRating != null)
+          'rating': element.communityRating.toDouble(),
+        // if (element.type.toString().toLowerCase() == 'folder') 'type': 'folder',
+        if (element.type.toString() == 'Book')
+          'type': element.path.toString().split('.').last.toLowerCase(),
+        if (element.isFolder != null && element.isFolder != false)
+          'type': 'folder',
+        //  elmeent.tags convert to List<String> from _BuiltList<String>
+        if (element.tags != null) 'tags': element.tags!.toList() ?? [],
+        // 'tags': element.tags ?? [],
+        'parentId': element.parentId ?? '',
+        'isFavorite': element.userData?.isFavorite ?? false,
       });
-      logger.d(responseData['Items'][i]['Name']);
     }
-  }
+  });
 
   // add the entry to the database
   logger.d("attempting to add book to database");
-  for (var i = 0; i < responseData['Items'].length; i++) {
+  await responseData.forEach((element) async {
+    // for (var i = 0; i < responseData['Items'].length; i++) {
     try {
       List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
       List<String> comicFileTypes = ['cbz', 'cbr'];
-      String id = responseData['Items'][i]['Id'] ?? '0';
-      String title = responseData['Items'][i]['Name'] ?? '';
+      String id = element.id ?? '0';
+      String title = element.name ?? '';
+      // String imagePath =
+      //     "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}";
       String imagePath =
-          "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}";
-      if (responseData['Items'][i]['ImageTags']['Primary'] == null) {
-        imagePath = 'Asset';
-      }
-      String releaseDate = responseData['Items'][i]['ProductionYear'].toString();
-      String path = responseData['Items'][i]['Path'] ?? '';
-      String description = responseData['Items'][i]['Overview'] ?? '';
+          '$url/Items/${element.id}/Images/Primary?&quality=90&Tag=${element.imageTags!['Primary']}';
+      if (element.imageTags!['Primary'] == null) imagePath = 'Asset';
+      String releaseDate = element.productionYear.toString() != null
+          ? element.productionYear.toString()
+          : '';
+      String path = element.path ?? '';
+      String description = element.overview ?? '';
       String url1 = url ?? '';
       double rating = -1;
-      if (responseData['Items'][i]['CommunityRating'] != null) {
-        rating = responseData['Items'][i]['CommunityRating'].toDouble();
+      if (element.communityRating != null) {
+        rating = element.communityRating.toDouble();
       }
-      List<dynamic> tags1 = responseData['Items'][i]['Tags'] ?? [];
-      String parentId = responseData['Items'][i]['ParentId'] ?? '';
-      String type = "Book";
-      bool isFavorited = responseData['Items'][i]['UserData']['IsFavorite'] ?? false;
-      if (responseData['Items'][i]['Type'] == 'Folder') {
-        type = 'Folder';
-      } else if (responseData['Items'][i]['Type'] == 'Book') {
-        if (bookFileTypes.contains(responseData['Items'][i]['Path'].toString().split('.').last.toLowerCase())) {
-          type = "Book";
-        } else if (comicFileTypes.contains(responseData['Items'][i]['Path'].toString().split('.').last.toLowerCase())) {
-          type = "Comic";
-        }
-      }
-      if (responseData['Items'][i]['Type'] == 'Book') {
-        if (bookFileTypes.contains(responseData['Items'][i]['Type'])) {
-          type = "Book";
-        } else if (comicFileTypes.contains(responseData['Items'][i]['Type'])) {
-          type = "Comic";
-        }
+      List<dynamic> tags1 = element.tags.toList() ?? [];
+      String parentId = element.parentId ?? '';
+      String type = 'Book';
+      bool isFavorited = element.userData?.isFavorite != null
+          ? element.userData!.isFavorite
+          : false;
+      if (element.type.toString().toLowerCase() == 'folder') {
+        type = 'folder';
+      } else if (bookFileTypes
+          .contains(element.path.toString().split('.').last.toLowerCase())) {
+        type = 'Book';
+      } else if (comicFileTypes
+          .contains(element.path.toString().split('.').last.toLowerCase())) {
+        type = 'Comic';
       }
       var entryExists = await isar.entrys.where().idEqualTo(id).findFirst();
       bool entryExists1 = entryExists != null;
@@ -159,13 +193,13 @@ Future<List<Map<String, dynamic>>> getComics(String comicsId, String etag) async
     } catch (e) {
       logger.e(e.toString());
     }
-  }
+  });
 
   return comics;
 }
 
-Map<String, String> getHeaders(
-    String url, String client, String device, String deviceId, String version, String token) {
+Map<String, String> getHeaders(String url, String client, String device,
+    String deviceId, String version, String token) {
   var logger = Logger();
   logger.d("getting headers");
   logger.d(url);
