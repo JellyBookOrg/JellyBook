@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/providers/progress.dart';
@@ -42,10 +41,19 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
     // call getChaptersFromDirectory with path as a FileSystemEntity
     await getChaptersFromDirectory(Directory(path));
     logger.d("chapters: $chapters");
-    List<String> formats = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"];
+    List<String> formats = [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".webp",
+      ".bmp",
+      ".tiff"
+    ];
     List<String> pageFiles = [];
     for (var chapter in chapters) {
-      List<String> files = Directory(chapter).listSync().map((e) => e.path).toList();
+      List<String> files =
+          Directory(chapter).listSync().map((e) => e.path).toList();
       for (var file in files) {
         if (formats.any((element) => file.endsWith(element))) {
           pageFiles.add(file);
