@@ -51,8 +51,6 @@ class InfoScreen extends StatelessWidget {
     return !isLiked;
   }
 
-  // init
-  @override
   void initState() {
     checkLiked(comicId).then((value) {
       isLiked = value;
@@ -67,7 +65,7 @@ class InfoScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // update the page so that the liked comics are at the top
-            Navigator.pop(context);
+            Navigator.pop(context, checkLiked(comicId));
           },
         ),
         title: Text(title),
