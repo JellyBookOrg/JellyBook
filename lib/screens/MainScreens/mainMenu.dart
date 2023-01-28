@@ -5,8 +5,10 @@ import 'package:jellybook/providers/fetchCategories.dart';
 import 'package:jellybook/screens/collectionScreen.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
+import 'package:jellybook/screens/MainScreens/searchScreen.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:isar/isar.dart';
+import 'package:jellybook/models/entry.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:logger/logger.dart';
@@ -70,7 +72,37 @@ class _MainMenuState extends State<MainMenu> {
             setState(() {});
           },
         ),
-        title: const Text('Home'),
+        title: Container(
+          width: double.infinity,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Center(
+              child: TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchScreen()),
+              );
+            },
+            child: Row(
+              children: [
+                Icon(Icons.search, color: Colors.grey),
+                SizedBox(width: 10),
+                Text(
+                  'Search...',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 17,
+                  ),
+                ),
+              ],
+            ),
+          )),
+        ),
+        // title: const Text('Home'),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.logout_rounded),
