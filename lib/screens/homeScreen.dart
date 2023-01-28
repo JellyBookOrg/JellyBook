@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
 // Screens imports
 import 'package:jellybook/screens/MainScreens/mainMenu.dart';

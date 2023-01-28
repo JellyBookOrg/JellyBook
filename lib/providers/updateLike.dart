@@ -1,6 +1,7 @@
 // The purpose of this file is to update the like status of a book/comic entry in the database
 
 import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:openapi/openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';

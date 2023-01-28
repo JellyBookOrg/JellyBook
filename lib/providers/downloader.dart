@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 // database imports
 import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
 // first we need to check if its already downloaded
 Future<bool> checkDownloaded(String id) async {

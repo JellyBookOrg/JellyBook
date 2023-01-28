@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jellybook/screens/loginScreen.dart';
 import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/login.dart';

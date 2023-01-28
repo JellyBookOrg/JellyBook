@@ -10,6 +10,7 @@ import 'package:like_button/like_button.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:jellybook/providers/updateLike.dart';
 import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:logger/logger.dart';
 

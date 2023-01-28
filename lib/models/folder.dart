@@ -1,6 +1,7 @@
 // The purpose of this file is to define the model for the folders that will house collections of books/compics
 
 import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
 part 'folder.g.dart';
 

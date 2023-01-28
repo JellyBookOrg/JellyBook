@@ -17,6 +17,7 @@ import 'package:openapi/openapi.dart';
 // import the database
 import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
 import 'package:logger/logger.dart';
 

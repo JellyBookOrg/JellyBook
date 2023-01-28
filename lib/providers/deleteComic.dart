@@ -1,6 +1,7 @@
 // The purpose of this file is to delete a comic from the client
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'dart:io';
 import 'package:logger/logger.dart';
