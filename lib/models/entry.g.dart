@@ -100,7 +100,8 @@ const EntrySchema = CollectionSchema(
     r'type': PropertySchema(
       id: 16,
       name: r'type',
-      type: IsarType.string,
+      type: IsarType.byte,
+      enumMap: _EntrytypeEnumValueMap,
     ),
     r'url': PropertySchema(
       id: 17,
@@ -159,7 +160,6 @@ int _entryEstimateSize(
     }
   }
   bytesCount += 3 + object.title.length * 3;
-  bytesCount += 3 + object.type.length * 3;
   bytesCount += 3 + object.url.length * 3;
   return bytesCount;
 }
@@ -186,7 +186,7 @@ void _entrySerialize(
   writer.writeString(offsets[13], object.releaseDate);
   writer.writeStringList(offsets[14], object.tags);
   writer.writeString(offsets[15], object.title);
-  writer.writeString(offsets[16], object.type);
+  writer.writeByte(offsets[16], object.type.index);
   writer.writeString(offsets[17], object.url);
 }
 
@@ -213,7 +213,8 @@ Entry _entryDeserialize(
     releaseDate: reader.readString(offsets[13]),
     tags: reader.readStringList(offsets[14]) ?? [],
     title: reader.readString(offsets[15]),
-    type: reader.readStringOrNull(offsets[16]) ?? 'comic',
+    type: _EntrytypeValueEnumMap[reader.readByteOrNull(offsets[16])] ??
+        EntryType.book,
     url: reader.readString(offsets[17]),
   );
   object.isarId = id;
@@ -260,13 +261,25 @@ P _entryDeserializeProp<P>(
     case 15:
       return (reader.readString(offset)) as P;
     case 16:
-      return (reader.readStringOrNull(offset) ?? 'comic') as P;
+      return (_EntrytypeValueEnumMap[reader.readByteOrNull(offset)] ??
+          EntryType.book) as P;
     case 17:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
+
+const _EntrytypeEnumValueMap = {
+  'book': 0,
+  'comic': 1,
+  'folder': 2,
+};
+const _EntrytypeValueEnumMap = {
+  0: EntryType.book,
+  1: EntryType.comic,
+  2: EntryType.folder,
+};
 
 Id _entryGetId(Entry object) {
   return object.isarId;
@@ -2156,54 +2169,46 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
   }
 
   QueryBuilder<Entry, Entry, QAfterFilterCondition> typeEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      EntryType value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'type',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Entry, Entry, QAfterFilterCondition> typeGreaterThan(
-    String value, {
+    EntryType value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'type',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Entry, Entry, QAfterFilterCondition> typeLessThan(
-    String value, {
+    EntryType value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'type',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Entry, Entry, QAfterFilterCondition> typeBetween(
-    String lower,
-    String upper, {
+    EntryType lower,
+    EntryType upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -2212,73 +2217,6 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'type',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'type',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'type',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeMatches(String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'type',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'type',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'type',
-        value: '',
       ));
     });
   }
@@ -2947,10 +2885,9 @@ extension EntryQueryWhereDistinct on QueryBuilder<Entry, Entry, QDistinct> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Entry, Entry, QDistinct> distinctByType() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'type');
     });
   }
 
@@ -3065,7 +3002,7 @@ extension EntryQueryProperty on QueryBuilder<Entry, Entry, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Entry, String, QQueryOperations> typeProperty() {
+  QueryBuilder<Entry, EntryType, QQueryOperations> typeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'type');
     });

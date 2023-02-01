@@ -231,9 +231,9 @@ class _SearchScreenState extends State<SearchScreen> {
     // instead of using the exact search query, we will fuzzy search
     var books = await isar!.entrys
         .filter()
-        .typeContains("book", caseSensitive: false)
+        .typeEqualTo(EntryType.book)
         .or()
-        .typeContains("comic", caseSensitive: false)
+        .typeEqualTo(EntryType.comic)
         .findAll();
 
     books = diceCoefficientRankings(searchQuery, books);

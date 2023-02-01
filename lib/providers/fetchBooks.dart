@@ -147,18 +147,18 @@ Future<List<Map<String, dynamic>>> getComics(
       }
       List<dynamic> tags1 = element.tags.toList() ?? [];
       String parentId = element.parentId ?? '';
-      String type = 'Book';
+      EntryType type = EntryType.book;
       bool isFavorited = element.userData?.isFavorite != null
           ? element.userData!.isFavorite
           : false;
       if (element.type.toString().toLowerCase() == 'folder') {
-        type = 'folder';
+        type = EntryType.folder;
       } else if (bookFileTypes
           .contains(element.path.toString().split('.').last.toLowerCase())) {
-        type = 'Book';
+        type = EntryType.book;
       } else if (comicFileTypes
           .contains(element.path.toString().split('.').last.toLowerCase())) {
-        type = 'Comic';
+        type = EntryType.comic;
       }
       var entryExists = await isar.entrys.where().idEqualTo(id).findFirst();
       bool entryExists1 = entryExists != null;

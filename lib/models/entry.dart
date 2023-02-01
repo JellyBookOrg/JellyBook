@@ -5,6 +5,12 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
 part 'entry.g.dart';
 
+enum EntryType {
+  book,
+  comic,
+  folder,
+}
+
 @Collection()
 class Entry {
   Id isarId = Isar.autoIncrement;
@@ -24,7 +30,8 @@ class Entry {
   int pageNum = 0;
   String folderPath = "";
   String filePath = "";
-  String type = "";
+  @enumerated
+  EntryType type;
   String parentId = "";
   String epubCfi = "";
   bool isFavorited = false;
@@ -44,7 +51,7 @@ class Entry {
     this.pageNum = 0,
     this.folderPath = '',
     this.filePath = '',
-    this.type = 'comic',
+    this.type = EntryType.book,
     this.parentId = '',
     this.epubCfi = '',
     this.isFavorited = false,

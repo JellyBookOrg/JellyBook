@@ -58,7 +58,8 @@ class CreateFolders {
 
   static Future<void> getFolders(List<String> categories) async {
     final isar = Isar.getInstance();
-    final entries = await isar!.entrys.filter().typeEqualTo('folder').findAll();
+    final entries =
+        await isar!.entrys.filter().typeEqualTo(EntryType.folder).findAll();
     await CreateFolders.createFolders(entries, categories);
   }
 }

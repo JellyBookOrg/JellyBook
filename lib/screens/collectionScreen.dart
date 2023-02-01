@@ -77,7 +77,7 @@ class collectionScreen extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   onTap: () {
-                    if (snapshot.data[index]['type'] != 'Folder') {
+                    if (snapshot.data[index]['type'] != 'folder') {
                       Navigator.push(
                         context,
                         PageRouteBuilder(
