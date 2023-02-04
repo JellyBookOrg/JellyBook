@@ -266,3 +266,100 @@ Future<List<String>> chooseCategories(List<String> categories, context) async {
   );
   return selected;
 }
+
+Future<Pair> getServerCategoriesOffline(context) async {
+  var logger = Logger();
+  logger.d("getting server categories");
+  final p_info.PackageInfo packageInfo =
+      await p_info.PackageInfo.fromPlatform();
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('accessToken') ?? "";
+  final url = prefs.getString('server') ?? "";
+  final userId = prefs.getString('UserId') ?? "";
+  final client = prefs.getString('client') ?? "JellyBook";
+  final device = prefs.getString('device') ?? "";
+  final deviceId = prefs.getString('deviceId') ?? "";
+  final version = prefs.getString('version') ?? packageInfo.version;
+  logger.d("got prefs");
+
+  bool hasComics = true;
+  if (hasComics) {
+    // get the comics and folders from the database
+    final isar = Isar.getInstance();
+    List<Entry> entries = await isar!.entrys
+        .where()
+        .filter()
+        .group((q) {
+          return q
+              .typeEqualTo(EntryType.book)
+              .or()
+              .typeEqualTo(EntryType.comic);
+        })
+        .and()
+        .downloadedEqualTo(true)
+        .findAll();
+    List<Folder> folders = await isar.folders.where().findAll();
+    logger.d("got entries and folders");
+    logger.d(folders.toString());
+
+    // turn into a map
+    List<Map<String, dynamic>> folderMap = [];
+    for (int i = 0; i < folders.length; i++) {
+      // go through each categories list of entries and see if it is downloaded, if it is, add it to the list, if not, don't
+      List<String> entriesList = [];
+      for (int j = 0; j < folders[i].bookIds.length; j++) {
+        if (entries
+            .map((entry) => entry.id)
+            .toList()
+            .contains(folders[i].bookIds[j])) {
+          entriesList.add(folders[i].bookIds[j]);
+        }
+      }
+      if (entriesList.isNotEmpty) {
+        folderMap.add({
+          "id": folders[i].id,
+          "name": folders[i].name,
+          "entries": entriesList,
+          "image": folders[i].image,
+        });
+      }
+    }
+
+    List<Map<String, dynamic>> comics = [];
+    entries.forEach((book) {
+      logger.d(book.title);
+      comics.add({
+        'id': book.id,
+        'name': book.title,
+        // 'imagePath':
+        //     '$url/Items/${book.id}/Images/Primary?&quality=90&Tag=${book.imageTags!['Primary']}',
+        // // if the imageTags!['Primary'] is null then we use 'Asset' instead
+        'imagePath': book.imagePath,
+        'releaseDate': book.releaseDate,
+        'path': book.path,
+        'description': book.description,
+        'url': book.url,
+        'communityRating': book.rating,
+        if (book.type == EntryType.comic || book.type == EntryType.book)
+          'type': book.path.toString().split('.').last.toLowerCase(),
+        'tags': book.tags,
+        'parent': book.parentId,
+        'isFavorite': book.isFavorited,
+        'isDownloaded': book.downloaded,
+      });
+    });
+
+    // organize the comics first by if liked and then alphabetically
+    comics.sort((a, b) {
+      if (a['isFavorite'] == b['isFavorite']) {
+        return a['name'].compareTo(b['name']);
+      } else if (a['isFavorite'] == true) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+
+    return Pair(comics, folderMap);
+  }
+}

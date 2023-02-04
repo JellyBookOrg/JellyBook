@@ -192,6 +192,8 @@ class _SearchScreenState extends State<SearchScreen> {
                               path: searchResults[i]['path'] ?? "null",
                               comicId: searchResults[i]['id'] ?? "null",
                               isLiked: searchResults[i]['isFavorite'] ?? false,
+                              isDownloaded:
+                                  searchResults[i]['isDownloaded'] ?? false,
                             ),
                             transitionsBuilder: (context, animation,
                                 secondaryAnimation, child) {
@@ -253,6 +255,7 @@ class _SearchScreenState extends State<SearchScreen> {
         "path": element.path,
         "id": element.id,
         "isLiked": element.isFavorited,
+        "isDownloaded": element.downloaded,
       });
     });
     setState(() {

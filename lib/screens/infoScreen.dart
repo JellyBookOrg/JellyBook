@@ -24,19 +24,25 @@ class InfoScreen extends StatelessWidget {
   final double stars;
   final String comicId;
   final String path;
+  final bool isDownloaded;
   bool isLiked;
+  final bool offline;
 
-  InfoScreen(
-      {required this.title,
-      required this.imageUrl,
-      required this.description,
-      required this.tags,
-      required this.url,
-      required this.comicId,
-      required this.stars,
-      required this.path,
-      required this.year,
-      required this.isLiked});
+  InfoScreen({
+    super.key,
+    required this.title,
+    required this.imageUrl,
+    required this.description,
+    required this.tags,
+    required this.url,
+    required this.comicId,
+    required this.stars,
+    required this.path,
+    required this.year,
+    required this.isLiked,
+    this.offline = false,
+    required this.isDownloaded,
+  });
 
   var logger = Logger();
 
@@ -89,7 +95,7 @@ class InfoScreen extends StatelessWidget {
                 ),
                 Expanded(
                   flex: 2,
-                  child: Container(
+                  child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.25,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
@@ -214,37 +220,74 @@ class InfoScreen extends StatelessWidget {
                             child: const Icon(Icons.play_arrow),
                           ),
                           IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  transitionDuration:
-                                      const Duration(milliseconds: 500),
-                                  pageBuilder: (context, animation,
-                                          secondaryAnimation) =>
-                                      DownloadScreen(
-                                    // title: title,
-                                    comicId: comicId,
-                                    // path: path,
+                            // have circle around the icon
+                            // icon: CircleAvatar(
+                            //   backgroundColor: !isDownloaded
+                            //       ? Colors.transparent
+                            //       : Colors.green,
+                            icon: !isDownloaded
+                                ? Icon(
+                                    Icons.download,
+                                    size: 22,
+                                    color: !offline
+                                        ? Theme.of(context).iconTheme.color
+                                        : Colors.white,
+                                  )
+                                : const Icon(
+                                    Icons.download_done,
+                                    size: 22,
+                                    color: Colors.greenAccent,
                                   ),
-                                  transitionsBuilder: (context, animation,
-                                      secondaryAnimation, child) {
-                                    var begin = const Offset(1.0, 0.0);
-                                    var end = Offset.zero;
-                                    var curve = Curves.ease;
 
-                                    var tween = Tween(begin: begin, end: end)
-                                        .chain(CurveTween(curve: curve));
+                            onPressed: () {
+                              if (!offline) {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        const Duration(milliseconds: 500),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        DownloadScreen(
+                                      // title: title,
+                                      comicId: comicId,
+                                      // path: path,
+                                    ),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      var begin = const Offset(1.0, 0.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.ease;
 
-                                    return SlideTransition(
-                                      position: animation.drive(tween),
-                                      child: child,
-                                    );
-                                  },
-                                ),
-                              );
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        "You are offline, please connect to the internet & reload this app to download this comic",
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge
+                                                    ?.color ??
+                                                Colors.white)),
+                                    backgroundColor:
+                                        Theme.of(context).dialogBackgroundColor,
+                                    duration: const Duration(seconds: 5),
+                                  ),
+                                );
+                              }
                             },
-                            icon: const Icon(Icons.download),
+                            // icon: const Icon(Icons.download),
                           ),
                           // check if the comic is liked
                           FutureBuilder(
@@ -304,7 +347,7 @@ class InfoScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: RichText(
                 text: TextSpan(
-                  text: "\t\t\t" + fixRichText(description),
+                  text: "\t\t\t${fixRichText(description)}",
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
@@ -317,7 +360,7 @@ class InfoScreen extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Container(
+            SizedBox(
               height: 50,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,

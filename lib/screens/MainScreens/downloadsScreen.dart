@@ -119,6 +119,8 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                                 url: snapshot.data[index]['url'],
                                 tags: snapshot.data[index]['tags'],
                                 isLiked: snapshot.data[index]['isFavorited'],
+                                isDownloaded: snapshot.data[index]
+                                    ['downloaded'],
                               ),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
