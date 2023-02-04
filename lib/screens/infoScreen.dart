@@ -29,6 +29,7 @@ class InfoScreen extends StatelessWidget {
   final bool offline;
 
   InfoScreen({
+    super.key,
     required this.title,
     required this.imageUrl,
     required this.description,
@@ -94,7 +95,7 @@ class InfoScreen extends StatelessWidget {
                 ),
                 Expanded(
                   flex: 2,
-                  child: Container(
+                  child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.25,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
@@ -220,24 +221,23 @@ class InfoScreen extends StatelessWidget {
                           ),
                           IconButton(
                             // have circle around the icon
-                            icon: CircleAvatar(
-                              backgroundColor: !isDownloaded
-                                  ? Colors.transparent
-                                  : Colors.green,
-                              child: !isDownloaded
-                                  ? Icon(
-                                      Icons.download,
-                                      size: 22,
-                                      color: !offline
-                                          ? Theme.of(context).iconTheme.color
-                                          : Colors.white,
-                                    )
-                                  : Icon(
-                                      Icons.download_done,
-                                      size: 22,
-                                      color: Colors.white,
-                                    ),
-                            ),
+                            // icon: CircleAvatar(
+                            //   backgroundColor: !isDownloaded
+                            //       ? Colors.transparent
+                            //       : Colors.green,
+                            icon: !isDownloaded
+                                ? Icon(
+                                    Icons.download,
+                                    size: 22,
+                                    color: !offline
+                                        ? Theme.of(context).iconTheme.color
+                                        : Colors.white,
+                                  )
+                                : const Icon(
+                                    Icons.download_done,
+                                    size: 22,
+                                    color: Colors.greenAccent,
+                                  ),
 
                             onPressed: () {
                               if (!offline) {
@@ -347,7 +347,7 @@ class InfoScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: RichText(
                 text: TextSpan(
-                  text: "\t\t\t" + fixRichText(description),
+                  text: "\t\t\t${fixRichText(description)}",
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
@@ -360,7 +360,7 @@ class InfoScreen extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Container(
+            SizedBox(
               height: 50,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,

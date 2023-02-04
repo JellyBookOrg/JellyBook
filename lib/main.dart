@@ -11,26 +11,19 @@ import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:logger/logger.dart';
 
-// for thsi file i also want to check if the user is online or offline
-// if the user is offline i want to show the offline book reader
-// if the user is online i want to show the login screen
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // top bar always visible, bottom bar only visible when swiped up
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky, overlays: [
     SystemUiOverlay.top,
   ]);
 
+  //
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    // make the top bar visible
-    // base colors on the system Brightness
     statusBarColor: Colors.transparent,
     statusBarBrightness: Brightness.dark,
     statusBarIconBrightness: Brightness.light,
-    // systemNavigationBarColor: Colors.transparent,
-    // systemNavigationBarDividerColor: Colors.transparent,
-    // systemNavigationBarIconBrightness: Brightness.dark,
   ));
 
   SystemChrome.setPreferredOrientations([

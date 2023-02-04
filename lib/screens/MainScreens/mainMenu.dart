@@ -153,9 +153,9 @@ class _MainMenuState extends State<MainMenu> {
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: snapshot.data.right?.length,
+                        itemExtent: MediaQuery.of(context).size.width / 3,
                         itemBuilder: (context, index) {
                           return SizedBox(
-                            width: MediaQuery.of(context).size.width / 3,
                             child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -329,7 +329,7 @@ class _MainMenuState extends State<MainMenu> {
                       addAutomaticKeepAlives: true,
                       addSemanticIndexes: true,
                       addRepaintBoundaries: true,
-                      cacheExtent: 1000,
+                      // cacheExtent: 30,
                       children: List.generate(
                         snapshot.data.left.length,
                         (index) {
