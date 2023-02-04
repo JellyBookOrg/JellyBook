@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // check_url();
     _passwordVisible = false;
     // check if url and username are provided
-    if (url != null && url != "" && username!= null && username != "") {
+    if (url != null && url != "" && username != null && username != "") {
       _loading = true;
       logger.d("url: " + url!);
       logger.d("username: " + username!);

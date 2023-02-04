@@ -71,6 +71,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                             description: snapshot.data![index].description,
                             imageUrl: snapshot.data![index].imagePath,
                             isLiked: snapshot.data![index].isFavorited,
+                            isDownloaded: snapshot.data![index].downloaded,
                           ),
                         ),
                       );
@@ -156,8 +157,8 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                                               .length >
                                                           4
                                                       ? 4
-                                                      : snapshot.data![index]
-                                                          .progress
+                                                      : snapshot
+                                                          .data![index].progress
                                                           .toString()
                                                           .length) +
                                           "%",

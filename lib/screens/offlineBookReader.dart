@@ -1,70 +1,87 @@
-// The purpose of this file is to create the main menu screen (this is part of the list of screens in the bottom navigation bar)
+// The purpose of this screen is to allow the user to read the book offline
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
-import 'package:jellybook/screens/collectionScreen.dart';
-import 'package:jellybook/screens/infoScreen.dart';
-import 'package:jellybook/screens/loginScreen.dart';
 import 'package:jellybook/screens/MainScreens/searchScreen.dart';
-import 'package:jellybook/models/login.dart';
-import 'package:jellybook/screens/offlineBookReader.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
-import 'package:jellybook/models/entry.dart';
+import 'package:jellybook/screens/collectionScreen.dart';
+import 'package:jellybook/screens/loginScreen.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:jellybook/screens/infoScreen.dart';
+import 'package:isar/isar.dart';
+import 'package:isar_flutter_libs/isar_flutter_libs.dart';
+import 'package:jellybook/screens/offlineBookReader.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:jellybook/models/entry.dart';
+import 'package:jellybook/models/folder.dart';
+import 'package:jellybook/models/login.dart';
 import 'package:logger/logger.dart';
+import 'package:jellybook/main.dart';
 
-class MainMenu extends StatefulWidget {
+class OfflineBookReader extends StatefulWidget {
+  const OfflineBookReader({Key? key}) : super(key: key);
+
   @override
-  _MainMenuState createState() => _MainMenuState();
+  _OfflineBookReaderState createState() => _OfflineBookReaderState();
 }
 
-class _MainMenuState extends State<MainMenu> {
-  /*
-           Heres what this should look like:
-           - should be a grid view of cards
-           - each comic should have its own card
-           - the cards should have:
-                - a photo
-                - the title
-                - the release data if known
-                - a more info button
-                - a progress bar if book has been started
-           - At the bottom will be a bar witch will contain the following sections:
-                - a library section
-                - a search section
-                - a settings section
-        */
-
-  var logger = Logger();
-
-  Future<void> logout() async {
-    final isar = Isar.getInstance();
-    var logins = await isar!.logins.where().findAll();
-    var loginIds = logins.map((e) => e.isarId).toList();
-    await isar.writeTxn(() async {
-      isar.logins.deleteAll(loginIds);
-      logger.i('deleted ${loginIds.length} logins');
-    });
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
-  }
-
-  var connectivityResult = ConnectivityResult.none;
-
-  int _selectedIndex = 0;
+class _OfflineBookReaderState extends State<OfflineBookReader> {
+  final logger = Logger();
 
   @override
   void initState() {
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      // Get the network status
+      var status = result;
+      // if the user is online
+      if (status == ConnectivityResult.wifi ||
+          status == ConnectivityResult.mobile) {
+        final isar = Isar.getInstance();
+        final login = isar!.logins.where().findFirstSync();
+        if (login!.serverUrl.isNotEmpty && login.username.isNotEmpty) {
+          final url = login.serverUrl;
+          final username = login.username;
+          final password = login.password;
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => MyApp(
+                url: url,
+                username: username,
+                password: password,
+              ),
+            ),
+          );
+        } else {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const MyApp(),
+            ),
+          );
+        }
+
+        // go to the login screen
+      }
+    });
     super.initState();
-    // fetchCategories();
   }
 
-// should be a futureBuilder
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  // create a listener to see if the user is online or offline
+  Future<bool> checkConnectivity() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,55 +91,26 @@ class _MainMenuState extends State<MainMenu> {
           icon: const Icon(Icons.refresh_rounded),
           tooltip: 'Refresh',
           onPressed: () {
-            setState(() {});
+            // refresh the app so that if the user has gone online, the app will show the login screen
+
+            setState(() {
+              // restart the app
+              // find the ansestor of the context that is a navigator
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => const MyApp(),
+                ),
+              );
+            });
           },
         ),
-        title: Container(
-          width: double.infinity,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Center(
-              child: TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchScreen()),
-              );
-            },
-            child: Row(
-              children: [
-                Icon(Icons.search, color: Colors.grey),
-                SizedBox(width: 10),
-                Text(
-                  'Search...',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-          )),
-        ),
-        // title: const Text('Home'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            tooltip: 'Logout',
-            onPressed: () {
-              logout();
-            },
-          ),
-        ],
+        title: const Text('Offline Book Reader'),
       ),
       body: ListView(
         children: <Widget>[
           const SizedBox(height: 10),
           FutureBuilder(
-            future: getServerCategories(context),
+            future: getServerCategoriesOffline(context),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {
@@ -342,8 +330,6 @@ class _MainMenuState extends State<MainMenu> {
                                 ),
                                 child: InkWell(
                                   onTap: () async {
-                                    logger.i("tapped");
-                                    // logger.i(snapshot.data.left[index]);
                                     final result = await Navigator.push(
                                       context,
                                       PageRouteBuilder(
@@ -381,9 +367,11 @@ class _MainMenuState extends State<MainMenu> {
                                           isLiked: snapshot.data.left![index]
                                                   ['isFavorite'] ??
                                               false,
-                                          isDownloaded: snapshot.data
-                                                  .left![index]['downloaded'] ??
-                                              false,
+                                          isDownloaded:
+                                              snapshot.data.left![index]
+                                                      ['isDownloaded'] ??
+                                                  false,
+                                          offline: true,
                                         ),
                                         transitionsBuilder: (context, animation,
                                             secondaryAnimation, child) {
@@ -582,13 +570,65 @@ class _MainMenuState extends State<MainMenu> {
                   return Column(
                     children: [
                       if (snapshot.data.right.toString().isNotEmpty &&
-                          snapshot.data.right != null)
+                          snapshot.data.right != null &&
+                          snapshot.data.right.toString() != "[]")
                         ...collectionChildren,
-                      if (snapshot.data.left.toString().isNotEmpty)
+                      if (snapshot.data.left.toString().isNotEmpty &&
+                          snapshot.data.left != null &&
+                          snapshot.data.left.toString() != "[]")
                         ...libraryChildren,
-                      // const SizedBox(
-                      //   height: 10,
-                      // ),
+                      // check if there is no data to display
+                      if (snapshot.data.left.toString().isEmpty ||
+                          snapshot.data.right == null ||
+                          snapshot.data.right.toString() == "[]" &&
+                              snapshot.data.left.toString().isEmpty ||
+                          snapshot.data.left == null ||
+                          snapshot.data.left.toString() == "[]")
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height / 2 - 140,
+                            ),
+                            const Icon(
+                              Icons.wifi_off,
+                              size: 75,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const AutoSizeText(
+                              "I'm sorry but you havent downloaded any content yet.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                              maxFontSize: 30,
+                              minFontSize: 10,
+                              maxLines: 2,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 15),
+                              child: AutoSizeText(
+                                "If you have not connected to the internet, please connect to the internet and click the refresh button in the top left corner of the screen.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.grey,
+                                  height: 1.25,
+                                ),
+                                maxFontSize: 30,
+                                minFontSize: 10,
+                                maxLines: 3,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   );
                 } else if (snapshot.hasError) {

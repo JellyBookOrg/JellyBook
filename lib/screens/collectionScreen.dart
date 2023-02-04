@@ -45,10 +45,11 @@ class collectionScreen extends StatelessWidget {
         'description': entry.description,
         'path': entry.path,
         'year': entry.releaseDate,
-        'type': entry.type,
+        'type': entry.type.toString(),
         'tags': entry.tags,
         'url': entry.url,
         'isFavorited': entry.isFavorited,
+        'isDownloaded': entry.downloaded,
       });
     }
     return entries;
@@ -94,6 +95,7 @@ class collectionScreen extends StatelessWidget {
                             url: snapshot.data[index]['url'],
                             tags: snapshot.data[index]['tags'],
                             isLiked: snapshot.data[index]['isFavorited'],
+                            isDownloaded: false,
                           ),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {

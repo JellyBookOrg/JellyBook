@@ -92,6 +92,7 @@ Future<List<Map<String, dynamic>>> getComics(
   List<Map<String, dynamic>> comics = [];
   responseData.forEach((element) {
     if (element.type.toString() == "book") {
+      // logger.d("element: $element");
       comics.add({
         'id': element.id ?? '',
         'name': element.name ?? '',
@@ -117,6 +118,7 @@ Future<List<Map<String, dynamic>>> getComics(
         // 'tags': element.tags ?? [],
         'parentId': element.parentId ?? '',
         'isFavorite': element.userData?.isFavorite ?? false,
+        'downloaded': false,
       });
     }
   });
@@ -130,6 +132,7 @@ Future<List<Map<String, dynamic>>> getComics(
       List<String> comicFileTypes = ['cbz', 'cbr'];
       String id = element.id ?? '0';
       String title = element.name ?? '';
+      String isDownloaded = 'false';
       // String imagePath =
       //     "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}";
       String imagePath =
@@ -181,6 +184,15 @@ Future<List<Map<String, dynamic>>> getComics(
       if (entryExists1) {
         entry.isarId = entryExists.isarId;
         entry.downloaded = entryExists.downloaded;
+        // change the downloaded value if it is already in the database (in comics List)
+        comics.indexWhere((comic) {
+          if (comic['id'] == entry.id) {
+            comic['downloaded'] = entry.downloaded;
+            return true;
+          } else {
+            return false;
+          }
+        });
         entry.progress = entryExists.progress;
         entry.folderPath = entryExists.folderPath;
         entry.filePath = entryExists.filePath;

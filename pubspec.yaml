@@ -66,6 +66,7 @@ dependencies:
   openapi:
     path: ./submodules/jellyfin_api
   string_similarity: ^2.0.0
+  connectivity_plus: ^2.1.0
 
 dev_dependencies:
   flutter_test:

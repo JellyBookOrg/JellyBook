@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:logger/logger.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 // Screens imports
 import 'package:jellybook/screens/MainScreens/mainMenu.dart';
@@ -12,8 +15,8 @@ import 'package:jellybook/screens/MainScreens/settingsScreen.dart';
 import 'package:jellybook/screens/MainScreens/downloadsScreen.dart';
 import 'package:jellybook/screens/MainScreens/continueReadingScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:logger/logger.dart';
+import 'package:jellybook/main.dart';
+import 'package:jellybook/screens/offlineBookReader.dart';
 
 // Cupertino imports
 import 'package:flutter/cupertino.dart';
@@ -40,6 +43,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 - a settings section
         */
   final logger = Logger();
+
+  @override
+  void initState() {
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      // Get the network status
+      var status = result;
+      // if the user is offline
+      if (status == ConnectivityResult.none) {
+        // show the offline book reader
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OfflineBookReader()),
+        );
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  // create a listener to see if the user is online or offline
+  Future<bool> checkConnectivity() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   Future<void> logout() async {
     final isar = Isar.getInstance();
