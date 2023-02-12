@@ -114,7 +114,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                                 stars: snapshot.data[index]['rating'],
                                 description: snapshot.data[index]
                                     ['description'],
-                                path: snapshot.data[index]['type'],
+                                path: snapshot.data[index]['path'],
                                 year: snapshot.data[index]['year'],
                                 url: snapshot.data[index]['url'],
                                 tags: snapshot.data[index]['tags'],
