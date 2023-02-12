@@ -2,8 +2,8 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:epub_view/epub_view.dart';
-import 'package:jellybook/providers/fileNameFromTitle.dart';
+// import 'package:epub_view_enhanced/epub_view_enhanced.dart';
+import 'package:jellybook_epub_view/epub_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
@@ -45,42 +45,45 @@ class _EpubReaderState extends State<EpubReader> {
 
   late EpubController _epubController;
 
+  // we will find the index position and jump to position
+
   // late EpubBookRef _epubBookRef;
-  Future<void> saveProgress(int page) async {
-    final isar = Isar.getInstance();
-    final entry = await isar!.entrys.filter().idEqualTo(comicId).findFirst();
-    // final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
-
-    // update the entry
-    entry!.pageNum = page;
-
-    // delete the old entry and add the new one
-    await isar.writeTxn(() async {
-      await isar.entrys.put(entry);
-    });
-
-    logger.d("saved progress");
-    logger.d("page num: ${entry.pageNum}");
-  }
+  // Future<void> saveProgress(String url) async {
+  //   final isar = Isar.getInstance();
+  //   final entry = await isar!.entrys.filter().idEqualTo(comicId).findFirst();
+  //   // final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+  //
+  //   // update the entry
+  //   // entry!.pageNum = page;
+  //
+  //   // delete the old entry and add the new one
+  //   await isar.writeTxn(() async {
+  //     // await isar.entrys.put(entry);
+  //   });
+  //
+  //   logger.d("saved progress");
+  //   // logger.d("page num: ${entry.pageNum}");
+  // }
 
   Future<void> updateChapter(String epubCfiNum) async {
     if (epubCfiNum == "error") {
       return;
     }
     final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+    logger.d("epubCfiNum: $epubCfiNum");
     await isar!.writeTxn(() async {
       entry!.epubCfi = epubCfiNum;
-      logger.d("entry.pageNum: ${entry.pageNum}");
       await isar!.entrys.put(entry);
     });
   }
 
-  Future<void> goToChapter(EpubController _epubController) async {
+  Future<void> goToChapter(EpubController epubController) async {
     final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
     var pageCfi = entry!.epubCfi;
     if (pageCfi.isNotEmpty && pageCfi != "") {
       logger.d("pageCfi: $pageCfi");
-      _epubController.gotoEpubCfi(pageCfi);
+      epubController.gotoEpubCfi(pageCfi);
+      // _epubController.gotoEpubCfi(pageCfi);
     }
   }
 
@@ -90,10 +93,6 @@ class _EpubReaderState extends State<EpubReader> {
     _epubController = EpubController(
       document: EpubDocument.openFile(File(addEscapeSequence(filePath))),
     );
-    // _epubController = EpubController(
-    //   document: EpubDocument.openFile(File(filePath)),
-    // );
-    goToChapter(_epubController);
   }
 
   String addEscapeSequence(String str) {
@@ -188,9 +187,18 @@ class _EpubReaderState extends State<EpubReader> {
                 },
                 onDocumentLoaded: (document) {
                   logger.d("Document loaded: ${document.Title}");
+                  // wait 5 seconds and then go to the chapter
+                  Future.delayed(Duration(seconds: 5), () {
+                    logger.d("Document loaded: ${document.Title}");
+                    goToChapter(_epubController);
+                  });
+                  // goToChapter(_epubController);
                 },
                 onChapterChanged: (chapter) {
-                  logger.d("Chapter changed: $chapter");
+                  // only do it every 5th time
+
+                  // logger.d("Chapter changed: $chapter");
+                  // logger.d(chapter!.position);
                   updateChapter(_epubController.generateEpubCfi() ?? "error");
                 },
               ),

@@ -64,6 +64,12 @@ class _MainMenuState extends State<MainMenu> {
     // fetchCategories();
   }
 
+  // dispose
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
 // should be a futureBuilder
   @override
   Widget build(BuildContext context) {

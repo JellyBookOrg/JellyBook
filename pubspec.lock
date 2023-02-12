@@ -361,14 +361,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.3"
-  epub_view:
+  epub_parser:
     dependency: "direct main"
     description:
-      name: epub_view
-      sha256: "1653240e1a699e0d3ee832f86c12000da0cc354159073d98456c25912d892808"
+      name: epub_parser
+      sha256: a620d67dd1de88ca91e732e95faece9b4c673b7875599359e76c966367158868
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "3.0.1"
   epubx:
     dependency: transitive
     description:
@@ -462,6 +462,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0-alpha.6"
+  flutter_html_to_pdf:
+    dependency: "direct main"
+    description:
+      name: flutter_html_to_pdf
+      sha256: "4bec44685f62a404bac7c9e412da0fbcd389ea5eceb397c268d829ecfa148c34"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -656,6 +664,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.5"
+  jellybook_epub_view:
+    dependency: "direct main"
+    description:
+      path: "submodules/jellybook_epub_view"
+      relative: true
+    source: path
+    version: "3.0.0"
   js:
     dependency: transitive
     description:
@@ -1035,10 +1050,10 @@ packages:
     dependency: transitive
     description:
       name: scrollable_positioned_list
-      sha256: "9566352ab9ba05794ee6c8864f154afba5d36c5637d0e3e32c615ba4ceb92772"
+      sha256: ca7fcaa743db712d4f7b1580526f494d0093c77a721a65705ee51fbeac7a2bd3
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.3"
+    version: "0.3.5"
   shared_preferences:
     dependency: "direct main"
     description:
