@@ -93,9 +93,6 @@ class _EpubReaderState extends State<EpubReader> {
     _epubController = EpubController(
       document: EpubDocument.openFile(File(addEscapeSequence(filePath))),
     );
-    // wait for the controller to be ready
-    _epubController.gotoEpubCfi(entry.epubCfi);
-    goToChapter(_epubController);
   }
 
   String addEscapeSequence(String str) {
