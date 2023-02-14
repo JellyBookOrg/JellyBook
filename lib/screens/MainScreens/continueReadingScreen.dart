@@ -28,14 +28,21 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
     var entries = await isar!.entrys
         .where()
         .filter()
+        .group((q) => q.downloadedEqualTo(true).and().pageNumGreaterThan(0))
         .downloadedEqualTo(true)
         .and()
         .pageNumGreaterThan(0)
         .or()
-        .epubCfiIsNotEmpty()
+        .group((q) => q.epubCfiIsNotEmpty().and().downloadedEqualTo(true))
         .findAll();
     // convert the entries to a list
     return entries;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getEntries();
   }
 
   @override
@@ -102,6 +109,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                             ),
                           ),
                         );
+                        setState(() {});
                       },
                       title: AutoSizeText(
                         snapshot.data![index].title,

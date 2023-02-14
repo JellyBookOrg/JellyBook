@@ -104,17 +104,15 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                             'folder') {
                           Navigator.push(
                             context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      InfoScreen(
+                            MaterialPageRoute(
+                              builder: (context) => InfoScreen(
                                 comicId: snapshot.data[index]['id'],
                                 title: snapshot.data[index]['title'],
                                 imageUrl: snapshot.data[index]['imagePath'],
                                 stars: snapshot.data[index]['rating'],
                                 description: snapshot.data[index]
                                     ['description'],
-                                path: snapshot.data[index]['type'],
+                                path: snapshot.data[index]['path'],
                                 year: snapshot.data[index]['year'],
                                 url: snapshot.data[index]['url'],
                                 tags: snapshot.data[index]['tags'],
@@ -122,49 +120,19 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                                 isDownloaded: snapshot.data[index]
                                     ['downloaded'],
                               ),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = const Offset(1.0, 0.0);
-                                var end = Offset.zero;
-                                var curve = Curves.ease;
-
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
                             ),
                           );
                         } else if (snapshot.data[index]['type'].toString() ==
                             'folder') {
                           Navigator.push(
                             context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      collectionScreen(
+                            MaterialPageRoute(
+                              builder: (context) => collectionScreen(
                                 folderId: snapshot.data[index]['id'],
                                 name: snapshot.data[index]['title'],
                                 image: snapshot.data[index]['imagePath'],
                                 bookIds: snapshot.data[index]['bookIds'],
                               ),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = const Offset(1.0, 0.0);
-                                var end = Offset.zero;
-                                var curve = Curves.ease;
-
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
                             ),
                           );
                         }
