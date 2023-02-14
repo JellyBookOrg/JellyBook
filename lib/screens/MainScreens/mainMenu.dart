@@ -171,10 +171,8 @@ class _MainMenuState extends State<MainMenu> {
                                   logger.i("tapped");
                                   await Navigator.push(
                                     context,
-                                    PageRouteBuilder(
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          collectionScreen(
+                                    MaterialPageRoute(
+                                      builder: (context) => collectionScreen(
                                         folderId: snapshot.data.right[index]
                                             ['id'],
                                         name: snapshot.data.right[index]
@@ -184,21 +182,6 @@ class _MainMenuState extends State<MainMenu> {
                                         bookIds: snapshot.data.right[index]
                                             ['entries'],
                                       ),
-                                      transitionsBuilder: (context, animation,
-                                          secondaryAnimation, child) {
-                                        var begin = const Offset(1.0, 0.0);
-                                        var end = Offset.zero;
-                                        var curve = Curves.ease;
-
-                                        var tween = Tween(
-                                                begin: begin, end: end)
-                                            .chain(CurveTween(curve: curve));
-
-                                        return SlideTransition(
-                                          position: animation.drive(tween),
-                                          child: child,
-                                        );
-                                      },
                                     ),
                                   );
                                 },
@@ -352,10 +335,8 @@ class _MainMenuState extends State<MainMenu> {
                                     // logger.i(snapshot.data.left[index]);
                                     final result = await Navigator.push(
                                       context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (context, animation,
-                                                secondaryAnimation) =>
-                                            InfoScreen(
+                                      MaterialPageRoute(
+                                        builder: (context) => InfoScreen(
                                           title: snapshot.data.left![index]
                                                   ['name'] ??
                                               "null",
@@ -391,21 +372,6 @@ class _MainMenuState extends State<MainMenu> {
                                                   .left![index]['downloaded'] ??
                                               false,
                                         ),
-                                        transitionsBuilder: (context, animation,
-                                            secondaryAnimation, child) {
-                                          var begin = const Offset(1.0, 0.0);
-                                          var end = Offset.zero;
-                                          var curve = Curves.ease;
-
-                                          var tween = Tween(
-                                                  begin: begin, end: end)
-                                              .chain(CurveTween(curve: curve));
-
-                                          return SlideTransition(
-                                            position: animation.drive(tween),
-                                            child: child,
-                                          );
-                                        },
                                       ),
                                     );
                                     // update state of the card

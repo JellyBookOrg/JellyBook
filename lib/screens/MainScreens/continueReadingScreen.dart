@@ -109,6 +109,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                             ),
                           ),
                         );
+                        setState(() {});
                       },
                       title: AutoSizeText(
                         snapshot.data![index].title,
