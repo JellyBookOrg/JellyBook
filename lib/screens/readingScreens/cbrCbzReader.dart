@@ -50,13 +50,14 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
       ".webp",
       ".bmp",
       ".tiff"
+      // also include all variations of capitalizations of these
     ];
     List<String> pageFiles = [];
     for (var chapter in chapters) {
       List<String> files =
           Directory(chapter).listSync().map((e) => e.path).toList();
       for (var file in files) {
-        if (formats.any((element) => file.endsWith(element))) {
+        if (formats.any((element) => file.toLowerCase().endsWith(element))) {
           pageFiles.add(file);
         }
       }
@@ -159,7 +160,8 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
     ];
 
     // Check if the directory ends with any of the file types
-    if (fileTypes.any((fileType) => directory.path.endsWith(fileType))) {
+    if (fileTypes
+        .any((fileType) => directory.path.toLowerCase().endsWith(fileType))) {
       // If it does, add the parent directory to the chapters list if it's not already there
       if (!chapters.contains(directory.parent.path)) {
         chapters.add(directory.parent.path);
@@ -167,9 +169,17 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
       }
     } else {
       // If it doesn't, recursively check the files in the directory
-      List<FileSystemEntity> files = Directory(directory.path).listSync();
-      for (var file in files) {
-        getChaptersFromDirectory(file);
+      List<FileSystemEntity> files = [];
+      try {
+        files = Directory(directory.path).listSync();
+        for (var file in files) {
+          getChaptersFromDirectory(file);
+        }
+      } catch (e) {
+        logger.d(
+          "Error: not a valid directory, its a file",
+          e.toString().split("'")[1],
+        );
       }
     }
   }
@@ -204,6 +214,7 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
                           children: [
                             Expanded(
                               child: PageView.builder(
+                                // scrollDirection: Axis.vertical,
                                 itemCount: pages.length,
                                 controller: PageController(
                                   initialPage: pageNum,

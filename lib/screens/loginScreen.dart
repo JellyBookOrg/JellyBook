@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jellybook/providers/login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jellybook/screens/homeScreen.dart';
+import 'package:jellybook/screens/offlineBookReader.dart';
 import 'package:logger/logger.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -78,6 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final FocusNode _focusNode2 = FocusNode();
   final FocusNode _focusNode3 = FocusNode();
   final FocusNode _focusNode4 = FocusNode();
+  final FocusNode _focusNode5 = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -151,46 +153,69 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(
-                height: 15,
+                height: 10,
               ),
-              Container(
-                // width dynamically sized of the button
-                width: MediaQuery.of(context).size.width - 50,
-                height: 50,
-                child: ElevatedButton(
-                  focusNode: _focusNode4,
-                  onPressed: () async {
-                    setState(() {
-                      _loading = true;
-                    });
-                    logger.d("url: " + _url.text);
-                    logger.d("username: " + _username.text);
-                    logger.d("password: " + _password.text);
-                    LoginProvider.loginStatic(
-                      _url.text,
-                      _username.text,
-                      _password.text,
-                    ).then((value) {
-                      if (value == "true") {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomeScreen(),
-                          ),
-                        );
-                      } else {
+              // Make a row with a big connect button and a small offline mode button
+              ButtonBar(
+                alignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    // width dynamically sized of the button
+                    width: MediaQuery.of(context).size.width -
+                        80 -
+                        MediaQuery.of(context).size.width * 0.10,
+                    height: 50,
+                    child: ElevatedButton(
+                      focusNode: _focusNode4,
+                      onPressed: () async {
                         setState(() {
-                          _error = value;
-                          _loading = false;
+                          _loading = true;
                         });
-                      }
-                    });
-                  },
-                  child: const Text("Connect",
-                      style: TextStyle(
-                        fontSize: 20,
-                      )),
-                ),
+                        logger.d("url: " + _url.text);
+                        logger.d("username: " + _username.text);
+                        logger.d("password: " + _password.text);
+                        LoginProvider.loginStatic(
+                          _url.text,
+                          _username.text,
+                          _password.text,
+                        ).then((value) {
+                          if (value == "true") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeScreen(),
+                              ),
+                            );
+                          } else {
+                            setState(() {
+                              _error = value;
+                              _loading = false;
+                            });
+                          }
+                        });
+                      },
+                      child: const Text("Connect",
+                          style: TextStyle(
+                            fontSize: 20,
+                          )),
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      fixedSize: MaterialStatePropertyAll(
+                        Size(MediaQuery.of(context).size.width * 0.09, 50),
+                      ),
+                      backgroundColor:
+                          MaterialStatePropertyAll(Colors.grey[500]),
+                    ),
+                    focusNode: _focusNode5,
+                    onPressed: () async {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => OfflineBookReader()));
+                    },
+                    child: const Icon(Icons.signal_wifi_off_rounded),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 15,
