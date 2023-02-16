@@ -36,29 +36,29 @@ Future<void> main() async {
   Logger.level = Level.debug;
   var logger = Logger();
 
-  if (kDebugMode) {
-    try {
-      // delete all entries in the database
-      // get a list of all the entries ids
-      var entries = await isar.entrys.where().findAll();
-      var entryIds = entries.map((e) => e.isarId).toList();
-      await isar.writeTxn(() async {
-        isar.entrys.deleteAll(entryIds);
-        logger.d("deleted ${entryIds.length} entries");
-      });
-      // delete all folders in the database
-      // get a list of all the folders ids
-      var folders = await isar.folders.where().findAll();
-      var folderIds = folders.map((e) => e.isarId).toList();
-      await isar.writeTxn(() async {
-        isar.folders.deleteAll(folderIds);
-        logger.d("deleted ${folderIds.length} folders");
-      });
-    } catch (e) {
-      logger.e(e);
-    }
-    logger.d("cleared Isar boxes");
-  }
+  // if (kDebugMode) {
+  //   try {
+  //     // delete all entries in the database
+  //     // get a list of all the entries ids
+  //     var entries = await isar.entrys.where().findAll();
+  //     var entryIds = entries.map((e) => e.isarId).toList();
+  //     await isar.writeTxn(() async {
+  //       isar.entrys.deleteAll(entryIds);
+  //       logger.d("deleted ${entryIds.length} entries");
+  //     });
+  //     // delete all folders in the database
+  //     // get a list of all the folders ids
+  //     var folders = await isar.folders.where().findAll();
+  //     var folderIds = folders.map((e) => e.isarId).toList();
+  //     await isar.writeTxn(() async {
+  //       isar.folders.deleteAll(folderIds);
+  //       logger.d("deleted ${folderIds.length} folders");
+  //     });
+  //   } catch (e) {
+  //     logger.e(e);
+  //   }
+  //   logger.d("cleared Isar boxes");
+  // }
 
   var logins = await isar.logins.where().findAll();
   if (logins.length != 0) {
@@ -98,6 +98,8 @@ class MyApp extends StatelessWidget {
             if (snapshot.data == ConnectivityResult.none) {
               return OfflineBookReader();
             } else {
+              // try to ping 1.1.1.1 or 8.8.8.8 or whatever their dns is and if network is reachable go to login screen
+              // todo
               return LoginScreen(
                 url: url,
                 username: username,
