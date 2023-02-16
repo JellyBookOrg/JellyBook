@@ -10,6 +10,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:logger/logger.dart';
+import 'dart:io';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -99,7 +100,17 @@ class MyApp extends StatelessWidget {
               return OfflineBookReader();
             } else {
               // try to ping 1.1.1.1 or 8.8.8.8 or whatever their dns is and if network is reachable go to login screen
-              // todo
+              // if not, go to offline book reader
+              Socket.connect('1.1.1.1', 53).then((socket) {
+                socket.destroy();
+                return LoginScreen(
+                  url: url,
+                  username: username,
+                  password: password,
+                );
+              }).catchError((e) {
+                return OfflineBookReader();
+              });
               return LoginScreen(
                 url: url,
                 username: username,
