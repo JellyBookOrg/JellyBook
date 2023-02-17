@@ -155,68 +155,82 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(
                 height: 10,
               ),
-              // Make a row with a big connect button and a small offline mode button
-              ButtonBar(
-                alignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    // width dynamically sized of the button
-                    width: MediaQuery.of(context).size.width -
-                        80 -
-                        MediaQuery.of(context).size.width * 0.10,
-                    height: 50,
-                    child: ElevatedButton(
-                      focusNode: _focusNode4,
-                      onPressed: () async {
+              SizedBox(
+                // width dynamically sized of the button
+                width: MediaQuery.of(context).size.width - 50,
+                height: 50,
+                child: ElevatedButton(
+                  focusNode: _focusNode4,
+                  onPressed: () async {
+                    setState(() {
+                      _loading = true;
+                    });
+                    logger.d("url: " + _url.text);
+                    logger.d("username: " + _username.text);
+                    logger.d("password: " + _password.text);
+                    LoginProvider.loginStatic(
+                      _url.text,
+                      _username.text,
+                      _password.text,
+                    ).then((value) {
+                      if (value == "true") {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
+                      } else {
                         setState(() {
-                          _loading = true;
+                          _error = value;
+                          _loading = false;
                         });
-                        logger.d("url: " + _url.text);
-                        logger.d("username: " + _username.text);
-                        logger.d("password: " + _password.text);
-                        LoginProvider.loginStatic(
-                          _url.text,
-                          _username.text,
-                          _password.text,
-                        ).then((value) {
-                          if (value == "true") {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomeScreen(),
-                              ),
-                            );
-                          } else {
-                            setState(() {
-                              _error = value;
-                              _loading = false;
-                            });
-                          }
-                        });
-                      },
-                      child: const Text("Connect",
-                          style: TextStyle(
-                            fontSize: 20,
-                          )),
-                    ),
-                  ),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      fixedSize: MaterialStatePropertyAll(
-                        Size(MediaQuery.of(context).size.width * 0.09, 50),
+                      }
+                    });
+                  },
+                  // make it say Connect and have a icon
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.login),
+                      SizedBox(
+                        width: 10,
                       ),
-                      backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey[500]),
-                    ),
-                    focusNode: _focusNode5,
-                    onPressed: () async {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => OfflineBookReader()));
-                    },
-                    child: const Icon(Icons.signal_wifi_off_rounded),
+                      Text("Connect", style: TextStyle(fontSize: 20)),
+                    ],
                   ),
-                ],
+                ),
               ),
+              const SizedBox(height: 10),
+              // offline mode button
+              SizedBox(
+                width: MediaQuery.of(context).size.width - 50,
+                height: 50,
+                child: ElevatedButton(
+                  focusNode: _focusNode5,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      _loading = true;
+                    });
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => OfflineBookReader()));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.cloud_off_outlined),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text("Offline Reader", style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                ),
+              ),
+
               const SizedBox(
                 height: 15,
               ),
