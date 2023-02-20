@@ -100,8 +100,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
                       onTap: () {
-                        if (snapshot.data[index]['type'].toString() !=
-                            'folder') {
+                        if (snapshot.data[index]['type'] != EntryType.folder) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -122,8 +121,8 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                               ),
                             ),
                           );
-                        } else if (snapshot.data[index]['type'].toString() ==
-                            'folder') {
+                        } else if (snapshot.data[index]['type'] ==
+                            EntryType.folder) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(

@@ -92,6 +92,7 @@ Future<Pair> getServerCategories(context) async {
         selected.add(categories[i]);
       }
     }
+
     List<Future<List<Map<String, dynamic>>>> comicsArray = [];
     List<String> comicsIds = [];
     logger.d("selected: " + selected.toString());
@@ -152,11 +153,38 @@ Future<Pair> getServerCategories(context) async {
         'image': folders[i].image,
       });
     }
-    // await removeEntriesFromDatabase(comicsArray);
-    logger.d("folderMap: " + folderMap.toString());
 
-    return Pair(comics, folderMap);
+    logger.d("folderMap: " + folderMap.toString());
+    var folderMap2 = await compareFolders(folderMap);
+    logger.d("folderMap2: " + folderMap2.toString());
+
+    return Pair(comics, folderMap2);
   }
+}
+
+// check to see if a folder isn't a subfolder of another folder
+Future<List<Map<String, dynamic>>> compareFolders(
+    List<Map<String, dynamic>> folders) async {
+  var logger = Logger();
+  logger.d("comparing folders");
+  List<Map<String, dynamic>> newFolders = [];
+  logger.d("folders: " + folders.length.toString());
+  for (int i = 0; i < folders.length; i++) {
+    logger.d("folder: " + folders[i]['name']);
+    bool isSubfolder = false;
+    for (int j = 0; j < folders.length; j++) {
+      if (i != j) {
+        if (folders[j]['entries'].contains(folders[i]['id'])) {
+          isSubfolder = true;
+        }
+      }
+    }
+    if (!isSubfolder) {
+      newFolders.add(folders[i]);
+    }
+  }
+  logger.d("newFolders: " + newFolders.length.toString());
+  return newFolders;
 }
 
 // function to remove entries from the database that are not in the server

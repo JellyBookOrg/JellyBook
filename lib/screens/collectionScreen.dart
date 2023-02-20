@@ -6,6 +6,7 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_star/flutter_star.dart';
+import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
@@ -25,9 +26,9 @@ class collectionScreen extends StatelessWidget {
   });
 
   var logger = Logger();
+  final isar = Isar.getInstance();
   // make a list of entries from the the list of bookIds
   Future<List<Map<String, dynamic>>> getEntries() async {
-    final isar = Isar.getInstance();
     // final isar = Isar.openSync([EntrySchema]);
     List<Map<String, dynamic>> entries = [];
     // get the entries from the database
@@ -78,7 +79,7 @@ class collectionScreen extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   onTap: () {
-                    if (snapshot.data[index]['type'] != 'folder') {
+                    if (snapshot.data[index]['type'] != "EntryType.folder") {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -97,15 +98,22 @@ class collectionScreen extends StatelessWidget {
                           ),
                         ),
                       );
-                    } else if (snapshot.data[index]['type'] == 'folder') {
+                    } else if (snapshot.data[index]['type'] ==
+                        "EntryType.folder") {
+                      logger.d("Tapped: ${snapshot.data[index].toString()}");
+                      var folder = isar!.folders
+                          .where()
+                          .filter()
+                          .idEqualTo(snapshot.data[index]['id'])
+                          .findFirstSync();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => collectionScreen(
-                            folderId: snapshot.data[index]['id'],
-                            name: snapshot.data[index]['title'],
-                            image: snapshot.data[index]['imagePath'],
-                            bookIds: snapshot.data[index]['bookIds'],
+                            folderId: folder!.id,
+                            name: folder.name,
+                            image: folder.image,
+                            bookIds: folder.bookIds,
                           ),
                         ),
                       );

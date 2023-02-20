@@ -71,13 +71,15 @@ Future<void> main() async {
     logger.d("login url: " + logins[0].serverUrl);
     logger.d("login username: " + logins[0].username);
     logger.d("login password: " + logins[0].password);
-    runApp(MyApp(
-        url: logins[0].serverUrl,
-        username: logins[0].username,
-        password: logins[0].password));
     logger.d("login found");
+    runApp(MyApp(
+      url: logins[0].serverUrl,
+      username: logins[0].username,
+      password: logins[0].password,
+    ));
+  } else {
+    runApp(MyApp());
   }
-  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
