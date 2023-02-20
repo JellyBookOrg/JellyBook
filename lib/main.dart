@@ -1,3 +1,5 @@
+import 'package:dio/adapter.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
@@ -31,6 +33,9 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  // dio allow self signed certificates
+  HttpOverrides.global = new MyHttpOverrides();
 
   final isar = await Isar.open([EntrySchema, FolderSchema, LoginSchema]);
 
@@ -72,6 +77,7 @@ Future<void> main() async {
         password: logins[0].password));
     logger.d("login found");
   }
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -123,5 +129,15 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    HttpClient client = super.createHttpClient(context);
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    return client;
   }
 }
