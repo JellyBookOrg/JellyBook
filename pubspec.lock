@@ -361,6 +361,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.3"
+  epub_parser:
+    dependency: "direct main"
+    description:
+      name: epub_parser
+      sha256: a620d67dd1de88ca91e732e95faece9b4c673b7875599359e76c966367158868
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   epubx:
     dependency: transitive
     description:
