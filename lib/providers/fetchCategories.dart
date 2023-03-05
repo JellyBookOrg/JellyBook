@@ -1,5 +1,8 @@
 // The purpose of this file is to fetch the categories from the database
 
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:openapi/openapi.dart';
 import 'dart:convert';
@@ -87,9 +90,13 @@ Future<Pair> getServerCategories(context) async {
       'ebook',
       'ebooks',
     ];
-    for (var i = 0; i < categories.length; i++) {
+    List<String> asked =
+        await askCategories(categories, includedAutomatically, context);
+    logger.d("asked cargories: $asked");
+    for (var i = 0; i < asked.length; i++) {
       if (includedAutomatically.contains(categories[i].toLowerCase())) {
-        selected.add(categories[i]);
+        selected.add(asked[i]);
+        logger.d("added ${asked[i]} to selected");
       }
     }
 
@@ -160,6 +167,131 @@ Future<Pair> getServerCategories(context) async {
 
     return Pair(comics, folderMap2);
   }
+}
+
+// ask user which categories they want to use
+Future<List<String>> askCategories(List<String> categories,
+    List<String> includedAutomatically, context) async {
+  var logger = Logger();
+  logger.d("asking categories");
+
+  List<String> selected = [];
+  // if platform is iOS, use CupertinoAlertDialog
+  if (Platform.isIOS) {
+    await showCupertinoDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: const Text("Select Categories"),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: 300,
+                child: ListView.builder(
+                  itemCount: categories.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // create rows with buttons and checkboxes
+                    return Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              if (selected.contains(categories[index])) {
+                                selected.remove(categories[index]);
+                              } else {
+                                selected.add(categories[index]);
+                              }
+                            });
+                          },
+                          child: Text(categories[index]),
+                        ),
+                        const Spacer(),
+                        CupertinoSwitch(
+                          value: selected.contains(categories[index]),
+                          onChanged: (bool value) {
+                            setState(() {
+                              if (value) {
+                                selected.add(categories[index]);
+                              } else {
+                                selected.remove(categories[index]);
+                              }
+                            });
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: const Text("Ok"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } else {
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Select Categories"),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: 300,
+                child: ListView.builder(
+                  itemCount: categories.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return CheckboxListTile(
+                      title: Text(categories[index]),
+                      value: selected.contains(categories[index]),
+                      onChanged: (bool? value) {
+                        setState(() {
+                          if (value == true) {
+                            logger.d("added ${categories[index]} to asked");
+                            selected.add(categories[index]);
+                          } else {
+                            logger.d("removed ${categories[index]} from asked");
+                            selected.remove(categories[index]);
+                          }
+                        });
+                      },
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  return selected;
 }
 
 // check to see if a folder isn't a subfolder of another folder
@@ -236,32 +368,32 @@ Future<void> removeEntriesFromDatabase(
 Future<List<String>> chooseCategories(List<String> categories, context) async {
   List<String> selected = [];
   var logger = Logger();
+  List<String> wantedCategories = [];
 
   // pop up a dialog to choose categories
   // use stateful builder to rebuild the dialog when the list changes
-  await showDialog(
+
+  showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
-        builder: (context, setState) {
+        builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: const Text('Choose Categories'),
+            title: Text("Choose Categories"),
             content: Container(
-              width: double.maxFinite,
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.8,
               child: ListView.builder(
-                shrinkWrap: true,
                 itemCount: categories.length,
-                itemBuilder: (context, index) {
+                itemBuilder: (BuildContext context, int index) {
                   return CheckboxListTile(
                     title: Text(categories[index]),
                     value: selected.contains(categories[index]),
                     onChanged: (bool? value) {
-                      if (value == true &&
-                          !selected.contains(categories[index])) {
-                        selected.add(categories[index]);
-                      } else if (value == false &&
-                          selected.contains(categories[index])) {
-                        selected.remove(categories[index]);
+                      if (value == true) {
+                        wantedCategories.add(categories[index]);
+                      } else {
+                        wantedCategories.remove(categories[index]);
                       }
                       setState(() {});
                     },
@@ -269,21 +401,17 @@ Future<List<String>> chooseCategories(List<String> categories, context) async {
                 },
               ),
             ),
-            actions: <Widget>[
+            actions: [
               TextButton(
-                child: const Text('Done'),
+                child: Text("Cancel"),
                 onPressed: () {
-                  if (selected.isNotEmpty) {
-                    Navigator.of(context).pop();
-                  } else {
-                    logger.e("No categories selected");
-                    // snackbar
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('No categories selected'),
-                      ),
-                    );
-                  }
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  Navigator.of(context).pop(wantedCategories);
                 },
               ),
             ],
@@ -292,7 +420,7 @@ Future<List<String>> chooseCategories(List<String> categories, context) async {
       );
     },
   );
-  return selected;
+  return wantedCategories;
 }
 
 Future<Pair> getServerCategoriesOffline(context) async {
