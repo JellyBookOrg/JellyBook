@@ -150,7 +150,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         downloading = true;
         progress = 0.0;
         path = dirLocation + '/' + fileName;
-        Navigator.pop(context);
+        // pop the navigator but pass in the value of true
+        Navigator.pop(context, true);
       });
     }
     logger.d('title: ' + entry.title);
@@ -194,13 +195,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     actions: [
                       TextButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pop(context, false);
                         },
                         child: Text('Cancel'),
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pop(context, false);
                           downloadFile(true);
                         },
                         child: Text('Redownload'),

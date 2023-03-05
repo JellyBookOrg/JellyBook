@@ -14,7 +14,7 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:logger/logger.dart';
 
-class InfoScreen extends StatelessWidget {
+class InfoScreen extends StatefulWidget {
   final String title;
   final String imageUrl;
   final String url;
@@ -24,9 +24,9 @@ class InfoScreen extends StatelessWidget {
   final double stars;
   final String comicId;
   final String path;
-  final bool isDownloaded;
+  bool isDownloaded;
   bool isLiked;
-  final bool offline;
+  bool offline;
 
   InfoScreen({
     super.key,
@@ -44,6 +44,50 @@ class InfoScreen extends StatelessWidget {
     required this.isDownloaded,
   });
 
+  @override
+  _InfoScreenState createState() => _InfoScreenState(
+        title: title,
+        imageUrl: imageUrl,
+        description: description,
+        tags: tags,
+        url: url,
+        comicId: comicId,
+        stars: stars,
+        path: path,
+        year: year,
+        isLiked: isLiked,
+        offline: offline,
+        isDownloaded: isDownloaded,
+      );
+}
+
+class _InfoScreenState extends State<InfoScreen> {
+  final String title;
+  final String imageUrl;
+  final String url;
+  final String description;
+  final List<dynamic> tags;
+  final String year;
+  final double stars;
+  final String comicId;
+  final String path;
+  bool isDownloaded;
+  bool isLiked;
+  bool offline;
+  _InfoScreenState({
+    required this.title,
+    required this.imageUrl,
+    required this.description,
+    required this.tags,
+    required this.url,
+    required this.comicId,
+    required this.stars,
+    required this.path,
+    required this.year,
+    required this.isLiked,
+    this.offline = false,
+    required this.isDownloaded,
+  });
   var logger = Logger();
 
 // check if it is liked or not by checking the database
@@ -80,7 +124,10 @@ class InfoScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              deleteComic(comicId, context);
+              deleteComic(comicId, context).then((value) {
+                isDownloaded = false;
+                setState(() {});
+              });
             },
           ),
         ],
@@ -206,25 +253,37 @@ class InfoScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDownloaded
+                                  ? Theme.of(context)
+                                      .buttonTheme
+                                      .colorScheme!
+                                      .primary
+                                  : Colors.grey,
+                            ),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReadingScreen(
-                                    title: title,
-                                    comicId: comicId,
+                              if (isDownloaded) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReadingScreen(
+                                      title: title,
+                                      comicId: comicId,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        "You need to download the comic first"),
+                                  ),
+                                );
+                              }
                             },
                             child: const Icon(Icons.play_arrow),
                           ),
                           IconButton(
-                            // have circle around the icon
-                            // icon: CircleAvatar(
-                            //   backgroundColor: !isDownloaded
-                            //       ? Colors.transparent
-                            //       : Colors.green,
                             icon: !isDownloaded
                                 ? Icon(
                                     Icons.download,
@@ -241,34 +300,21 @@ class InfoScreen extends StatelessWidget {
 
                             onPressed: () {
                               if (!offline) {
+                                // push to the downloader screen and on return check if it returns a value of true and assign that to isDownloaded
                                 Navigator.push(
                                   context,
-                                  PageRouteBuilder(
-                                    transitionDuration:
-                                        const Duration(milliseconds: 500),
-                                    pageBuilder: (context, animation,
-                                            secondaryAnimation) =>
-                                        DownloadScreen(
-                                      // title: title,
+                                  MaterialPageRoute(
+                                    builder: (context) => DownloadScreen(
                                       comicId: comicId,
-                                      // path: path,
                                     ),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      var begin = const Offset(1.0, 0.0);
-                                      var end = Offset.zero;
-                                      var curve = Curves.ease;
-
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-
-                                      return SlideTransition(
-                                        position: animation.drive(tween),
-                                        child: child,
-                                      );
-                                    },
                                   ),
-                                );
+                                ).then((value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      isDownloaded = value;
+                                    });
+                                  }
+                                });
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
@@ -315,16 +361,6 @@ class InfoScreen extends StatelessWidget {
                                   },
                                   onTap: (bool isLiked) async {
                                     updateLike(comicId);
-                                    // ScaffoldMessenger.of(context).showSnackBar(
-                                    //   const SnackBar(
-                                    //     content: Text(
-                                    //         "This feature is not available yet",
-                                    //         style: TextStyle(
-                                    //           color: Colors.white,
-                                    //         )),
-                                    //     backgroundColor: Colors.black,
-                                    //   ),
-                                    // );
                                     return !isLiked;
                                   },
                                 );
