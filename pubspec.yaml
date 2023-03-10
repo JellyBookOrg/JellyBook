@@ -70,6 +70,11 @@ dependencies:
   string_similarity: ^2.0.0
   connectivity_plus: ^2.1.0
 
+  # Translations
+  flutter_localizations:
+    sdk: flutter
+  intl: 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -101,6 +106,8 @@ flutter:
   assets:
     - assets/images/Logo.png
     - assets/images/NoCoverArt.png
+
+  generate: true
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

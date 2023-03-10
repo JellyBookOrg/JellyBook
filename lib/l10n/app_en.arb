@@ -1,0 +1,13 @@
+{
+  "@@locale" : "en",
+  "appName" : "JellyBook",
+
+  "pageLoginAddress" : "Your Address",
+  "@pageLoginAddress" : {},
+
+  "pageLoginUsername" : "Username",
+  "@pageLoginUsername" : {},
+
+  "pageLoginPassword" : "Password",
+  "@pageLoginPassword" : {}
+}

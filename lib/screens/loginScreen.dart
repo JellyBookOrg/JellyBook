@@ -6,6 +6,8 @@ import 'package:jellybook/screens/homeScreen.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
 import 'package:logger/logger.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class LoginScreen extends StatefulWidget {
 // optional inputs of url, username, and password (use empty string if not provided)
   final String? url;
@@ -47,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // check_url();
     _passwordVisible = false;
     // check if url and username are provided
-    if (url != null && url != "" && username != null && username != "") {
+    if (url != "" && url != null && username != "" && username != null) {
       _loading = true;
       logger.d("url: " + url!);
       logger.d("username: " + username!);
@@ -105,8 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: TextFormField(
                   controller: _url,
                   focusNode: _focusNode1,
-                  decoration: const InputDecoration(
-                    labelText: "Server Address",
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.pageLoginAddress,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -119,8 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: TextFormField(
                   controller: _username,
                   focusNode: _focusNode2,
-                  decoration: const InputDecoration(
-                    labelText: "Username",
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.pageLoginUsername,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -135,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   focusNode: _focusNode3,
                   obscureText: !_passwordVisible,
                   decoration: InputDecoration(
-                    labelText: "Password",
+                    labelText: AppLocalizations.of(context)!.pageLoginPassword,
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
