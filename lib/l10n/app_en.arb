@@ -1,13 +1,34 @@
 {
-  "@@locale" : "en",
-  "appName" : "JellyBook",
+	"@@locale": "en",
 
-  "pageLoginAddress" : "Your Address",
-  "@pageLoginAddress" : {},
+	"pageLoginAddress": "Your Address",
+        "@pageLoginAddress" : {},
+	"pageLoginUsername": "Username",
+	"@pageLoginUsername": {},
+	"pageLoginPassword": "Password",
+	"@pageLoginPassword": {},
 
-  "pageLoginUsername" : "Username",
-  "@pageLoginUsername" : {},
+        "permissionRequired" : "Permission Required",
+        "@permissionRequired" : {},
 
-  "pageLoginPassword" : "Password",
-  "@pageLoginPassword" : {}
+        "permissionExplanation" : "JellyBook needs permission to access your files to read your comics",
+        "@permissionExplanation" : {},
+
+        "ok" : "OK",
+        "@ok" : {},
+
+        "downloadRequired" : "Download Required",
+        "@downloadRequired" : {},
+
+        "downloadExplanation" : "JellyBook needs to download the comic before you can read it",
+        "@downloadExplanation" : {},
+
+        "unsupportedFileType" : "File Type Not Supported",
+        "@unsupportedFileType" : {},
+
+        "unsupportedFileTypeExplanation" : "JellyBook does not support this file type. Please download a different file",
+        "@unsupportedFileTypeExplanation" : {},
+
+        "loadingComic" : "Please wait while we load your comic/book",
+        "@loadingComic" : {}
 }

@@ -104,9 +104,16 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: const [
         Locale('en', 'US'), // English
-        Locale('en', 'CA'), // English
-        Locale('en', 'UK') // English
       ],
+      localeListResolutionCallback: (allLocales, supportedLocales) {
+        final locale = allLocales?.first.languageCode;
+        var logger = Logger();
+        logger.d("Locale: " + locale!);
+        if (locale == 'en') {
+          return const Locale('en', 'US');
+        }
+        return const Locale('en', 'US');
+      },
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,

@@ -14,6 +14,8 @@ import 'package:jellybook/screens/readingScreens/pdfReader.dart';
 import 'package:jellybook/screens/readingScreens/cbrCbzReader.dart';
 import 'package:jellybook/screens/readingScreens/epubReader.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class ReadingScreen extends StatefulWidget {
   final String title;
   final String comicId;
@@ -80,12 +82,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Permission Required'),
-          content: const Text(
-              'JellyBook needs permission to access your files to read your comics'),
+          title: Text(AppLocalizations.of(context)!.permissionRequired),
+          content: Text(AppLocalizations.of(context)!.permissionExplanation),
           actions: [
             TextButton(
-              child: const Text('OK'),
+              child: Text(AppLocalizations.of(context)!.ok),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -116,12 +117,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Download Required'),
-          content: const Text(
-              'JellyBook needs to download the comic before you can read it'),
+          title: Text(AppLocalizations.of(context)!.downloadRequired),
+          content: Text(AppLocalizations.of(context)!.downloadExplanation),
           actions: [
             TextButton(
-              child: const Text('OK'),
+              child: Text(AppLocalizations.of(context)!.ok),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -130,30 +130,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
         ),
       );
     }
-    //   Navigator.push(
-    //     context,
-    //     PageRouteBuilder(
-    //       transitionDuration: const Duration(milliseconds: 500),
-    //       pageBuilder: (context, animation, secondaryAnimation) =>
-    //           DownloadScreen(
-    //         comicId: comicId,
-    //       ),
-    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-    //         var begin = const Offset(1.0, 0.0);
-    //         var end = Offset.zero;
-    //         var curve = Curves.ease;
-    //
-    //         var tween =
-    //             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-    //
-    //         return SlideTransition(
-    //           position: animation.drive(tween),
-    //           child: child,
-    //         );
-    //       },
-    //     ),
-    //   );
-    // }
   }
 
   // check file extension
@@ -275,12 +251,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('File Type Not Supported'),
-            content: const Text(
-                'JellyBook does not support this file type. Please download a different file'),
+            title: Text(AppLocalizations.of(context)!.unsupportedFileType),
+            content: Text(
+                AppLocalizations.of(context)!.unsupportedFileTypeExplanation),
             actions: [
               TextButton(
-                child: const Text('OK'),
+                child: Text(AppLocalizations.of(context)!.ok),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -297,8 +273,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: const Center(
-        child: Text("Please wait while we load your comic/book",
+      body: Center(
+        child: Text(AppLocalizations.of(context)!.loadingComic,
             style: TextStyle(fontSize: 20)),
       ),
     );
