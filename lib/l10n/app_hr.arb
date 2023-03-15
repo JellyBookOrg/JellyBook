@@ -1,1 +1,10 @@
-{}
+{
+  "appName": "JellyBook",
+  "@appName": {},
+  "pageLoginAddress": "Tvoja adresa",
+  "@pageLoginAddress": {},
+  "pageLoginUsername": "Korisničko ime",
+  "@pageLoginUsername": {},
+  "pageLoginPassword": "Lozinka",
+  "@pageLoginPassword": {}
+}
