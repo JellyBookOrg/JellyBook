@@ -1,5 +1,12 @@
 <h1 align="center">JellyBook</h1>
 <h3 align="center">A book a comic reading app for Jellyfin</h3>
+<div class="badges" align="center">
+  <a href="https://hosted.weblate.org/engage/JellyBook/">
+    <img src="https://hosted.weblate.org/widgets/JellyBook/-/jellybook-app/svg-badge.svg" alt="Translation status" />
+  </a>
+  <img alt="GitHub" src="https://img.shields.io/github/license/Kara-Zor-El/JellyBook">
+  <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/Kara-Zor-El/JellyBook?include_prereleases">
+</div>
 <p align="center">
   <img src='./assets/images/Logo.png' width='30%' height='30%' />
 </p>
@@ -60,9 +67,13 @@
  
 ## ⚙️ Contributing:
  - Check out our wiki: [Here](https://github.com/Kara-Zor-El/JellyBook/wiki)
+ - Check out our weblate instance to help translate: [Here](https://hosted.weblate.org/projects/JellyBook/jellybook-app/)
 
 ## 📚 Translating:
- - placeholder text
+
+<a href="https://hosted.weblate.org/engage/JellyBook/">
+  <img src="https://hosted.weblate.org/widgets/JellyBook/-/jellybook-app/multi-auto.svg" alt="Translation status" align="center"/>
+</a>
 
 
 ## 🎉 Special Thanks:
