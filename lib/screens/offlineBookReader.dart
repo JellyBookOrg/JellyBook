@@ -20,6 +20,8 @@ import 'package:jellybook/models/login.dart';
 import 'package:logger/logger.dart';
 import 'package:jellybook/main.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class OfflineBookReader extends StatefulWidget {
   const OfflineBookReader({Key? key}) : super(key: key);
 
@@ -89,7 +91,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
         leading: IconButton(
           // icon: const Icon(Icons.home),
           icon: const Icon(Icons.refresh_rounded),
-          tooltip: 'Refresh',
+          tooltip: AppLocalizations.of(context)!.refresh,
           onPressed: () {
             // refresh the app so that if the user has gone online, the app will show the login screen
 

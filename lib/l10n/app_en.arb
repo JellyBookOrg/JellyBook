@@ -1,6 +1,8 @@
 {
 	"@@locale": "en",
 
+        "appName" : 
+
 	"pageLoginAddress": "Your Address",
         "@pageLoginAddress" : {},
 	"pageLoginUsername": "Username",
@@ -30,5 +32,8 @@
         "@unsupportedFileTypeExplanation" : {},
 
         "loadingComic" : "Please wait while we load your comic/book",
-        "@loadingComic" : {}
+        "@loadingComic" : {},
+
+        "refresh" : "Refresh",
+        "@refresh" : {},
 }
