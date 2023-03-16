@@ -1,4 +1,5 @@
 {
+  "@@locale": "it",
   "appName": "JellyBook",
   "@appName": {},
   "pageLoginUsername": "Nome utente",

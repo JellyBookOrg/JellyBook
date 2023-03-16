@@ -1,4 +1,5 @@
 {
+  "@@locale": "sv",
   "appName": "JellyBook",
   "@appName": {},
   "pageLoginPassword": "Lösenord",
