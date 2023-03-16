@@ -14,6 +14,8 @@ import 'package:jellybook/models/login.dart';
 import 'package:logger/logger.dart';
 import 'dart:io';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -95,6 +97,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'JellyBook',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
+      ],
+      supportedLocales: const [
+        Locale('en', 'US'), // English
+      ],
+      localeListResolutionCallback: (allLocales, supportedLocales) {
+        final locale = allLocales?.first.languageCode;
+        var logger = Logger();
+        logger.d("Locale: " + locale!);
+        if (locale == 'en') {
+          return const Locale('en', 'US');
+        }
+        return const Locale('en', 'US');
+      },
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
