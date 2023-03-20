@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _url,
                   focusNode: _focusNode1,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.pageLoginAddress,
+                    labelText: AppLocalizations.of(context)?.pageLoginAddress,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -193,12 +193,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   // make it say Connect and have a icon
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(Icons.login),
                       SizedBox(
                         width: 10,
                       ),
-                      Text("Connect", style: TextStyle(fontSize: 20)),
+                      Text(AppLocalizations.of(context)?.connect ?? "Connect",
+                          style: TextStyle(fontSize: 20)),
                     ],
                   ),
                 ),
@@ -222,12 +223,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(Icons.cloud_off_outlined),
                       SizedBox(
                         width: 10,
                       ),
-                      Text("Offline Reader", style: TextStyle(fontSize: 20)),
+                      Text(
+                          AppLocalizations.of(context)
+                                  ?.pageLoginOfflineReader ??
+                              "Offline Reader",
+                          style: TextStyle(fontSize: 20)),
                     ],
                   ),
                 ),

@@ -8,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:jellybook/themes/themeManager.dart';
 import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -54,7 +55,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ThemeManager themeManager = Provider.of<ThemeManager>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(fontSize: 20)),
+        title: Text((AppLocalizations.of(context)?.settings ?? 'Settings'),
+            style: TextStyle(fontSize: 20)),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -94,9 +96,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // theme settings (future builder to get the current theme and then change it)
   Widget themeSettings(BuildContext context) => DropDownSettingsTile(
         settingKey: 'theme',
-        title: 'Theme',
+        title: AppLocalizations.of(context)?.theme ?? 'Theme',
         selected: Settings.getValue<String>('theme') ?? 'System',
         leading: const Icon(Icons.color_lens),
+        // @TODO: Look into using AppLocalizations for the values
+        // Not sure if it'll work since the value won't be updated when the language is changed
         values: <String, String>{
           'System': 'System',
           'Light': 'Light',
@@ -115,6 +119,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             themeManager.setTheme(ThemeData.light());
           } else if (value == 'Dark') {
             themeManager.setTheme(ThemeData.dark());
+          } else if (value == 'Amoled') {
+            themeManager.setTheme(ThemeData.dark());
           }
         },
       );
@@ -122,7 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // language settings
   Widget languageSettings() => DropDownSettingsTile(
         settingKey: 'language',
-        title: 'Language',
+        title: AppLocalizations.of(context)?.language ?? 'Language',
         selected: Settings.getValue<String>('language') ?? 'English',
         leading: Icon(Icons.language),
         values: <String, String>{
@@ -137,7 +143,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // page transition settings
   Widget pageTransitionSettings() => DropDownSettingsTile(
         settingKey: 'pageTransition',
-        title: 'Page Transition',
+        title:
+            AppLocalizations.of(context)?.pageTransition ?? 'Page Transition',
         selected: Settings.getValue<String>('pageTransition') ?? 'Page Turn',
         leading: Icon(Icons.pageview),
         values: <String, String>{
@@ -153,7 +160,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // experimental features settings
   Widget experimentalFeaturesSettings() => SwitchSettingsTile(
         settingKey: 'experimentalFeatures',
-        title: 'Experimental Features',
+        title: AppLocalizations.of(context)?.experimentalFeatures ??
+            'Experimental Features',
         leading: Icon(Icons.bug_report),
         onChange: (value) async {
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -171,14 +179,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 // version number (should be a future builder)
                 Text(
-                  'Version: ' + (version.isNotEmpty ? version : 'Unknown'),
+                  (AppLocalizations.of(context)?.version ?? 'Version: ') +
+                      (version.isNotEmpty
+                          ? version
+                          : AppLocalizations.of(context)?.unknown ?? 'Unknown'),
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(
                   height: 10,
                 ),
                 Text(
-                  "Made by Kara Wilson",
+                  (AppLocalizations.of(context)?.madeBy ?? "Made by") +
+                      " Kara Wilson",
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(

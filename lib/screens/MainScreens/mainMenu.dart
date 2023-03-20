@@ -15,6 +15,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -78,7 +79,7 @@ class _MainMenuState extends State<MainMenu> {
         leading: IconButton(
           // icon: const Icon(Icons.home),
           icon: const Icon(Icons.refresh_rounded),
-          tooltip: 'Refresh',
+          tooltip: AppLocalizations.of(context)?.refresh ?? 'Refresh',
           onPressed: () {
             setState(() {});
           },
@@ -103,7 +104,7 @@ class _MainMenuState extends State<MainMenu> {
                 Icon(Icons.search, color: Colors.grey),
                 SizedBox(width: 10),
                 Text(
-                  'Search...',
+                  (AppLocalizations.of(context)?.search ?? 'Search') + '…',
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 17,
@@ -135,12 +136,13 @@ class _MainMenuState extends State<MainMenu> {
                   logger.i("Snapshot Data");
                   // logger.i("Collections: ${snapshot.data.left}");
                   List<Widget> collectionChildren = [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
-                          "Collections",
+                          AppLocalizations.of(context)?.collections ??
+                              "Collections",
                           style: TextStyle(
                             // size is the size of a title
                             fontSize: 30,
@@ -293,12 +295,12 @@ class _MainMenuState extends State<MainMenu> {
                     const SizedBox(
                       height: 10,
                     ),
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
-                          "Library",
+                          AppLocalizations.of(context)?.library ?? "Library",
                           style: TextStyle(
                             // size is the size of a title
                             fontSize: 30,
@@ -569,7 +571,9 @@ class _MainMenuState extends State<MainMenu> {
                   return Center(
                     // return error message if there is an error
                     child: Text(
-                      "Error" + snapshot.error.toString(),
+                      (AppLocalizations.of(context)?.error ?? "Error") +
+                          ": " +
+                          snapshot.error.toString(),
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 20,
@@ -578,9 +582,9 @@ class _MainMenuState extends State<MainMenu> {
                   );
                   // if theres no books in the database, show a message
                 } else if (snapshot.data == null) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      "No books found",
+                      AppLocalizations.of(context)?.noBooks ?? "No books found",
                       style: TextStyle(fontSize: 20),
                     ),
                   );
@@ -601,8 +605,9 @@ class _MainMenuState extends State<MainMenu> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height / 2 - 120,
                     ),
-                    const Text(
-                      "Please wait while we fetch content from the database",
+                    Text(
+                      AppLocalizations.of(context)?.waitToFetchDB ??
+                          "Please wait while we fetch content from the database",
                       style: TextStyle(fontSize: 20),
                       textAlign: TextAlign.center,
                     ),

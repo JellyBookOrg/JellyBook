@@ -13,6 +13,7 @@ import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InfoScreen extends StatefulWidget {
   final String title;
@@ -274,8 +275,9 @@ class _InfoScreenState extends State<InfoScreen> {
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
+                                  SnackBar(
+                                    content: Text(AppLocalizations.of(context)
+                                            ?.downloadFirst ??
                                         "You need to download the comic first"),
                                   ),
                                 );
@@ -319,7 +321,9 @@ class _InfoScreenState extends State<InfoScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                        "You are offline, please connect to the internet & reload this app to download this comic",
+                                        AppLocalizations.of(context)
+                                                ?.downloadOffline ??
+                                            "You are offline, please connect to the internet & reload this app to download this comic",
                                         style: TextStyle(
                                             color: Theme.of(context)
                                                     .textTheme

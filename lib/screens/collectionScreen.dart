@@ -11,6 +11,7 @@ import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class collectionScreen extends StatelessWidget {
   final String folderId;
@@ -217,9 +218,10 @@ class collectionScreen extends StatelessWidget {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Text(
-                    "No results found in this folder",
+                    AppLocalizations.of(context)?.noResultsFound ??
+                        'No results found in this folder',
                     style: TextStyle(
                       fontSize: 25,
                     ),
@@ -235,9 +237,10 @@ class collectionScreen extends StatelessWidget {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Text(
-                    "An error has occured",
+                    AppLocalizations.of(context)?.unknownError ??
+                        "An unknown error has occured.",
                     style: TextStyle(
                       fontSize: 25,
                     ),

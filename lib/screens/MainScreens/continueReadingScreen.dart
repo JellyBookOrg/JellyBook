@@ -11,6 +11,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ContinueReadingScreen extends StatefulWidget {
   const ContinueReadingScreen();
@@ -49,17 +50,19 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Continue Reading"),
+        title: Text(AppLocalizations.of(context)?.continueReading ??
+            "Continue Reading"),
       ),
       body: Column(
         children: <Widget>[
           const SizedBox(height: 10),
-          const Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: EdgeInsets.only(left: 10),
               child: Text(
-                "Continue Reading",
+                AppLocalizations.of(context)?.continueReading ??
+                    "Continue Reading",
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -353,9 +356,10 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                   // add text saying that there are no books/comics that have been started and have a frown under it
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
-                        "No books/comics have been started",
+                        AppLocalizations.of(context)?.noBooksStarted ??
+                            "You have not started any books/comics yet.",
                         style: TextStyle(
                           fontSize: 25,
                         ),

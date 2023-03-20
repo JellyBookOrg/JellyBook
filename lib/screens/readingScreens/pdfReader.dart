@@ -11,6 +11,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:jellybook/providers/progress.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PdfReader extends StatefulWidget {
   final String comicId;
@@ -91,7 +92,8 @@ class _PdfReaderState extends State<PdfReader> {
             // return an error message
             return Center(
               child: Text(
-                'Error: ${snapshot.error}',
+                (AppLocalizations.of(context)?.error ?? 'Error:') +
+                    ' ${snapshot.error}',
               ),
             );
           } else {
