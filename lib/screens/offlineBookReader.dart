@@ -91,7 +91,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
         leading: IconButton(
           // icon: const Icon(Icons.home),
           icon: const Icon(Icons.refresh_rounded),
-          tooltip: AppLocalizations.of(context)!.refresh,
+          tooltip: AppLocalizations.of(context)?.refresh ?? "Refresh",
           onPressed: () {
             // refresh the app so that if the user has gone online, the app will show the login screen
 
@@ -106,7 +106,8 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
             });
           },
         ),
-        title: const Text('Offline Book Reader'),
+        title: Text(AppLocalizations.of(context)?.offlineBookReader ??
+            "Offline Book Reader"),
       ),
       body: ListView(
         children: <Widget>[
@@ -119,12 +120,13 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                   logger.i("Snapshot Data");
                   // logger.i("Collections: ${snapshot.data.left}");
                   List<Widget> collectionChildren = [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
-                          "Collections",
+                          AppLocalizations.of(context)?.collections ??
+                              "Collections",
                           style: TextStyle(
                             // size is the size of a title
                             fontSize: 30,
@@ -277,12 +279,12 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                     const SizedBox(
                       height: 10,
                     ),
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
-                          "Library",
+                          AppLocalizations.of(context)?.library ?? "Library",
                           style: TextStyle(
                             // size is the size of a title
                             fontSize: 30,
@@ -567,8 +569,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                             const SizedBox(
                               height: 20,
                             ),
-                            const AutoSizeText(
-                              "I'm sorry but you havent downloaded any content yet.",
+                            AutoSizeText(
+                              AppLocalizations.of(context)?.noContent ??
+                                  "I'm sorry but you havent downloaded any content yet.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 20,
@@ -580,10 +583,11 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                             const SizedBox(
                               height: 10,
                             ),
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.symmetric(horizontal: 15),
                               child: AutoSizeText(
-                                "If you have not connected to the internet, please connect to the internet and click the refresh button in the top left corner of the screen.",
+                                AppLocalizations.of(context)?.noContent2 ??
+                                    "If you have not connected to the internet, please connect to the internet and click the refresh button in the top left corner of the screen.",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 20,
@@ -605,7 +609,8 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                   return Center(
                     // return error message if there is an error
                     child: Text(
-                      "Error" + snapshot.error.toString(),
+                      (AppLocalizations.of(context)?.error ?? "Error") +
+                          snapshot.error.toString(),
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 20,
@@ -614,9 +619,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                   );
                   // if theres no books in the database, show a message
                 } else if (snapshot.data == null) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      "No books found",
+                      AppLocalizations.of(context)?.noBooks ?? "No books found",
                       style: TextStyle(fontSize: 20),
                     ),
                   );

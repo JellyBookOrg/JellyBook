@@ -11,6 +11,7 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:logger/logger.dart';
 import 'package:string_similarity/string_similarity.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -56,7 +57,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   },
                 ),
                 // only have suffix icon when the search bar is selected
-                hintText: 'Search...',
+                hintText:
+                    (AppLocalizations.of(context)?.search ?? 'Search') + '...',
                 border: InputBorder.none,
               ),
               onChanged: (value) async {
@@ -73,14 +75,18 @@ class _SearchScreenState extends State<SearchScreen> {
       // body based on if searchResults is 0 or not
       body: searchResults.length == 0
           ? _searchController.text.toString().length == 0
-              ? const Center(
-                  child: Text('Please search for a book',
+              ? Center(
+                  child: Text(
+                      AppLocalizations.of(context)?.searchBook ??
+                          'Please search for a book',
                       style: TextStyle(
                         fontSize: 20,
                       )),
                 )
-              : const Center(
-                  child: Text('No results found',
+              : Center(
+                  child: Text(
+                      AppLocalizations.of(context)?.noResults ??
+                          'No results found',
                       style: TextStyle(
                         fontSize: 20,
                       )),

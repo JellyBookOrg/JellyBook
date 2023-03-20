@@ -11,6 +11,7 @@ import 'package:jellybook/providers/fixRichText.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DownloadsScreen extends StatefulWidget {
   @override
@@ -64,12 +65,12 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       body: Column(
         children: <Widget>[
           const SizedBox(height: 10),
-          const Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: EdgeInsets.only(left: 10),
               child: Text(
-                "Downloads",
+                AppLocalizations.of(context)?.downloads ?? "Downloads",
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -143,12 +144,17 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text("Delete"),
-                                content: const Text(
+                                title: Text(
+                                    AppLocalizations.of(context)?.delete ??
+                                        "Delete"),
+                                content: Text(AppLocalizations.of(context)
+                                        ?.deleteConfirm ??
                                     "Are you sure you want to delete this book/comic?"),
                                 actions: <Widget>[
                                   TextButton(
-                                    child: const Text("Cancel"),
+                                    child: Text(
+                                        AppLocalizations.of(context)?.cancel ??
+                                            "Cancel"),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
@@ -287,9 +293,10 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
-                          "No books were found to be downloaded",
+                          AppLocalizations.of(context)?.noBooksFound ??
+                              "No books were found to be downloaded",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 25,
@@ -309,9 +316,10 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
-                          "An error has occured",
+                          AppLocalizations.of(context)?.unknownError ??
+                              "An error has occured",
                           style: TextStyle(
                             fontSize: 25,
                           ),

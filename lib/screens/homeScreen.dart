@@ -17,6 +17,7 @@ import 'package:jellybook/screens/MainScreens/continueReadingScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
 import 'package:jellybook/main.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // Cupertino imports
 import 'package:flutter/cupertino.dart';
@@ -118,15 +119,15 @@ class _HomeScreenState extends State<HomeScreen> {
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: 'Home',
+                  label: AppLocalizations.of(context)?.home ?? 'Home',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.download),
-                  label: 'Downloads',
+                  label: AppLocalizations.of(context)?.downloads ?? 'Downloads',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),
-                  label: 'Reading',
+                  label: AppLocalizations.of(context)?.reading ?? 'Reading',
                 ),
                 // BottomNavigationBarItem(
                 //   icon: Icon(Icons.settings),
@@ -183,15 +184,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   tabs: [
                     GButton(
                       icon: Icons.home,
-                      text: 'Home',
+                      text: AppLocalizations.of(context)?.home ?? 'Home',
                     ),
                     GButton(
                       icon: Icons.download,
-                      text: 'Downloads',
+                      text: AppLocalizations.of(context)?.downloads ??
+                          'Downloads',
                     ),
                     GButton(
                       icon: Icons.book,
-                      text: 'Reading',
+                      text: AppLocalizations.of(context)?.reading ?? 'Reading',
                     ),
                     // GButton(
                     //   icon: Icons.settings,

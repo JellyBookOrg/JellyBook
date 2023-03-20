@@ -20,6 +20,7 @@ import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DownloadScreen extends StatefulWidget {
   final String comicId;
@@ -178,7 +179,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Downloading'),
+        title: Text(AppLocalizations.of(context)?.downloading ?? 'Downloading'),
         automaticallyImplyLeading: !downloading,
         // if the file is downloaded, have a button to force download
         actions: [
@@ -189,22 +190,28 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Redownload?'),
-                    content:
-                        Text('Are you sure you want to redownload this file?'),
+                    title: Text((AppLocalizations.of(context)?.redownload ??
+                            'Redownload') +
+                        '?'),
+                    content: Text(
+                      AppLocalizations.of(context)?.redownload ??
+                          'Are you sure you want to redownload this file?',
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context, false);
                         },
-                        child: Text('Cancel'),
+                        child: Text(
+                            AppLocalizations.of(context)?.cancel ?? 'Cancel'),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context, false);
                           downloadFile(true);
                         },
-                        child: Text('Redownload'),
+                        child: Text(AppLocalizations.of(context)?.redownload ??
+                            'Redownload'),
                       ),
                     ],
                   ),
@@ -232,7 +239,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   ),
                   if (progress < 100)
                     Text(
-                      'Downloading File: ' + progress.toStringAsFixed(2) + '%',
+                      (AppLocalizations.of(context)?.downloadingFile ??
+                              'Downloading File:') +
+                          ' ' +
+                          progress.toStringAsFixed(2) +
+                          '%',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -240,7 +251,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     ),
                   if (progress == 100)
                     Text(
-                      'Extracting Content',
+                      AppLocalizations.of(context)?.extractingContent ??
+                          'Extracting Content',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -255,7 +267,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'File Downloaded',
+                    AppLocalizations.of(context)?.fileDownloaded ??
+                        'File Downloaded',
                     style: TextStyle(
                       fontSize: 20,
                     ),
