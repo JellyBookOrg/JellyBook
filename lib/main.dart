@@ -101,13 +101,10 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       localeListResolutionCallback: (allLocales, supportedLocales) {
-        final locale = allLocales?.first.languageCode;
+        final locale = allLocales?.first.languageCode ?? "en";
         var logger = Logger();
-        logger.d("Locale: " + locale!);
-        if (locale == 'en') {
-          return const Locale('en', 'US');
-        }
-        return const Locale('en', 'US');
+        logger.d("locale: " + locale);
+        return Locale(locale);
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
