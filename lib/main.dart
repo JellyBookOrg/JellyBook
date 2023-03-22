@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
       localeListResolutionCallback: (allLocales, supportedLocales) {
         final locale = allLocales?.first.languageCode;
         var logger = Logger();
-        logger.d("Locale: " + locale!);
+        logger.d("Locale: ${locale!}");
         if (locale == 'en') {
           return const Locale('en', 'US');
         }
