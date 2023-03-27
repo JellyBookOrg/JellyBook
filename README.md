@@ -1,5 +1,5 @@
 <h1 align="center">JellyBook</h1>
-<h3 align="center">A book a comic reading app for Jellyfin</h3>
+<h3 align="center">A book and comic reading app for Jellyfin</h3>
 <div class="badges" align="center">
   <a href="https://hosted.weblate.org/engage/JellyBook/">
     <img src="https://hosted.weblate.org/widgets/JellyBook/-/jellybook-app/svg-badge.svg" alt="Translation status" />
