@@ -1,6 +1,7 @@
 {
   "@@locale": "en_pirate",
 
+
   "noContent": "Blimey! Ye haven't downloaded any treasure yet.",
   "@noContent": {},
   "noBooksStarted": "Ye haven't begun t' read any books or comics yet, matey.",
