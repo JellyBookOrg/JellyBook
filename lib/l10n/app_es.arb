@@ -91,5 +91,19 @@
   "offlineBookReader": "Lector de libros sin conexión",
   "@offlineBookReader": {},
   "permissionExplanation": "JellyBook necesita permisos de acceso a tus archivos para leer tus cómics",
-  "@permissionExplanation": {}
+  "@permissionExplanation": {},
+  "pageLoginOfflineReader": "Lector sin conexión",
+  "@pageLoginOfflineReader": {},
+  "downloadRequired": "Descarga requerida",
+  "@downloadRequired": {},
+  "unsupportedFileTypeExplanation": "JellyBook no es compatible con este tipo de archivo. Por favor, descarga un archivo diferente",
+  "@unsupportedFileTypeExplanation": {},
+  "redownloadVerify": "¿Está seguro de que deseas volver a descargar este archivo?",
+  "@redownloadVerify": {},
+  "deleteConfirm": "¿Estás seguro de que quieres borrar este libro/cómic?",
+  "@deleteConfirm": {},
+  "permissionRequired": "Permiso requerido",
+  "@permissionRequired": {},
+  "downloadExplanation": "JellyBook necesita descargar el cómic antes de que puedas leerlo",
+  "@downloadExplanation": {}
 }
