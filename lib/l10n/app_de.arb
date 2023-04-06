@@ -7,5 +7,21 @@
   "pageLoginUsername": "Benutzername",
   "@pageLoginUsername": {},
   "pageLoginPassword": "Passwort",
-  "@pageLoginPassword": {}
+  "@pageLoginPassword": {},
+  "pageLoginOfflineReader": "Offline Leser",
+  "@pageLoginOfflineReader": {},
+  "connect": "Verbinden",
+  "@connect": {},
+  "permissionRequired": "Berechtigung erforderlich",
+  "@permissionRequired": {},
+  "ok": "OK",
+  "@ok": {},
+  "error": "Fehler",
+  "@error": {},
+  "library": "Bibliothek",
+  "@library": {},
+  "noContent": "Es tut mir leid, aber Sie haben noch keine Inhalte heruntergeladen.",
+  "@noContent": {},
+  "noBooks": "Keine Bücher gefunden",
+  "@noBooks": {}
 }
