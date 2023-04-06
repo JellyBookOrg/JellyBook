@@ -18,7 +18,7 @@
   "@pageLoginOfflineReader": {},
   "connect": "Set Sail",
   "@connect": {},
-  "appName": "",
+  "appName": "JellyBook",
   "@appName": {},
   "permissionRequired": "Swashbuckle Needed",
   "@permissionRequired": {},
@@ -105,5 +105,7 @@
   "downloading": "Plundering",
   "@downloading": {},
   "nativeName": "Pirate",
-  "@nativeName": {}
+  "@nativeName": {},
+  "version": "Version: ",
+  "@version": {}
 }
