@@ -16,6 +16,7 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:logger/logger.dart';
 import 'package:jellybook/providers/pair.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // have optional perameter to have the function return the list of folders
 Future<Pair> getServerCategories(context) async {
@@ -183,7 +184,7 @@ Future<List<String>> askCategories(List<String> categories,
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: const Text("Select Categories"),
+          title: Text(AppLocalizations.of(context)!.selectCategories),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return SizedBox(

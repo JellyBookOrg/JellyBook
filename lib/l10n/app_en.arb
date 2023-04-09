@@ -161,5 +161,8 @@
         "@searchBook" : {},
 
         "noResults" : "No results found",
-        "@noResults" : {}
+        "@noResults" : {},
+
+        "selectCategories" : "Select Categories",
+        "@selectCategories" : {}
 }

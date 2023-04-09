@@ -5,8 +5,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jellybook/screens/homeScreen.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
 import 'package:logger/logger.dart';
+import 'package:jellybook/providers/languageProvider.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
 // optional inputs of url, username, and password (use empty string if not provided)
