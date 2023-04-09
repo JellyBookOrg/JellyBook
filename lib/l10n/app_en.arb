@@ -161,5 +161,41 @@
         "@searchBook" : {},
 
         "noResults" : "No results found",
-        "@noResults" : {}
+        "@noResults" : {},
+
+        "selectCategories" : "Select Categories",
+        "@selectCategories" : {},
+
+        "noHttp" : "URL does not contain http:// or https://",
+        "@noHttp" : {},
+
+        "noDot" : "URL does not contain a .",
+        "@noDot" : {},
+
+        "noSlash" : "URL does not contain a /",
+        "@noSlash" : {},
+
+        "invalidUrl" : "URL is not valid. Please check the URL and try again.",
+        "@invalidUrl" : {},
+
+        "invalidCredentials" : "Incorrect username or password",
+        "@invalidCredentials" : {},
+
+        "serverNotFound" : "Server not found\nPlease check the URL",
+        "@serverNotFound" : {},
+
+        "proxyAuthRequired" : "Proxy authentication required\nPlease check the server logs",
+        "@proxyAuthRequired" : {},
+
+        "requestTimeout" : "Request timeout\nPlease check the server logs",
+        "@requestTimeout" : {},
+
+        "dontBrewCoffee" : "Do not brew coffee with me. I am a teapot",
+        "@dontBrewCoffee" : {},
+
+        "serverError" : "Server error\nPlease check the server logs",
+        "@serverError" : {},
+
+        "badGateway" : "Bad gateway\nPlease check the server logs",
+        "@badGateway" : {}
 }

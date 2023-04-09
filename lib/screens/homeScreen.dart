@@ -129,10 +129,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icon(Icons.book),
                   label: AppLocalizations.of(context)?.reading ?? 'Reading',
                 ),
-                // BottomNavigationBarItem(
-                //   icon: Icon(Icons.settings),
-                //   label: 'Settings',
-                // ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
+                ),
               ],
               currentIndex: _selectedIndex,
               onTap: (index) {
@@ -195,10 +195,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.book,
                       text: AppLocalizations.of(context)?.reading ?? 'Reading',
                     ),
-                    // GButton(
-                    //   icon: Icons.settings,
-                    //   text: 'Settings',
-                    // ),
+                    GButton(
+                      icon: Icons.settings,
+                      text: 'Settings',
+                    ),
                   ],
                   selectedIndex: _selectedIndex,
                   onTabChange: (index) {

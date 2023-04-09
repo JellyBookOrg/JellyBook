@@ -75,6 +75,7 @@ dependencies:
     sdk: flutter
   intl: 
   intl_utils: ^2.8.2
+  device_info_plus: ^4.1.3
 
 dev_dependencies:
   flutter_test:

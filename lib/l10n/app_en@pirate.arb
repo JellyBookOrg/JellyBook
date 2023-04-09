@@ -105,5 +105,7 @@
   "ok": "Aye",
   "@ok": {},
   "downloading": "Plundering",
-  "@downloading": {}
+  "@downloading": {},
+  "selectCategories": "Select Ye Categories",
+  "@selectCategories" : {}
 }

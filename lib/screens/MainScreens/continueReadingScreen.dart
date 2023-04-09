@@ -88,118 +88,91 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                   snapshot.data != null &&
                   snapshot.data!.isNotEmpty) {
                 // logger.d(snapshot.data.toString());
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => InfoScreen(
-                              year: snapshot.data![index].releaseDate,
-                              title: snapshot.data![index].title,
-                              path: snapshot.data![index].filePath,
-                              stars: snapshot.data![index].rating,
-                              comicId: snapshot.data![index].id,
-                              url: snapshot.data![index].url,
-                              tags: snapshot.data![index].tags,
-                              description: snapshot.data![index].description,
-                              imageUrl: snapshot.data![index].imagePath,
-                              isLiked: snapshot.data![index].isFavorited,
-                              isDownloaded: snapshot.data![index].downloaded,
-                            ),
-                          ),
-                        );
-                        setState(() {});
-                      },
-                      title: AutoSizeText(
-                        snapshot.data![index].title,
-                        maxLines: 1,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      leading: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.grey[900]!.withOpacity(0.5)
-                                      : Colors.grey[300]!.withOpacity(0.5),
-                                  // color: Colors.black.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(2, 3),
+                return Column(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => InfoScreen(
+                                  year: snapshot.data![index].releaseDate,
+                                  title: snapshot.data![index].title,
+                                  path: snapshot.data![index].filePath,
+                                  stars: snapshot.data![index].rating,
+                                  comicId: snapshot.data![index].id,
+                                  url: snapshot.data![index].url,
+                                  tags: snapshot.data![index].tags,
+                                  description:
+                                      snapshot.data![index].description,
+                                  imageUrl: snapshot.data![index].imagePath,
+                                  isLiked: snapshot.data![index].isFavorited,
+                                  isDownloaded:
+                                      snapshot.data![index].downloaded,
                                 ),
-                              ],
-                            ),
-                            // if (snapshot.data![index].pageNum != 0)
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: snapshot.data![index].imagePath != "Asset"
-                                  ? FancyShimmerImage(
-                                      imageUrl: snapshot.data![index].imagePath,
-                                      errorWidget: Image.asset(
-                                        "assets/images/NoCoverArt.png",
-                                        fit: BoxFit.cover,
-                                      ),
-                                      width: MediaQuery.of(context).size.width *
-                                          0.1,
-                                      boxFit: BoxFit.fitWidth,
-                                    )
-                                  : Image.asset(
-                                      'assets/images/NoCoverArt.png',
-                                      width: MediaQuery.of(context).size.width *
-                                          0.1,
-                                      fit: BoxFit.fitWidth,
-                                    ),
+                              ),
+                            );
+                            setState(() {});
+                          },
+                          title: AutoSizeText(
+                            snapshot.data![index].title,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          snapshot.data![index].progress != 0
-                              ? Positioned(
-                                  top: 0,
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 0,
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.1,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.14,
-                                    decoration: BoxDecoration(
+                          leading: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  boxShadow: [
+                                    BoxShadow(
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
-                                          ? Colors.black.withOpacity(0.5)
-                                          : Colors.grey.withOpacity(0.5),
+                                          ? Colors.grey[900]!.withOpacity(0.5)
+                                          : Colors.grey[300]!.withOpacity(0.5),
                                       // color: Colors.black.withOpacity(0.5),
-                                      borderRadius: const BorderRadius.only(
-                                        bottomRight: Radius.circular(5),
-                                      ),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                      offset: const Offset(2, 3),
                                     ),
-                                    child: Center(
-                                      child: AutoSizeText(
-                                        maxLines: 1,
-                                        "${snapshot.data![index].progress.toString().substring(0, snapshot.data![index].progress.toString().length > 4 ? 4 : snapshot.data![index].progress.toString().length)}%",
-                                        style: TextStyle(
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          fontSize: 20,
+                                  ],
+                                ),
+                                // if (snapshot.data![index].pageNum != 0)
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(5),
+                                  child: snapshot.data![index].imagePath !=
+                                          "Asset"
+                                      ? FancyShimmerImage(
+                                          imageUrl:
+                                              snapshot.data![index].imagePath,
+                                          errorWidget: Image.asset(
+                                            "assets/images/NoCoverArt.png",
+                                            fit: BoxFit.cover,
+                                          ),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.1,
+                                          boxFit: BoxFit.fitWidth,
+                                        )
+                                      : Image.asset(
+                                          'assets/images/NoCoverArt.png',
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.1,
+                                          fit: BoxFit.fitWidth,
                                         ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : snapshot.data![index].pageNum != 0
+                                ),
+                              ),
+                              snapshot.data![index].progress != 0
                                   ? Positioned(
                                       top: 0,
                                       left: 0,
@@ -225,7 +198,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                         child: Center(
                                           child: AutoSizeText(
                                             maxLines: 1,
-                                            "${snapshot.data![index].pageNum}p",
+                                            "${snapshot.data![index].progress.toString().substring(0, snapshot.data![index].progress.toString().length > 4 ? 4 : snapshot.data![index].progress.toString().length)}%",
                                             style: TextStyle(
                                               color: Theme.of(context)
                                                           .brightness ==
@@ -239,10 +212,12 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                         ),
                                       ),
                                     )
-                                  : snapshot.data![index].epubCfi == ""
+                                  : snapshot.data![index].pageNum != 0
                                       ? Positioned(
                                           top: 0,
                                           left: 0,
+                                          right: 0,
+                                          bottom: 0,
                                           child: Container(
                                             width: MediaQuery.of(context)
                                                     .size
@@ -250,7 +225,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                                 0.1,
                                             height: MediaQuery.of(context)
                                                     .size
-                                                    .width *
+                                                    .height *
                                                 0.14,
                                             decoration: BoxDecoration(
                                               color: Theme.of(context)
@@ -260,15 +235,16 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                                       .withOpacity(0.5)
                                                   : Colors.grey
                                                       .withOpacity(0.5),
+                                              // color: Colors.black.withOpacity(0.5),
                                               borderRadius:
                                                   const BorderRadius.only(
                                                 bottomRight: Radius.circular(5),
                                               ),
                                             ),
                                             child: Center(
-                                              child: Text(
-                                                snapshot.data![index].pageNum
-                                                    .toString(),
+                                              child: AutoSizeText(
+                                                maxLines: 1,
+                                                "${snapshot.data![index].pageNum}p",
                                                 style: TextStyle(
                                                   color: Theme.of(context)
                                                               .brightness ==
@@ -277,64 +253,116 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                                       : Colors.black,
                                                   fontSize: 20,
                                                 ),
+                                                textAlign: TextAlign.center,
                                               ),
                                             ),
                                           ),
                                         )
-                                      : const Text(""),
-                        ],
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (snapshot.data![index].description.isNotEmpty)
-                            AutoSizeText(
-                              snapshot.data![index].description,
-                              maxLines: 2,
-                              style: const TextStyle(
-                                fontSize: 15,
+                                      : snapshot.data![index].epubCfi == ""
+                                          ? Positioned(
+                                              top: 0,
+                                              left: 0,
+                                              child: Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.1,
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.14,
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.dark
+                                                      ? Colors.black
+                                                          .withOpacity(0.5)
+                                                      : Colors.grey
+                                                          .withOpacity(0.5),
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                    bottomRight:
+                                                        Radius.circular(5),
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    snapshot
+                                                        .data![index].pageNum
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                      color: Theme.of(context)
+                                                                  .brightness ==
+                                                              Brightness.dark
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                      fontSize: 20,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : const Text(""),
+                              const SizedBox(
+                                height: 10,
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          if (snapshot.data![index].rating > 0)
-                            // prevent the rating from being touched since it can be changed if touched
-                            IgnorePointer(
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    child: CustomRating(
-                                      max: 5,
-                                      score: snapshot.data![index].rating / 2,
-                                      star: Star(
-                                        fillColor: Color.lerp(
-                                            Colors.red,
-                                            Colors.yellow,
-                                            snapshot.data![index].rating / 10)!,
-                                        emptyColor:
-                                            Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? Colors.grey[900]!
-                                                : Colors.grey[300]!,
-                                        // emptyColor: Colors.grey.withOpacity(0.5),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (snapshot.data![index].description.isNotEmpty)
+                                AutoSizeText(
+                                  snapshot.data![index].description,
+                                  maxLines: 2,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              if (snapshot.data![index].rating > 0)
+                                // prevent the rating from being touched since it can be changed if touched
+                                IgnorePointer(
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 0, 0),
+                                        child: CustomRating(
+                                          max: 5,
+                                          score:
+                                              snapshot.data![index].rating / 2,
+                                          star: Star(
+                                            fillColor: Color.lerp(
+                                                Colors.red,
+                                                Colors.yellow,
+                                                snapshot.data![index].rating /
+                                                    10)!,
+                                            emptyColor:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.grey[900]!
+                                                    : Colors.grey[300]!,
+                                            // emptyColor: Colors.grey.withOpacity(0.5),
+                                          ),
+                                          onRating: (double score) {},
+                                        ),
                                       ),
-                                      onRating: (double score) {},
-                                    ),
+                                      Text(
+                                        " ${snapshot.data![index].rating / 2}/5.0",
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    " ${snapshot.data![index].rating / 2}/5.0",
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                  },
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 );
               } else if (snapshot.hasError) {
                 // return the error in the center of the screen
