@@ -105,5 +105,7 @@
   "permissionRequired": "Permiso requerido",
   "@permissionRequired": {},
   "downloadExplanation": "JellyBook necesita descargar el cómic antes de que puedas leerlo",
-  "@downloadExplanation": {}
+  "@downloadExplanation": {},
+  "nativeName": "Inglés",
+  "@nativeName": {}
 }
