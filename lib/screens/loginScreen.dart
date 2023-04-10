@@ -59,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       LoginProvider.loginStatic(
         url!,
         username!,
+        context,
         password!,
       ).then((value) {
         if (value == "true") {
@@ -175,6 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     LoginProvider.loginStatic(
                       _url.text,
                       _username.text,
+                      context,
                       _password.text,
                     ).then((value) {
                       if (value == "true") {
