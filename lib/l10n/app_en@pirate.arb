@@ -107,5 +107,7 @@
   "nativeName": "Pirate",
   "@nativeName": {},
   "version": "Version: ",
-  "@version": {}
+  "@version": {},
+  "selectCategories": "Select Ye Categories",
+  "@selectCategories" : {}
 }

@@ -1,111 +1,201 @@
 {
-  "@@locale": "en",
-  "appName": "JellyBook",
-  "@appName": {},
-  "pageLoginAddress": "Your Address",
-  "@pageLoginAddress": {},
-  "pageLoginUsername": "Username",
-  "@pageLoginUsername": {},
-  "pageLoginPassword": "Password",
-  "@pageLoginPassword": {},
-  "pageLoginOfflineReader": "Offline Reader",
-  "@pageLoginOfflineReader": {},
-  "connect": "Connect",
-  "@connect": {},
-  "permissionRequired": "Permission Required",
-  "@permissionRequired": {},
-  "permissionExplanation": "JellyBook needs permission to access your files to read your comics",
-  "@permissionExplanation": {},
-  "ok": "OK",
-  "@ok": {},
-  "downloadRequired": "Download Required",
-  "@downloadRequired": {},
-  "downloadExplanation": "JellyBook needs to download the comic before you can read it",
-  "@downloadExplanation": {},
-  "unsupportedFileType": "File Type Not Supported",
-  "@unsupportedFileType": {},
-  "unsupportedFileTypeExplanation": "JellyBook does not support this file type. Please download a different file",
-  "@unsupportedFileTypeExplanation": {},
-  "loadingComic": "Please wait while we load your comic/book",
-  "@loadingComic": {},
-  "refresh": "Refresh",
-  "@refresh": {},
-  "downloadFirst": "You need to download the comic first",
-  "@downloadFirst": {},
-  "downloadOffline": "You are offline, please connect to the internet & reload this app to download this comic",
-  "@downloadOffline": {},
-  "noResultsFound": "No results found in this folder",
-  "@noResultsFound": {},
-  "unknownError": "An unknown error has occured.",
-  "@unknownError": {},
-  "error": "Error",
-  "@error": {},
-  "offlineBookReader": "Offline Book Reader",
-  "@offlineBookReader": {},
-  "collections": "Collections",
-  "@collections": {},
-  "library": "Library",
-  "@library": {},
-  "noContent": "I'm sorry but you havent downloaded any content yet.",
-  "@noContent": {},
-  "noContent2": "If you have not connected to the internet, please connect to the internet and click the refresh button in the top left corner of the screen.",
-  "@noContent2": {},
-  "noBooks": "No books found",
-  "@noBooks": {},
-  "waitToFetchDB": "Please wait while we fetch content from the database",
-  "@waitToFetchDB": {},
-  "downloading": "Downloading",
-  "@downloading": {},
-  "redownload": "Redownload",
-  "@redownload": {},
-  "redownloadVerify": "Are you sure you want to redownload this file?",
-  "@redownloadVerify": {},
-  "cancel": "Cancel",
-  "@cancel": {},
-  "downloadingFile": "Downloading File:",
-  "@downloadingFile": {},
-  "extractingContent": "Extracting Content",
-  "@extractingContent": {},
-  "fileDownloaded": "File Downloaded",
-  "@fileDownloaded": {},
-  "home": "Home",
-  "@home": {},
-  "downloads": "Downloads",
-  "@downloads": {},
-  "reading": "Reading",
-  "@reading": {},
-  "settings": "Settings",
-  "@settings": {},
-  "continueReading": "Continue Reading",
-  "@continueReading": {},
-  "noBooksStarted": "You have not started any books/comics yet.",
-  "@noBooksStarted": {},
-  "search": "Search",
-  "@search": {},
-  "theme": "Theme",
-  "@theme": {},
-  "language": "Language",
-  "@language": {},
-  "pageTransition": "Page Transition",
-  "@pageTransition": {},
-  "experimentalFeatures": "Experimental Features",
-  "@experimentalFeatures": {},
-  "version": "Version: ",
-  "@version": {},
-  "unknown": "Unknown",
-  "@unknown": {},
-  "madeBy": "Made By",
-  "@madeBy": {},
-  "delete": "Delete",
-  "@delete": {},
-  "deleteConfirm": "Are you sure you want to delete this book/comic?",
-  "@deleteConfirm": {},
-  "noBooksFound": "No books were found to be downloaded",
-  "@noBooksFound": {},
-  "searchBook": "Please search for a book",
-  "@searchBook": {},
-  "noResults": "No results found",
-  "@noResults": {},
-  "nativeName": "English",
-  "@nativeName": {}
+	"@@locale": "en",
+
+        "appName" : "JellyBook",
+        "@appName" : {},
+
+	"pageLoginAddress": "Your Address",
+        "@pageLoginAddress" : {},
+	"pageLoginUsername": "Username",
+	"@pageLoginUsername": {},
+	"pageLoginPassword": "Password",
+	"@pageLoginPassword": {},
+        "pageLoginOfflineReader": "Offline Reader",
+        "@pageLoginOfflineReader": {},
+
+        "connect": "Connect",
+        "@connect": {},
+
+        "permissionRequired" : "Permission Required",
+        "@permissionRequired" : {},
+
+        "permissionExplanation" : "JellyBook needs permission to access your files to read your comics",
+        "@permissionExplanation" : {},
+
+        "ok" : "OK",
+        "@ok" : {},
+
+        "downloadRequired" : "Download Required",
+        "@downloadRequired" : {},
+
+        "downloadExplanation" : "JellyBook needs to download the comic before you can read it",
+        "@downloadExplanation" : {},
+
+        "unsupportedFileType" : "File Type Not Supported",
+        "@unsupportedFileType" : {},
+
+        "unsupportedFileTypeExplanation" : "JellyBook does not support this file type. Please download a different file",
+        "@unsupportedFileTypeExplanation" : {},
+
+        "loadingComic" : "Please wait while we load your comic/book",
+        "@loadingComic" : {},
+
+        "refresh" : "Refresh",
+        "@refresh" : {},
+
+        "downloadFirst": "You need to download the comic first",
+        "@downloadFirst": {},
+
+        "downloadOffline": "You are offline, please connect to the internet & reload this app to download this comic",
+        "@downloadOffline": {},
+
+        "noResultsFound": "No results found in this folder",
+        "@noResultsFound": {},
+
+        "unknownError": "An unknown error has occured.",
+        "@unknownError": {},
+
+        "error": "Error:",
+        "@error": {},
+
+        "offlineBookReader" : "Offline Book Reader",
+        "@offlineBookReader" : {},
+
+        "collections" : "Collections",
+        "@collections" : {},
+
+        "library" : "Library",
+        "@library" : {},
+
+        "noContent": "I'm sorry but you havent downloaded any content yet.",
+        "@noContent": {},
+
+        "noContent2" : "If you have not connected to the internet, please connect to the internet and click the refresh button in the top left corner of the screen.",
+        "@noContent2": {},
+
+        "error" : "Error",
+        "@error" : {},
+
+        "noBooks" : "No books found",
+        "@noBooks" : {},
+
+        "waitToFetchDB" : "Please wait while we fetch content from the database",
+        "@waitToFetchDB" : {},
+
+        "downloading" : "Downloading",
+        "@downloading" : {},
+
+        "redownload" : "Redownload",
+        "@redownload" : {},
+
+        "redownloadVerify" : "Are you sure you want to redownload this file?",
+        "@redownloadVerify" : {},
+
+        "cancel" : "Cancel",
+        "@cancel" : {},
+
+        "downloadingFile" : "Downloading File:",
+        "@downloadingFile" : {},
+
+        "extractingContent" : "Extracting Content",
+        "@extractingContent" : {},
+
+        "fileDownloaded" : "File Downloaded",
+        "@fileDownloaded" : {},
+
+        "home" : "Home",
+        "@home" : {},
+
+        "downloads" : "Downloads",
+        "@downloads" : {},
+
+        "reading" : "Reading",
+        "@reading" : {},
+
+        "settings" : "Settings",
+        "@settings" : {},
+
+        "continueReading" : "Continue Reading",
+        "@continueReading" : {},
+
+        "noBooksStarted" : "You have not started any books/comics yet.",
+        "@noBooksStarted" : {},
+
+        "search" : "Search",
+        "@search" : {},
+
+        "settings" : "Settings",
+        "@settings" : {},
+
+        "theme" : "Theme",
+        "@theme" : {},
+
+        "language" : "Language",
+        "@language" : {},
+
+        "pageTransition" : "Page Transition",
+        "@pageTransition" : {},
+
+        "experimentalFeatures" : "Experimental Features",
+        "@experimentalFeatures" : {},
+        
+        "version" : "Version: ",
+        "@version" : {},
+
+        "unknown" : "Unknown",
+        "@unknown" : {},
+
+        "madeBy" : "Made By",
+        "@madeBy" : {},
+
+        "delete" : "Delete",
+        "@delete" : {},
+
+        "deleteConfirm" : "Are you sure you want to delete this book/comic?",
+        "@deleteConfirm" : {},
+
+        "noBooksFound" : "No books were found to be downloaded", 
+        "@noBooksFound" : {},
+
+        "searchBook" : "Please search for a book",
+        "@searchBook" : {},
+
+        "noResults" : "No results found",
+        "@noResults" : {},
+
+        "selectCategories" : "Select Categories",
+        "@selectCategories" : {},
+
+        "noHttp" : "URL does not contain http:// or https://",
+        "@noHttp" : {},
+
+        "noDot" : "URL does not contain a .",
+        "@noDot" : {},
+
+        "noSlash" : "URL does not contain a /",
+        "@noSlash" : {},
+
+        "invalidUrl" : "URL is not valid. Please check the URL and try again.",
+        "@invalidUrl" : {},
+
+        "invalidCredentials" : "Incorrect username or password",
+        "@invalidCredentials" : {},
+
+        "serverNotFound" : "Server not found\nPlease check the URL",
+        "@serverNotFound" : {},
+
+        "proxyAuthRequired" : "Proxy authentication required\nPlease check the server logs",
+        "@proxyAuthRequired" : {},
+
+        "requestTimeout" : "Request timeout\nPlease check the server logs",
+        "@requestTimeout" : {},
+
+        "dontBrewCoffee" : "Do not brew coffee with me. I am a teapot",
+        "@dontBrewCoffee" : {},
+
+        "serverError" : "Server error\nPlease check the server logs",
+        "@serverError" : {},
+
+        "badGateway" : "Bad gateway\nPlease check the server logs",
+        "@badGateway" : {}
 }

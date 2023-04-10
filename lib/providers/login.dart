@@ -1,15 +1,19 @@
 // This files purpose is to attempt to login to the server
 // this is not the screen, it is just the request and response
 
-// import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart' as package_info;
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:logger/logger.dart';
 import 'package:openapi/openapi.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class LoginProvider {
   final String url;
@@ -28,63 +32,66 @@ class LoginProvider {
      */
 
   // make a static version of the above class
-  static Future<String> loginStatic(String url, String username,
+  static Future<String> loginStatic(
+      String url, String username, BuildContext context,
       [String password = ""]) async {
     var logger = Logger();
     logger.d("LoginStatic called");
     final storage = FlutterSecureStorage();
     // String _url = "$url/Users/authenticatebyname";
     String _url = url;
+    final BuildContext _context = context;
     const _client = "JellyBook";
-    const _device = "Unknown Device";
-    const _deviceId = "Unknown Device id";
+    String _device;
+    String _deviceId;
     late String _version;
+
+    logger.d("getDeviceInfo called");
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    _device = "Unknown Device";
+    _deviceId = "Unknown Device id";
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      _device = androidInfo.model ?? "Unknown Device";
+      _deviceId = androidInfo.version.release != null
+          ? "Android ${androidInfo.version.release}"
+          : "Unknown Device id";
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      _device = iosInfo.name ?? "Unknown Device";
+      _device = iosInfo.identifierForVendor ?? "Unknown Device id";
+    }
 
     package_info.PackageInfo packageInfo =
         await package_info.PackageInfo.fromPlatform();
 
     _version = packageInfo.version;
 
-    if ((!url.contains("http://") || !url.contains("https://")) == false) {
-      logger.d("URL does not contain http:// or https://");
-      return "Plase add http:// or https:// to the url";
-    }
-
-    final Map<String, String> body = {
-      "Username": username,
-      "Pw": password,
-    };
-
     logger.d("Attempting to login to $url");
-    if (!_url.contains("http")) {
-      _url = "http://$_url";
-    }
+
     // check if the last character is a /
     if (_url.endsWith("/")) {
       _url = _url.substring(0, _url.length - 1);
     }
     // check if url is valid using regex (allow other languages and emojis)
-    final RegExp urlTest = RegExp(
-        r"^(http|https)://[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$");
+    final RegExp urlTest = RegExp(r"^(http|https)://+.+");
     if (!urlTest.hasMatch(_url)) {
       logger.e("URL is not valid");
       // tell why it is not valid
-      if (!_url.contains("http")) {
-        return "URL does not contain http:// or https://";
+      if (!_url.startsWith("http")) {
+        return AppLocalizations.of(_context)?.noHttp ??
+            "URL does not start with http:// or https://";
       }
       if (!_url.contains(".")) {
-        return "URL does not contain a .";
+        return AppLocalizations.of(_context)?.noDot ??
+            "URL does not contain a .";
       }
       if (!_url.contains("/")) {
-        return "URL does not contain a /";
+        return AppLocalizations.of(_context)?.noSlash ??
+            "URL does not contain a /";
       }
-      if (_url.endsWith("/")) {
-        return "URL ends with a /";
-      }
-      if (_url.contains(" ")) {
-        return "URL contains a space";
-      }
-      return "URL is not valid";
+      return AppLocalizations.of(_context)?.invalidUrl ??
+          "URL is not valid. Please check the URL and try again.";
     }
 
     final api = Openapi(basePathOverride: _url);
@@ -104,6 +111,7 @@ class LoginProvider {
       logger.d("Status Code: ${response.statusCode}");
     } catch (e) {
       logger.e("Error:\n$e");
+      return e.toString();
       // logger.e('Exception when calling UserApi->authenticateUserByName: $e\n');
     }
 
@@ -163,16 +171,36 @@ class LoginProvider {
     } else {
       if (response.statusCode == 401) {
         logger.e("401");
-        return "Incorrect username or password";
+        return AppLocalizations.of(_context)?.invalidCredentials ??
+            "Incorrect username or password";
       } else if (response.statusCode == 404) {
         logger.e("404");
-        return "Server not found";
+        return AppLocalizations.of(_context)?.serverNotFound ??
+            "Server not found\nPlease check the URL";
+      } else if (response.statusCode == 407) {
+        logger.e("407");
+        return AppLocalizations.of(_context)?.proxyAuthRequired ??
+            "Proxy authentication required\nPlease check the server logs";
+      } else if (response.statusCode == 408) {
+        logger.e("408");
+        return AppLocalizations.of(_context)?.requestTimeout ??
+            "Request timeout\nPlease check the server logs";
+      } else if (response.statusCode == 418) {
+        logger.e("418");
+        return AppLocalizations.of(_context)?.dontBrewCoffee ??
+            "Do not brew coffee with me. I am a teapot";
       } else if (response.statusCode == 500) {
         logger.e("500");
-        return "Server error";
+        return AppLocalizations.of(_context)?.serverError ??
+            "Server error\nPlease check the server logs";
+      } else if (response.statusCode == 502) {
+        logger.e("502");
+        return AppLocalizations.of(_context)?.badGateway ??
+            "Bad gateway\nPlease check the server logs";
       } else {
         logger.e("Unknown error");
-        return "Error: ${response.statusCode}";
+        return (AppLocalizations.of(_context)?.error ?? "Error:") +
+            " ${response.statusCode}";
       }
     }
   }

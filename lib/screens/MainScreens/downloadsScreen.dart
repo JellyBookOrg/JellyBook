@@ -95,196 +95,212 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
               if (snapshot.hasData &&
                   snapshot.data.length > 0 &&
                   snapshot.connectionState == ConnectionState.done) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      onTap: () {
-                        if (snapshot.data[index]['type'] != EntryType.folder) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => InfoScreen(
-                                comicId: snapshot.data[index]['id'],
-                                title: snapshot.data[index]['title'],
-                                imageUrl: snapshot.data[index]['imagePath'],
-                                stars: snapshot.data[index]['rating'],
-                                description: snapshot.data[index]
-                                    ['description'],
-                                path: snapshot.data[index]['path'],
-                                year: snapshot.data[index]['year'],
-                                url: snapshot.data[index]['url'],
-                                tags: snapshot.data[index]['tags'],
-                                isLiked: snapshot.data[index]['isFavorited'],
-                                isDownloaded: snapshot.data[index]
-                                    ['downloaded'],
-                              ),
-                            ),
-                          );
-                        } else if (snapshot.data[index]['type'] ==
-                            EntryType.folder) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => collectionScreen(
-                                folderId: snapshot.data[index]['id'],
-                                name: snapshot.data[index]['title'],
-                                image: snapshot.data[index]['imagePath'],
-                                bookIds: snapshot.data[index]['bookIds'],
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text(
-                                    AppLocalizations.of(context)?.delete ??
-                                        "Delete"),
-                                content: Text(AppLocalizations.of(context)
-                                        ?.deleteConfirm ??
-                                    "Are you sure you want to delete this book/comic?"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text(
-                                        AppLocalizations.of(context)?.cancel ??
+                return Column(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          onTap: () {
+                            if (snapshot.data[index]['type'] !=
+                                EntryType.folder) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => InfoScreen(
+                                    comicId: snapshot.data[index]['id'],
+                                    title: snapshot.data[index]['title'],
+                                    imageUrl: snapshot.data[index]['imagePath'],
+                                    stars: snapshot.data[index]['rating'],
+                                    description: snapshot.data[index]
+                                        ['description'],
+                                    path: snapshot.data[index]['path'],
+                                    year: snapshot.data[index]['year'],
+                                    url: snapshot.data[index]['url'],
+                                    tags: snapshot.data[index]['tags'],
+                                    isLiked: snapshot.data[index]
+                                        ['isFavorited'],
+                                    isDownloaded: snapshot.data[index]
+                                        ['downloaded'],
+                                  ),
+                                ),
+                              );
+                            } else if (snapshot.data[index]['type'] ==
+                                EntryType.folder) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => collectionScreen(
+                                    folderId: snapshot.data[index]['id'],
+                                    name: snapshot.data[index]['title'],
+                                    image: snapshot.data[index]['imagePath'],
+                                    bookIds: snapshot.data[index]['bookIds'],
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                        AppLocalizations.of(context)?.delete ??
+                                            "Delete"),
+                                    content: Text(AppLocalizations.of(context)
+                                            ?.deleteConfirm ??
+                                        "Are you sure you want to delete this book/comic?"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text(AppLocalizations.of(context)
+                                                ?.cancel ??
                                             "Cancel"),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text("Delete"),
-                                    onPressed: () {
-                                      final isar = Isar.getInstance();
-                                      var entry = isar!.entrys
-                                          .where()
-                                          .idEqualTo(snapshot.data[index]['id'])
-                                          .findFirstSync();
-                                      isar.writeTxn(() async {
-                                        await isar.entrys.delete(entry!.isarId);
-                                      });
-                                      snapshot.data.removeAt(index);
-                                      setState(() {});
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: const Text("Delete"),
+                                        onPressed: () {
+                                          final isar = Isar.getInstance();
+                                          var entry = isar!.entrys
+                                              .where()
+                                              .idEqualTo(
+                                                  snapshot.data[index]['id'])
+                                              .findFirstSync();
+                                          isar.writeTxn(() async {
+                                            await isar.entrys
+                                                .delete(entry!.isarId);
+                                          });
+                                          snapshot.data.removeAt(index);
+                                          setState(() {});
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                      ),
-                      title: Text(snapshot.data[index]['title']),
-                      leading: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.black.withOpacity(0.5)
-                                  : Colors.grey.withOpacity(0.5),
-                              // color: Colors.black.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: const Offset(2, 3),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: snapshot.data![index]['imagePath'] != 'Asset'
-                              ? FancyShimmerImage(
-                                  imageUrl: snapshot.data![index]['imagePath'],
-                                  errorWidget: Image.asset(
-                                    'assets/images/NoCoverArt.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  boxFit: BoxFit.fitWidth,
-                                )
-                              : Image.asset(
-                                  'assets/images/NoCoverArt.png',
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  fit: BoxFit.fitWidth,
+                          ),
+                          title: Text(snapshot.data[index]['title']),
+                          leading: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.black.withOpacity(0.5)
+                                      : Colors.grey.withOpacity(0.5),
+                                  // color: Colors.black.withOpacity(0.5),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: const Offset(2, 3),
                                 ),
-                        ),
-                      ),
-                      subtitle: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          if (snapshot.data[index]['rating'] >= 0)
-                            IgnorePointer(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    child: CustomRating(
-                                      max: 5,
-                                      score: snapshot.data[index]['rating'] / 2,
-                                      star: Star(
-                                        fillColor: Color.lerp(
-                                            Colors.red,
-                                            Colors.yellow,
-                                            snapshot.data[index]['rating'] /
-                                                10)!,
-                                        emptyColor: Theme.of(context)
-                                                    .brightness ==
-                                                Brightness.dark
-                                            ? Colors.grey[800]!.withOpacity(0.5)
-                                            : Colors.grey[300]!
-                                                .withOpacity(0.5),
-                                        // emptyColor: Colors.grey.withOpacity(0.5),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: snapshot.data![index]['imagePath'] !=
+                                      'Asset'
+                                  ? FancyShimmerImage(
+                                      imageUrl: snapshot.data![index]
+                                          ['imagePath'],
+                                      errorWidget: Image.asset(
+                                        'assets/images/NoCoverArt.png',
+                                        fit: BoxFit.cover,
                                       ),
-                                      onRating: (double score) {},
+                                      width: MediaQuery.of(context).size.width *
+                                          0.1,
+                                      boxFit: BoxFit.fitWidth,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/NoCoverArt.png',
+                                      width: MediaQuery.of(context).size.width *
+                                          0.1,
+                                      fit: BoxFit.fitWidth,
                                     ),
+                            ),
+                          ),
+                          subtitle: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              if (snapshot.data[index]['rating'] >= 0)
+                                IgnorePointer(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 0, 0),
+                                        child: CustomRating(
+                                          max: 5,
+                                          score: snapshot.data[index]
+                                                  ['rating'] /
+                                              2,
+                                          star: Star(
+                                            fillColor: Color.lerp(
+                                                Colors.red,
+                                                Colors.yellow,
+                                                snapshot.data[index]['rating'] /
+                                                    10)!,
+                                            emptyColor:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.grey[800]!
+                                                        .withOpacity(0.5)
+                                                    : Colors.grey[300]!
+                                                        .withOpacity(0.5),
+                                            // emptyColor: Colors.grey.withOpacity(0.5),
+                                          ),
+                                          onRating: (double score) {},
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            8, 0, 0, 0),
+                                        child: Text(
+                                          "${(snapshot.data[index]['rating'] / 2).toStringAsFixed(2)} / 5.00",
+                                          style: const TextStyle(
+                                            fontStyle: FontStyle.italic,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                    child: Text(
-                                      "${(snapshot.data[index]['rating'] / 2).toStringAsFixed(2)} / 5.00",
+                                ),
+                              if (snapshot.data[index]['rating'] < 0 &&
+                                  snapshot.data[index]['description'] != '')
+                                Flexible(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: fixRichText(
+                                          snapshot.data[index]['description']),
                                       style: const TextStyle(
                                         fontStyle: FontStyle.italic,
                                         fontSize: 15,
+                                        color: Colors.grey,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          if (snapshot.data[index]['rating'] < 0 &&
-                              snapshot.data[index]['description'] != '')
-                            Flexible(
-                              child: RichText(
-                                text: TextSpan(
-                                  text: fixRichText(
-                                      snapshot.data[index]['description']),
-                                  style: const TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 15,
-                                    color: Colors.grey,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                  },
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  ],
                 );
               } else if (snapshot.hasData &&
                   snapshot.data.length == 0 &&
