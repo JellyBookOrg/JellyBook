@@ -68,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: ListView(
           children: [
             const SizedBox(
-              height: 40,
+              height: 10,
             ),
             // should be comprised of widgets
             /* themeSettings(context),
@@ -80,19 +80,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(
               height: 20,
             ),
-            pageTransitionSettings(),
-            const SizedBox(
-              height: 20,
-            ),
-            experimentalFeaturesSettings(),
+            // pageTransitionSettings(),
+            // const SizedBox(
+            //   height: 20,
+            // ),
+            // experimentalFeaturesSettings(),
             SizedBox(
               // depends on screen size
-              height: MediaQuery.of(context).size.height * 0.15,
+              height: MediaQuery.of(context).size.height * 0.55,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.25,
+              child: ElevatedButton(
+                onPressed: () {
+                  showLicensePage(
+                    context: context,
+                    applicationName: 'Jellybook',
+                    applicationVersion: version,
+                    applicationIcon: Image.asset(
+                      'assets/images/Logo.png',
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.width * 0.4,
+                    ),
+                    applicationLegalese:
+                        'MIT License. Made with love by Kara Wilson',
+                  );
+                },
+                child: Text(
+                  'Licenses',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
             ),
             aboutSettings(),
             const SizedBox(
               height: 40,
             ),
+            // button to show licenses (open source licenses)
+            // create a container to hold the button of a certain size
           ],
         ),
       ),
