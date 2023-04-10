@@ -1,6 +1,8 @@
 // This files purpose is to attempt to login to the server
 // this is not the screen, it is just the request and response
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:logger/logger.dart';
 import 'package:openapi/openapi.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class LoginProvider {
   final String url;
@@ -39,9 +42,25 @@ class LoginProvider {
     String _url = url;
     final BuildContext _context = context;
     const _client = "JellyBook";
-    const _device = "Unknown Device";
-    const _deviceId = "Unknown Device id";
+    String _device;
+    String _deviceId;
     late String _version;
+
+    logger.d("getDeviceInfo called");
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    _device = "Unknown Device";
+    _deviceId = "Unknown Device id";
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      _device = androidInfo.model ?? "Unknown Device";
+      _deviceId = androidInfo.version.release != null
+          ? "Android ${androidInfo.version.release}"
+          : "Unknown Device id";
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      _device = iosInfo.name ?? "Unknown Device";
+      _device = iosInfo.identifierForVendor ?? "Unknown Device id";
+    }
 
     package_info.PackageInfo packageInfo =
         await package_info.PackageInfo.fromPlatform();
