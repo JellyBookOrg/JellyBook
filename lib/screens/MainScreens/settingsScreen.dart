@@ -522,6 +522,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         var file =
             File((await getApplicationDocumentsDirectory()).path + "/log.txt");
         await file.writeAsString(log);
+        // tell the user where the file is
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Log file written to ${file.path}",
+            ),
+          ),
+        );
       },
     );
   }
