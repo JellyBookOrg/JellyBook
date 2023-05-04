@@ -1,8 +1,11 @@
 // The purpose of this file is to allow the user to change the settings of the app
 
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:jellybook/providers/themeProvider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -81,13 +84,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               height: 20,
             ),
             // pageTransitionSettings(),
-            // const SizedBox(
-            //   height: 20,
-            // ),
+            themeSettings(context),
+            const SizedBox(
+              height: 20,
+            ),
             // experimentalFeaturesSettings(),
+            // button to show log file
+            logToFile(),
+            const SizedBox(
+              height: 20,
+            ),
             SizedBox(
               // depends on screen size
-              height: MediaQuery.of(context).size.height * 0.55,
+              height: MediaQuery.of(context).size.height * 0.38,
             ),
             Container(
               width: MediaQuery.of(context).size.width * 0.25,
@@ -112,12 +121,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            aboutSettings(),
             const SizedBox(
-              height: 40,
+              height: 20,
             ),
-            // button to show licenses (open source licenses)
-            // create a container to hold the button of a certain size
+            aboutSettings(),
           ],
         ),
       ),
@@ -125,10 +132,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // theme settings (future builder to get the current theme and then change it)
-  /*
   Widget themeSettings(BuildContext context) => DropDownSettingsTile(
         settingKey: 'theme',
-        title: AppLocalizations.of(context)?.theme ?? 'Theme',
+        title: AppLocalizations.of(context)?.theme ?? 'theme',
         selected: Settings.getValue<String>('theme') ?? 'System',
         leading: const Icon(Icons.color_lens),
         // @TODO: Look into using AppLocalizations for the values
@@ -137,26 +143,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'System': 'System',
           'Light': 'Light',
           'Dark': 'Dark',
+          'Amoled': 'Amoled',
         },
         onChange: (value) async {
-          ThemeManager themeManager = Provider.of<ThemeManager>(context);
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('theme', value.toString());
-          ThemeData _themeData = ThemeMode.system == ThemeMode.dark
-              ? ThemeData.dark()
-              : ThemeData.light();
-          if (value == 'System') {
-            themeManager.setTheme(_themeData);
-          } else if (value == 'Light') {
-            themeManager.setTheme(ThemeData.light());
-          } else if (value == 'Dark') {
-            themeManager.setTheme(ThemeData.dark());
-          } else if (value == 'Amoled') {
-            themeManager.setTheme(ThemeData.dark());
-          }
+          ThemeChangeNotifier themeChangeNotifier =
+              Provider.of<ThemeChangeNotifier>(context, listen: false);
+          prefs.setString('theme', value.toString().toLowerCase());
+          themeChangeNotifier.setTheme = value.toString().toLowerCase();
         },
       );
-      */
 
   final isoLangs = {
     "ab": {"name": "Abkhaz", "nativeName": "аҧсуа"},
@@ -511,4 +507,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
       );
+
+  Widget logToFile() {
+    // this is a button that will log the current log to a file
+    // create a button that will log the current log to a file
+    return ElevatedButton(
+      child: Text("Log to File"),
+      onPressed: () async {
+        // get the current log
+        final logger = Logger();
+        final log = logger.toString();
+
+        // write the log to a file in the app's directory
+        var file =
+            File((await getApplicationDocumentsDirectory()).path + "/log.txt");
+        await file.writeAsString(log);
+      },
+    );
+  }
 }

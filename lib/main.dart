@@ -18,6 +18,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:jellybook/providers/languageProvider.dart';
+import 'package:jellybook/providers/themeProvider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -112,26 +113,23 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<LocaleChangeNotifier>(
             create: (context) => LocaleChangeNotifier(context, prefs!)),
+        ChangeNotifierProvider<ThemeChangeNotifier>(
+            create: (context) => ThemeChangeNotifier(context, prefs!)),
       ],
       builder: (context, _) {
         final localeChangenotifier = Provider.of<LocaleChangeNotifier>(context);
         Locale locale2 = localeChangenotifier.locale;
+        final themeChangenotifier = Provider.of<ThemeChangeNotifier>(context);
+        ThemeData themeData = themeChangenotifier.getTheme;
         print("Locale (main.dart): " + locale2.toString());
         return MaterialApp(
           title: 'JellyBook',
           debugShowCheckedModeBanner: false,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          // localeListResolutionCallback: (allLocales, supportedLocales) {
-          // final locale = allLocales?.first.languageCode ?? "en";
-          // return Locale(locale);
-          // },
-          locale: locale2,
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-          ),
-          darkTheme: ThemeData.dark(),
+          locale: locale2 != null ? locale2 : Locale('en', 'US'),
+          theme: themeData != null ? themeData : ThemeData.dark(),
+          // darkTheme: ThemeData.dark(),
           home: FutureBuilder(
             future: Connectivity().checkConnectivity(),
             builder: (context, snapshot) {
