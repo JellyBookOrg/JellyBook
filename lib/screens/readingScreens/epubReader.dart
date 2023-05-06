@@ -9,7 +9,7 @@ import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:logger/logger.dart';
+import 'package:jellybook/variables.dart';
 
 class EpubReader extends StatefulWidget {
   final String title;
@@ -36,7 +36,6 @@ class _EpubReaderState extends State<EpubReader> {
   double progress = 0.0;
   String fileType = '';
   final isar = Isar.getInstance();
-  var logger = Logger();
 
   _EpubReaderState({
     required this.title,

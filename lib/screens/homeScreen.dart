@@ -6,7 +6,6 @@ import 'package:jellybook/models/login.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:logger/logger.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 // Screens imports
@@ -18,6 +17,8 @@ import 'package:jellybook/screens/loginScreen.dart';
 import 'package:jellybook/main.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/providers/languageProvider.dart';
+import 'package:jellybook/variables.dart';
 
 // Cupertino imports
 import 'package:flutter/cupertino.dart';
@@ -43,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 - a search section
                 - a settings section
         */
-  final logger = Logger();
 
   @override
   void initState() {

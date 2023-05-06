@@ -6,13 +6,12 @@ import 'package:logger/logger.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
+import 'package:jellybook/variables.dart';
 
 // first we need to check if its already downloaded
 Future<bool> checkDownloaded(String id) async {
   // open the database
   final isar = Isar.getInstance();
-
-  var logger = Logger();
 
   // get the entry
   final entry = await isar!.entrys.where().idEqualTo(id).findFirst();

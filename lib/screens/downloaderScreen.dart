@@ -19,8 +19,8 @@ import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
-import 'package:logger/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 class DownloadScreen extends StatefulWidget {
   final String comicId;
@@ -54,7 +54,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
   bool downloading = false;
   String comicFolder = 'Error';
 
-  var logger = Logger();
   final isar = Isar.getInstance();
   String dirLocation = '';
   late Entry entry;

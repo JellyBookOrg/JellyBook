@@ -14,8 +14,8 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -38,8 +38,6 @@ class _MainMenuState extends State<MainMenu> {
                 - a search section
                 - a settings section
         */
-
-  var logger = Logger();
 
   Future<void> logout() async {
     final isar = Isar.getInstance();
@@ -101,12 +99,13 @@ class _MainMenuState extends State<MainMenu> {
             },
             child: Row(
               children: [
-                Icon(Icons.search, color: Colors.grey),
+                Icon(Icons.search,
+                    color: Theme.of(context).secondaryHeaderColor),
                 SizedBox(width: 10),
                 Text(
                   (AppLocalizations.of(context)?.search ?? 'Search') + '…',
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: Theme.of(context).secondaryHeaderColor,
                     fontSize: 17,
                   ),
                 ),

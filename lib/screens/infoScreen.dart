@@ -12,8 +12,8 @@ import 'package:jellybook/providers/updateLike.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 class InfoScreen extends StatefulWidget {
   final String title;
@@ -89,7 +89,6 @@ class _InfoScreenState extends State<InfoScreen> {
     this.offline = false,
     required this.isDownloaded,
   });
-  var logger = Logger();
 
 // check if it is liked or not by checking the database
   Future<bool> checkLiked(String id) async {
@@ -359,8 +358,10 @@ class _InfoScreenState extends State<InfoScreen> {
                                   likeBuilder: (bool isLiked) {
                                     return Icon(
                                       Icons.favorite,
-                                      color:
-                                          isLiked ? Colors.red : Colors.white,
+                                      color: isLiked
+                                          ? Colors.red
+                                          : Theme.of(context).iconTheme.color ??
+                                              Colors.white,
                                     );
                                   },
                                   onTap: (bool isLiked) async {

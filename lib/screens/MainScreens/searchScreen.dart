@@ -9,9 +9,9 @@ import 'package:jellybook/providers/fixRichText.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:logger/logger.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -22,7 +22,6 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _searchController = TextEditingController();
   final isar = Isar.getInstance();
-  final logger = Logger();
 
   @override
   void dispose() {
@@ -200,7 +199,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                   searchResults[i]['isDownloaded'] ?? false,
                             ),
                           ),
-                        );
+                        ).whenComplete(() async {
+                          // update the search results
+                          await getSearchResults(
+                              _searchController.text.toString());
+                        });
                       },
                     ),
                   ),

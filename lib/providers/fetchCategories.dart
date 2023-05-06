@@ -14,13 +14,12 @@ import 'package:jellybook/models/folder.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
-import 'package:logger/logger.dart';
 import 'package:jellybook/providers/pair.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 // have optional perameter to have the function return the list of folders
 Future<Pair> getServerCategories(context) async {
-  var logger = Logger();
   logger.d("getting server categories");
   final p_info.PackageInfo packageInfo =
       await p_info.PackageInfo.fromPlatform();
@@ -173,7 +172,6 @@ Future<Pair> getServerCategories(context) async {
 // ask user which categories they want to use
 Future<List<String>> askCategories(List<String> categories,
     List<String> includedAutomatically, context) async {
-  var logger = Logger();
   logger.d("asking categories");
 
   List<String> selected = [];
@@ -298,7 +296,6 @@ Future<List<String>> askCategories(List<String> categories,
 // check to see if a folder isn't a subfolder of another folder
 Future<List<Map<String, dynamic>>> compareFolders(
     List<Map<String, dynamic>> folders) async {
-  var logger = Logger();
   logger.d("comparing folders");
   List<Map<String, dynamic>> newFolders = [];
   logger.d("folders: " + folders.length.toString());
@@ -368,7 +365,6 @@ Future<void> removeEntriesFromDatabase(
 
 Future<List<String>> chooseCategories(List<String> categories, context) async {
   List<String> selected = [];
-  var logger = Logger();
   List<String> wantedCategories = [];
 
   // pop up a dialog to choose categories
@@ -425,7 +421,6 @@ Future<List<String>> chooseCategories(List<String> categories, context) async {
 }
 
 Future<Pair> getServerCategoriesOffline(context) async {
-  var logger = Logger();
   logger.d("getting server categories");
   final p_info.PackageInfo packageInfo =
       await p_info.PackageInfo.fromPlatform();

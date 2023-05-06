@@ -10,11 +10,11 @@ import 'package:built_collection/built_collection.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
+import 'package:jellybook/variables.dart';
 
 // get comics
 Future<List<Map<String, dynamic>>> getComics(
     String comicsId, String etag) async {
-  var logger = Logger();
   logger.d('getting comics');
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken');
@@ -213,7 +213,6 @@ Future<List<Map<String, dynamic>>> getComics(
 
 Map<String, String> getHeaders(String url, String client, String device,
     String deviceId, String version, String token) {
-  var logger = Logger();
   logger.d("getting headers");
   logger.d(url);
   logger.d(client);

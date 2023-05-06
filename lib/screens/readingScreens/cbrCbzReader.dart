@@ -9,7 +9,8 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/providers/progress.dart';
-import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 // cbr/cbz reader
 class CbrCbzReader extends StatefulWidget {
@@ -35,7 +36,6 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   late String path;
   late List<String> chapters = [];
   late List<String> pages = [];
-  var logger = Logger();
 
   Future<void> createPageList() async {
     // create a list of chapters

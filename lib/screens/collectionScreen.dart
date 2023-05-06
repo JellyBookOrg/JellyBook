@@ -10,8 +10,8 @@ import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 class collectionScreen extends StatelessWidget {
   final String folderId;
@@ -26,7 +26,6 @@ class collectionScreen extends StatelessWidget {
     required this.bookIds,
   });
 
-  var logger = Logger();
   final isar = Isar.getInstance();
   // make a list of entries from the the list of bookIds
   Future<List<Map<String, dynamic>>> getEntries() async {

@@ -10,8 +10,8 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:jellybook/providers/progress.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 class PdfReader extends StatefulWidget {
   final String comicId;
@@ -45,8 +45,6 @@ class _PdfReaderState extends State<PdfReader> {
   // pages
   int _totalPages = 0;
   late PdfController pdfController;
-
-  var logger = Logger();
 
   _PdfReaderState({
     required this.comicId,

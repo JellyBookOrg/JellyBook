@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,11 +9,11 @@ import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/login.dart';
-import 'package:logger/logger.dart';
 import 'dart:io';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -19,6 +21,16 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/providers/themeProvider.dart';
+import 'package:jellybook/variables.dart';
+
+Future<String> get _localPath async {
+  // get the directory that normally is located at /storage/emulated/0/Documents/
+  var directory = await getExternalStorageDirectory();
+  if (directory == null) {
+    directory = await getApplicationDocumentsDirectory();
+  }
+  return directory.path;
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,8 +59,9 @@ Future<void> main() async {
 
   final isar = await Isar.open([EntrySchema, FolderSchema, LoginSchema]);
 
-  Logger.level = Level.debug;
-  var logger = Logger();
+  // set the localPath variable
+  localPath = await _localPath;
+  debugPrint("localPath: $localPath");
 
   // if (kDebugMode) {
   //   try {

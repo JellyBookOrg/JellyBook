@@ -4,14 +4,13 @@
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:logger/logger.dart';
+import 'package:jellybook/variables.dart';
 
 Future<void> saveProgress({
   required int page,
   required String comicId,
   List<String> pages = const [],
 }) async {
-  var logger = Logger();
   // open the database
   final isar = Isar.getInstance();
 
@@ -36,7 +35,6 @@ Future<void> saveProgress({
 }
 
 Future<void> getProgress(String comicId) async {
-  var logger = Logger();
   // open the database
   final isar = Isar.openSync([EntrySchema]);
 

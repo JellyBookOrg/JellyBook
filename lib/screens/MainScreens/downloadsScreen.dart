@@ -10,8 +10,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 class DownloadsScreen extends StatefulWidget {
   @override
@@ -19,8 +19,6 @@ class DownloadsScreen extends StatefulWidget {
 }
 
 class _DownloadsScreenState extends State<DownloadsScreen> {
-  var logger = Logger();
-
   Future<List<Map<String, dynamic>>> getEntries() async {
     final isar = Isar.getInstance();
     // final isar = Isar.openSync([EntrySchema]);

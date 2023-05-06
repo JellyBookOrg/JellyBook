@@ -11,9 +11,9 @@ import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/models/login.dart';
-import 'package:logger/logger.dart';
 import 'package:openapi/openapi.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:jellybook/variables.dart';
 
 class LoginProvider {
   final String url;
@@ -35,7 +35,6 @@ class LoginProvider {
   static Future<String> loginStatic(
       String url, String username, BuildContext context,
       [String password = ""]) async {
-    var logger = Logger();
     logger.d("LoginStatic called");
     final storage = FlutterSecureStorage();
     // String _url = "$url/Users/authenticatebyname";

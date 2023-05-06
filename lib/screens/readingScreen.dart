@@ -7,7 +7,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:logger/logger.dart';
 
 // reading screens
 import 'package:jellybook/screens/readingScreens/pdfReader.dart';
@@ -15,6 +14,7 @@ import 'package:jellybook/screens/readingScreens/cbrCbzReader.dart';
 import 'package:jellybook/screens/readingScreens/epubReader.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/variables.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String title;
@@ -45,7 +45,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
   double progress = 0.0;
   String fileType = '';
   final isar = Isar.getInstance();
-  final logger = Logger();
   // var isar = Isar.open([EntrySchema], inspector: true);
 
   _ReadingScreenState({

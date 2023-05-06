@@ -6,7 +6,7 @@ import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:logger/logger.dart';
+import 'package:jellybook/variables.dart';
 
 // This function takes the list of entries and creates folders if their parentId is not one of the categories
 // It adds the folder to the list of folders in a isar box
@@ -14,7 +14,6 @@ class CreateFolders {
   static Future<void> createFolders(
       List<Entry> entries, List<String> categories) async {
     final isar = Isar.getInstance();
-    var logger = Logger();
 
     final prefs = await SharedPreferences.getInstance();
     List<String> categories = prefs.getStringList('categories') ?? [];

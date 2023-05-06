@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
+import 'package:jellybook/providers/themeProvider.dart';
 import 'package:jellybook/screens/MainScreens/searchScreen.dart';
 import 'package:jellybook/screens/collectionScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
@@ -17,10 +18,13 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/login.dart';
-import 'package:logger/logger.dart';
 import 'package:jellybook/main.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jellybook/providers/languageProvider.dart';
+import 'package:jellybook/variables.dart';
 
 class OfflineBookReader extends StatefulWidget {
   const OfflineBookReader({Key? key}) : super(key: key);
@@ -30,8 +34,6 @@ class OfflineBookReader extends StatefulWidget {
 }
 
 class _OfflineBookReaderState extends State<OfflineBookReader> {
-  final logger = Logger();
-
   @override
   void initState() {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
@@ -62,7 +64,6 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
             ),
           );
         }
-
         // go to the login screen
       }
     });

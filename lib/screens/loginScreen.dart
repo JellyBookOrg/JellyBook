@@ -2,13 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:jellybook/providers/login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:jellybook/providers/themeProvider.dart';
 import 'package:jellybook/screens/homeScreen.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
-import 'package:logger/logger.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jellybook/variables.dart';
 
 class LoginScreen extends StatefulWidget {
 // optional inputs of url, username, and password (use empty string if not provided)
@@ -43,13 +45,20 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
   bool _loading = false;
   String _error = '';
-  var logger = Logger();
 
   @override
   void initState() {
     super.initState();
     // check_url();
     _passwordVisible = false;
+    SharedPreferences.getInstance().then((prefs) {
+      ThemeChangeNotifier themeChangeNotifier =
+          Provider.of<ThemeChangeNotifier>(context, listen: false);
+      // get the theme from shared preferences
+      String theme = prefs.getString('theme') ?? 'dark';
+      // set the theme
+      themeChangeNotifier.setTheme = theme.toString().toLowerCase();
+    });
     // check if url and username are provided
     if (url != "" && url != null && username != "" && username != null) {
       _loading = true;

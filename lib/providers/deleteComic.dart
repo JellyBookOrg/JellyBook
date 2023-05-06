@@ -4,11 +4,10 @@ import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'dart:io';
-import 'package:logger/logger.dart';
+import 'package:jellybook/variables.dart';
 
 Future<void> deleteComic(String id, context) async {
   bool delete = false;
-  var logger = Logger();
   await showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -37,7 +36,6 @@ Future<void> deleteComic(String id, context) async {
 
 Future<void> confirmedDelete(String id, context) async {
   final isar = Isar.getInstance();
-  var logger = Logger();
   final entry = await isar!.entrys.where().idEqualTo(id).findFirst();
   if (entry!.downloaded == true) {
     try {

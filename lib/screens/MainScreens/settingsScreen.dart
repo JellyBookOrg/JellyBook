@@ -12,10 +12,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:jellybook/themes/themeManager.dart';
 import 'package:provider/provider.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:jellybook/providers/languageProvider.dart';
+import 'package:jellybook/variables.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -35,7 +35,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     getPackageInfo();
     super.initState();
     Settings.init();
-    // Settings.init();
   }
 
   themeListener() {
@@ -50,8 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   String version = '';
-
-  var logger = Logger();
+  late String theme;
 
   Future<void> getPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -90,10 +88,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             // experimentalFeaturesSettings(),
             // button to show log file
-            logToFile(),
-            const SizedBox(
-              height: 20,
-            ),
+            // logToFile(),
+            // const SizedBox(
+            //   height: 20,
+            // ),
             SizedBox(
               // depends on screen size
               height: MediaQuery.of(context).size.height * 0.38,
@@ -135,7 +133,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget themeSettings(BuildContext context) => DropDownSettingsTile(
         settingKey: 'theme',
         title: AppLocalizations.of(context)?.theme ?? 'theme',
-        selected: Settings.getValue<String>('theme') ?? 'System',
+        // first letter of selected value is capitalized
+        selected: capitalize(Settings.getValue<String>('theme') ?? 'System'),
         leading: const Icon(Icons.color_lens),
         // @TODO: Look into using AppLocalizations for the values
         // Not sure if it'll work since the value won't be updated when the language is changed
@@ -146,13 +145,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'Amoled': 'Amoled',
         },
         onChange: (value) async {
+          // debugPrint('Theme changed to $value');
           SharedPreferences prefs = await SharedPreferences.getInstance();
           ThemeChangeNotifier themeChangeNotifier =
               Provider.of<ThemeChangeNotifier>(context, listen: false);
           prefs.setString('theme', value.toString().toLowerCase());
+          Settings.setValue<String>('theme', value.toString().toLowerCase());
           themeChangeNotifier.setTheme = value.toString().toLowerCase();
         },
       );
+
+  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
   final isoLangs = {
     "ab": {"name": "Abkhaz", "nativeName": "аҧсуа"},
@@ -515,7 +518,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Text("Log to File"),
       onPressed: () async {
         // get the current log
-        final logger = Logger();
         final log = logger.toString();
 
         // write the log to a file in the app's directory
