@@ -680,9 +680,11 @@ packages:
   jellybook_epub_view:
     dependency: "direct main"
     description:
-      path: "submodules/jellybook_epub_view"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: e0b69af0c0e140aa49bde3d135057e95951b0ce0
+      url: "https://github.com/Kara-Zor-El/jellybook_epub_view.git"
+    source: git
     version: "3.0.0"
   js:
     dependency: transitive
@@ -823,9 +825,11 @@ packages:
   openapi:
     dependency: "direct main"
     description:
-      path: "submodules/jellyfin_api"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: f1ec0659fd18d1ba338c4560fff5cfa21668468f
+      url: "https://github.com/Kara-Zor-El/jellyfin_api.git"
+    source: git
     version: "1.0.0"
   package_config:
     dependency: transitive
