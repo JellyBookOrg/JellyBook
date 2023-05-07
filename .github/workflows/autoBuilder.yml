@@ -1,4 +1,4 @@
-name: Test Build
+name: JellyBook Android Builder
 
 on: [push]
 
@@ -37,10 +37,43 @@ jobs:
         run: flutter build apk --release --split-per-abi
       - name: Build release App Bundle
         run: flutter build appbundle --release
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v3
         with:
-          name: apks
-          path: |
-            build/app/outputs/apk/*
-            build/app/outputs/bundle/*
+          name: JellyBook Debug APK
+          path: JellyBook-debug.apk
+      - name: Rename debug APK
+        run: mv build/app/outputs/apk/app-debug.apk build/app/outputs/apk/JellyBook-debug.apk
+      - name: Upload debug split APKs
+        uses: actions/upload-artifact@v3
+        with:
+          name: JellyBook Debug Split APKs
+          path: build/app/outputs/apk/JellyBook-debug-*.apk
+      - name: Rename debug split APKs
+        run: mv build/app/outputs/apk/app-debug-*.apk build/app/outputs/apk/JellyBook-debug-*.apk
+      - name: Upload debug App Bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: JellyBook Debug App Bundle
+          path: JellyBook-debug.aab
+      - name: Rename debug App Bundle
+        run: mv build/app/outputs/bundle/app-debug.aab build/app/outputs/bundle/JellyBook-debug.aab
+      - name: Upload release APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: JellyBook Release APK
+          path: JellyBook-release.apk
+      - name: Rename release APK
+        run: mv build/app/outputs/apk/app-release.apk build/app/outputs/apk/JellyBook-release.apk
+      - name: Upload release split APKs
+        uses: actions/upload-artifact@v3
+        with:
+          name: JellyBook Release Split APKs
+          path: build/app/outputs/apk/JellyBook-release-*.apk
+      - name: Rename release split APKs
+        run: mv build/app/outputs/apk/app-release-*.apk build/app/outputs/apk/JellyBook-release-*.apk
+      - name: Upload release App Bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: JellyBook Release App Bundle
+          path: JellyBook-release.aab
