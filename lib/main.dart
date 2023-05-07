@@ -146,6 +146,14 @@ class MyApp extends StatelessWidget {
           home: FutureBuilder(
             future: Connectivity().checkConnectivity(),
             builder: (context, snapshot) {
+              SharedPreferences.getInstance().then((prefs) {
+                ThemeChangeNotifier themeChangeNotifier =
+                    Provider.of<ThemeChangeNotifier>(context, listen: false);
+                // get the theme from shared preferences
+                String theme = prefs.getString('theme') ?? 'dark';
+                // set the theme
+                themeChangeNotifier.setTheme = theme.toString().toLowerCase();
+              });
               if (snapshot.hasData) {
                 if (snapshot.data == ConnectivityResult.none) {
                   return OfflineBookReader();

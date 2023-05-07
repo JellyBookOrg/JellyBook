@@ -51,14 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     // check_url();
     _passwordVisible = false;
-    SharedPreferences.getInstance().then((prefs) {
-      ThemeChangeNotifier themeChangeNotifier =
-          Provider.of<ThemeChangeNotifier>(context, listen: false);
-      // get the theme from shared preferences
-      String theme = prefs.getString('theme') ?? 'dark';
-      // set the theme
-      themeChangeNotifier.setTheme = theme.toString().toLowerCase();
-    });
     // check if url and username are provided
     if (url != "" && url != null && username != "" && username != null) {
       _loading = true;
@@ -117,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
                 child: TextFormField(
+                  key: const Key('urlField'),
                   controller: _url,
                   focusNode: _focusNode1,
                   decoration: InputDecoration(
@@ -131,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
                 child: TextFormField(
+                  key: const Key('usernameField'),
                   controller: _username,
                   focusNode: _focusNode2,
                   decoration: InputDecoration(
@@ -145,6 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
                 child: TextFormField(
+                  key: const Key('passwordField'),
                   controller: _password,
                   focusNode: _focusNode3,
                   obscureText: !_passwordVisible,
@@ -174,14 +169,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: MediaQuery.of(context).size.width - 50,
                 height: 50,
                 child: ElevatedButton(
+                  key: const Key('connectButton'),
                   focusNode: _focusNode4,
                   onPressed: () async {
                     setState(() {
                       _loading = true;
                     });
-                    logger.d("url: " + _url.text);
+                    // logger.d("url: " + _url.text);
                     logger.d("username: " + _username.text);
-                    logger.d("password: " + _password.text);
+                    // logger.d("password: " + _password.text);
                     LoginProvider.loginStatic(
                       _url.text,
                       _username.text,
@@ -207,12 +203,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.login),
-                      SizedBox(
+                      const Icon(Icons.login),
+                      const SizedBox(
                         width: 10,
                       ),
                       Text(AppLocalizations.of(context)?.connect ?? "Connect",
-                          style: TextStyle(fontSize: 20)),
+                          style: const TextStyle(fontSize: 20)),
                     ],
                   ),
                 ),
@@ -223,6 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: MediaQuery.of(context).size.width - 50,
                 height: 50,
                 child: ElevatedButton(
+                  key: const Key('offlineButton'),
                   focusNode: _focusNode5,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
