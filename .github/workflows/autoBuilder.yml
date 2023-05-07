@@ -1,67 +1,44 @@
-name: Auto Build
+name: Test Build
 
 on: [push]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  build:
-    runs-on: macos-latest
+  build-android:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v1
-    - name: Set up Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'adopt'
-        java-version: '17.0.5'
-    - name: Create provisioning profile directory
-      run: mkdir -p $HOME/Library/MobileDevice/Provisioning\ Profiles
-    - name: Save provisioning profile
-      run: echo ${{ secrets.PROVISIONING_PROFILE_DATA }} | base64 --decode > provisioning_profile.mobileprovision
-      env:
-        PROVISIONING_PROFILE_DATA: ${{ secrets.PROVISIONING_PROFILE_DATA }}
-    - name: Install provisioning profile
-      run: cp provisioning_profile.mobileprovision $HOME/Library/MobileDevice/Provisioning\ Profiles/
-    - name: Build IPA
-      run: |
-        flutter build ipa --release \
-          --export-options-plist ios/Runner/Info-Release.plist \
-          --codesign
-      shell: bash
-      env:
-        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
-    - name: Upload IPA
-      uses: actions/upload-artifact@v2
-      with:
-        name: ipa
-        path: build/ios/ipa/Runner.ipa
-    - name: Build APK
-      run: flutter build apk --release
-      shell: bash
-      env:
-        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
-    - name: Upload APK
-      uses: actions/upload-artifact@v2
-      with:
-        name: apk
-        path: build/app/outputs/apk/release/app-release.apk
-    - name: Build APK (debug)
-      run: flutter build apk
-      shell: bash
-      env:
-        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
-    - name: Upload APK (debug)
-      uses: actions/upload-artifact@v2
-      with:
-        name: apk (debug)
-        path: build/app/outputs/apk/debug/app-debug.apk
-    - name: Build IPA (debug)
-      run: flutter build ios
-      shell: bash
-      env:
-        FLUTTER_ROOT: ${{ runner.tool_cache }}/flutter
-    - name: Upload IPA (debug)
-      uses: actions/upload-artifact@v2
-      with:
-        name: ipa (debug)
-        path: build/ios/ipa/Runner.ipa
+      - name: Set up Workflow dependencies
+        uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2.10.0
+        with:
+          channel: 'any'
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Build debug APK
+        run: flutter build apk --debug
+      - name: Build debug APK (split-per-abi)
+        run: flutter build apk --debug --split-per-abi
+      - name: Build debug App Bundle
+        run: flutter build appbundle --debug
+      - name: Build release APK
+        run: flutter build apk --release
+      - name: Build release APK (split-per-abi)
+        run: flutter build apk --release --split-per-abi
+      - name: Build release App Bundle
+        run: flutter build appbundle --release
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: apks
+          path: |
+            build/app/outputs/apk/*
+            build/app/outputs/bundle/*
