@@ -36,13 +36,19 @@ Future<void> saveProgress({
 
 Future<void> getProgress(String comicId) async {
   // open the database
-  final isar = Isar.openSync([EntrySchema]);
+  final isar = Isar.getInstance();
+  // final isar = Isar.openSync([EntrySchema]);
 
   // get the entry
-  final entry = await isar.entrys.where().idEqualTo(comicId).findFirst();
+  final entry =
+      await isar?.entrys.where().idEqualTo(comicId).findFirst() ?? null;
+  if (entry == null) {
+    logger.d("entry is null");
+    return;
+  }
 
   // get the progress
-  var progress = entry!.progress;
+  var progress = entry.progress;
 
   // get the page number
   var pageNum = entry.pageNum;

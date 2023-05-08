@@ -57,7 +57,11 @@ Future<void> main() async {
   // dio allow self signed certificates
   HttpOverrides.global = new MyHttpOverrides();
 
-  final isar = await Isar.open([EntrySchema, FolderSchema, LoginSchema]);
+  // path for isar database
+  Directory dir = await getApplicationDocumentsDirectory();
+
+  final isar = await Isar.open([EntrySchema, FolderSchema, LoginSchema],
+      directory: dir.path);
 
   // set the localPath variable
   localPath = await _localPath;
