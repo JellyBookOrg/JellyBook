@@ -492,7 +492,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       )) {
                         await launchUrl(
                           Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
-                          mode: LaunchMode.platformDefault,
+                          mode: LaunchMode.inAppWebView,
                         );
                       }
                     } catch (e) {
