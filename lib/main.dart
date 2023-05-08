@@ -67,6 +67,9 @@ Future<void> main() async {
   localPath = await _localPath;
   debugPrint("localPath: $localPath");
 
+  // set language to english
+  // Settings.setValue<String>("localeString", "en");
+
   // if (kDebugMode) {
   //   try {
   //     // delete all entries in the database
@@ -134,58 +137,58 @@ class MyApp extends StatelessWidget {
             create: (context) => ThemeChangeNotifier(context, prefs!)),
       ],
       builder: (context, _) {
-        final localeChangenotifier = Provider.of<LocaleChangeNotifier>(context);
-        Locale locale2 = localeChangenotifier.locale;
-        final themeChangenotifier = Provider.of<ThemeChangeNotifier>(context);
-        ThemeData themeData = themeChangenotifier.getTheme;
-        print("Locale (main.dart): " + locale2.toString());
-        return MaterialApp(
-          title: 'JellyBook',
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: locale2 != null ? locale2 : Locale('en', 'US'),
-          theme: themeData != null ? themeData : ThemeData.dark(),
-          // darkTheme: ThemeData.dark(),
-          home: FutureBuilder(
-            future: Connectivity().checkConnectivity(),
-            builder: (context, snapshot) {
-              SharedPreferences.getInstance().then((prefs) {
-                ThemeChangeNotifier themeChangeNotifier =
-                    Provider.of<ThemeChangeNotifier>(context, listen: false);
-                // get the theme from shared preferences
-                String theme = prefs.getString('theme') ?? 'dark';
-                // set the theme
-                themeChangeNotifier.setTheme = theme.toString().toLowerCase();
-              });
-              if (snapshot.hasData) {
-                if (snapshot.data == ConnectivityResult.none) {
-                  return OfflineBookReader();
-                } else {
-                  // try to ping 1.1.1.1 or 8.8.8.8 or whatever their dns is and if network is reachable go to login screen
-                  // if not, go to offline book reader
-                  Socket.connect('1.1.1.1', 53).then((socket) {
-                    socket.destroy();
+        return Consumer2<LocaleChangeNotifier, ThemeChangeNotifier>(
+            builder: (context, localeChangeNotifier, themeChangeNotifier, _) {
+          Locale locale = localeChangeNotifier.locale;
+          ThemeData themeData = themeChangeNotifier.getTheme;
+          return MaterialApp(
+            title: 'JellyBook',
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: locale != null ? locale : Locale('en', 'US'),
+            theme: themeData != null ? themeData : ThemeData.dark(),
+            // darkTheme: ThemeData.dark(),
+            home: FutureBuilder(
+              future: Connectivity().checkConnectivity(),
+              builder: (context, snapshot) {
+                SharedPreferences.getInstance().then((prefs) {
+                  ThemeChangeNotifier themeChangeNotifier =
+                      Provider.of<ThemeChangeNotifier>(context, listen: false);
+                  // get the theme from shared preferences
+                  String theme = prefs.getString('theme') ?? 'dark';
+                  // set the theme
+                  themeChangeNotifier.setTheme = theme.toString().toLowerCase();
+                });
+                if (snapshot.hasData) {
+                  if (snapshot.data == ConnectivityResult.none) {
+                    return OfflineBookReader();
+                  } else {
+                    // try to ping 1.1.1.1 or 8.8.8.8 or whatever their dns is and if network is reachable go to login screen
+                    // if not, go to offline book reader
+                    Socket.connect('1.1.1.1', 53).then((socket) {
+                      socket.destroy();
+                      return LoginScreen(
+                        url: url,
+                        username: username,
+                        password: password,
+                      );
+                    }).catchError((e) {
+                      return OfflineBookReader();
+                    });
                     return LoginScreen(
                       url: url,
                       username: username,
                       password: password,
                     );
-                  }).catchError((e) {
-                    return OfflineBookReader();
-                  });
-                  return LoginScreen(
-                    url: url,
-                    username: username,
-                    password: password,
-                  );
+                  }
+                } else {
+                  return const CircularProgressIndicator();
                 }
-              } else {
-                return const CircularProgressIndicator();
-              }
-            },
-          ),
-        );
+              },
+            ),
+          );
+        });
       },
     );
   }

@@ -20,10 +20,8 @@ class ThemeChangeNotifier extends ChangeNotifier {
 
   // get the theme from shared preferences
   ThemeData get getTheme {
-    print("getTheme() called ${_theme.toString()}");
     SharedPreferences.getInstance().then((prefs) {
       String theme = prefs.getString("theme") ?? "dark";
-      print("getTheme() called $theme");
       switch (theme) {
         case "dark":
           _theme = ThemeData.dark();
@@ -52,11 +50,11 @@ class ThemeChangeNotifier extends ChangeNotifier {
   }
 
   Future<String> get getThemeName async {
-    print("getTheme() called ${_theme.toString()}");
+    // print("getTheme() called ${_theme.toString()}");
     String theme = "dark";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     theme = prefs.getString("theme") ?? "dark";
-    print("getTheme() called $theme");
+    // print("getTheme() called $theme");
     switch (theme) {
       case "dark":
         return "Dark";
@@ -76,7 +74,7 @@ class ThemeChangeNotifier extends ChangeNotifier {
       prefs.setString("theme", theme);
       notifyListeners();
     });
-    print("setTheme() called $theme");
+    // print("setTheme() called $theme");
     switch (theme) {
       case "dark":
         _theme = ThemeData.dark();

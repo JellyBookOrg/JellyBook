@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.settings),
-                  label: 'Settings',
+                  label: AppLocalizations.of(context)?.settings ?? 'Settings',
                 ),
               ],
               currentIndex: _selectedIndex,
@@ -197,7 +197,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     GButton(
                       icon: Icons.settings,
-                      text: 'Settings',
+                      text:
+                          AppLocalizations.of(context)?.settings ?? 'Settings',
                     ),
                   ],
                   selectedIndex: _selectedIndex,

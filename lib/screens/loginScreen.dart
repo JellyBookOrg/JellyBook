@@ -113,7 +113,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _url,
                   focusNode: _focusNode1,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)?.pageLoginAddress,
+                    labelText: AppLocalizations.of(context)?.pageLoginAddress ??
+                        "Your Address",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -128,7 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _username,
                   focusNode: _focusNode2,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)?.pageLoginUsername,
+                    labelText:
+                        AppLocalizations.of(context)?.pageLoginUsername ??
+                            "Username",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -144,7 +147,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   focusNode: _focusNode3,
                   obscureText: !_passwordVisible,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)?.pageLoginPassword,
+                    labelText:
+                        AppLocalizations.of(context)?.pageLoginPassword ??
+                            "Password",
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(

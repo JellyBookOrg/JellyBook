@@ -14,8 +14,6 @@ class LocaleChangeNotifier extends ChangeNotifier {
   // async function to get the locale from shared preferences
   Locale get locale {
     SharedPreferences.getInstance().then((prefs) {
-      print(
-          "prefs.getString('localeString') ${prefs.getString('localeString')}");
       return Locale(prefs.getString("localeString") ?? "en");
     });
     return _locale;
