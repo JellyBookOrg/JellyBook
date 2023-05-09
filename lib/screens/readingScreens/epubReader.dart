@@ -136,15 +136,6 @@ class _EpubReaderState extends State<EpubReader> {
   @override
   void initState() {
     super.initState();
-    requestPermissions();
-  }
-
-  // request permissions
-  Future<void> requestPermissions() async {
-    if (Platform.isAndroid) {
-      // request read and write permissions
-      await Permission.storage.request();
-    }
   }
 
   @override

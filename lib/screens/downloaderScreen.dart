@@ -72,88 +72,110 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
     final storage = FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
-    bool checkPermission1 = await Permission.storage.request().isGranted;
-    if (checkPermission1 == false) {
-      checkPermission1 = await Permission.storage.request().isGranted;
-    }
+    // bool checkPermission1 = await Permission.storage.request().isGranted;
+    // if (checkPermission1 == false) {
+    //   await Permission.storage.request();
+    //   checkPermission1 = await Permission.storage.request().isGranted;
+    // }
+    // print all details of the entry
+    logger.d("Entry details:\nTitle: " +
+        entry.title +
+        "\nID: " +
+        entry.id +
+        "\nURL: " +
+        entry.url +
+        "\nImage Path: " +
+        entry.imagePath +
+        "\nFolder Path: " +
+        entry.folderPath +
+        "\nFile Path: " +
+        entry.filePath +
+        "\nPath: " +
+        entry.path +
+        "\nDownloaded: " +
+        entry.downloaded.toString());
+    // if (checkPermission1 == false) {
+    //   checkPermission1 = await Permission.storage.request().isGranted;
+    // }
 
     if (entry.folderPath.toString() != '') {
       // set the path to the comic folder
       path = entry.folderPath;
       await Directory(path).create(recursive: true);
     }
-    if (checkPermission1 == true) {
-      if (entry.folderPath != '' && forceDown == false) {
-        return;
-      }
-
-      url = entry.url;
-      imageUrl = entry.imagePath;
-      id = entry.id.toString();
-
-      // get stuff from the secure storage
-      String client = await storage.read(key: 'client') ?? '';
-      token = await storage.read(key: 'AccessToken') ??
-          prefs.getString('accessToken') ??
-          '';
-      final device = prefs.getString('device') ?? '';
-      final deviceId = prefs.getString('deviceId');
-      final version = prefs.getString('version') ?? '';
-      fileName = await fileNameFromTitle(entry.path.split('/').last);
-      dirLocation =
-          await getApplicationDocumentsDirectory().then((value) => value.path);
-      Map<String, String> headers = {
-        'Accept':
-            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'X-Emby-Authorization':
-            'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
-      };
-      // url = url + '/Items/' + comicId + '/Download?api_key=' + token;
-      var files = await Directory(dirLocation).list().toList();
-      logger.d(files.toString());
-      String dir = dirLocation + '/' + fileName;
-      logger.d(dir);
-      logger.d('Folder does not exist');
-      // try {
-      // make directory
-      await Directory(dirLocation).create(recursive: true);
-      logger.d('Directory created');
-      // set the location of the folder
-      dir = dirLocation + '/' + fileName;
-      // set the comic file
-      entry.filePath = dir;
-      logger.d('Directory created');
-      logger.d('Attempting to download file');
-      final api = Openapi(basePathOverride: url).getLibraryApi();
-      Response<Uint8List> download;
-      download = await api.getDownload(
-        itemId: id,
-        headers: headers,
-        onReceiveProgress: (received, total) {
-          setState(() {
-            downloading = true;
-            progress = (received / total * 100);
-          });
-        },
-      );
-      logger.d('File downloaded');
-      // update to say writing file
-      await writeToFile(download, dir);
-
-      await extractFile(dir);
-
-      setState(() {
-        downloading = true;
-        progress = 0.0;
-        path = dirLocation + '/' + fileName;
-        // pop the navigator but pass in the value of true
-        Navigator.pop(context, true);
-      });
+    // if (checkPermission1 == true) {
+    if (entry.folderPath != '' && forceDown == false) {
+      return;
     }
+    logger.d('About to download file');
+
+    url = entry.url;
+    imageUrl = entry.imagePath;
+    id = entry.id.toString();
+
+    // get stuff from the secure storage
+    String client = await storage.read(key: 'client') ?? '';
+    token = await storage.read(key: 'AccessToken') ??
+        prefs.getString('accessToken') ??
+        '';
+    final device = prefs.getString('device') ?? '';
+    final deviceId = prefs.getString('deviceId');
+    final version = prefs.getString('version') ?? '';
+    fileName = await fileNameFromTitle(entry.path.split('/').last);
+    dirLocation =
+        await getApplicationDocumentsDirectory().then((value) => value.path);
+    Map<String, String> headers = {
+      'Accept':
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+      'Accept-Encoding': 'gzip, deflate',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Connection': 'keep-alive',
+      'Upgrade-Insecure-Requests': '1',
+      'X-Emby-Authorization':
+          'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
+    };
+    // url = url + '/Items/' + comicId + '/Download?api_key=' + token;
+    var files = await Directory(dirLocation).list().toList();
+    logger.d(files.toString());
+    String dir = dirLocation + '/' + fileName;
+    logger.d(dir);
+    logger.d('Folder does not exist');
+    // try {
+    // make directory
+    await Directory(dirLocation).create(recursive: true);
+    logger.d('Directory created');
+    // set the location of the folder
+    dir = dirLocation + '/' + fileName;
+    // set the comic file
+    entry.filePath = dir;
+    logger.d('Directory created');
+    logger.d('Attempting to download file');
+    final api = Openapi(basePathOverride: url).getLibraryApi();
+    Response<Uint8List> download;
+    download = await api.getDownload(
+      itemId: id,
+      headers: headers,
+      onReceiveProgress: (received, total) {
+        setState(() {
+          downloading = true;
+          progress = (received / total * 100);
+        });
+      },
+    );
+    logger.d('File downloaded');
+    // update to say writing file
+    await writeToFile(download, dir);
+
+    await extractFile(dir);
+
+    setState(() {
+      downloading = true;
+      progress = 0.0;
+      path = dirLocation + '/' + fileName;
+      // pop the navigator but pass in the value of true
+      Navigator.pop(context, true);
+    });
+    // }
     logger.d('title: ' + entry.title);
     logger.d('comicFolder: ' + comicFolder);
 
