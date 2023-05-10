@@ -2,7 +2,7 @@
   "@@locale": "es",
   "appName": "JellyBook",
   "@appName": {},
-  "pageLoginAddress": "Tu dirección",
+  "pageLoginAddress": "Dirección web",
   "@pageLoginAddress": {},
   "pageLoginUsername": "Nombre del usuario",
   "@pageLoginUsername": {},
