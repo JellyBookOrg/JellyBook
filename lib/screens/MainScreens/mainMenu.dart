@@ -1,6 +1,7 @@
 // The purpose of this file is to create the main menu screen (this is part of the list of screens in the bottom navigation bar)
 
 import 'package:flutter/material.dart';
+import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
 import 'package:jellybook/screens/collectionScreen.dart';
 import 'package:jellybook/screens/infoScreen.dart';
@@ -43,9 +44,17 @@ class _MainMenuState extends State<MainMenu> {
     final isar = Isar.getInstance();
     var logins = await isar!.logins.where().findAll();
     var loginIds = logins.map((e) => e.isarId).toList();
+    var entries = await isar.entrys.where().findAll();
+    var entryIds = entries.map((e) => e.isarId).toList();
+    var folders = await isar.folders.where().findAll();
+    var folderIds = folders.map((e) => e.isarId).toList();
     await isar.writeTxn(() async {
-      isar.logins.deleteAll(loginIds);
       logger.i('deleted ${loginIds.length} logins');
+      isar.logins.deleteAll(loginIds);
+      logger.i('deleted ${entryIds.length} entries');
+      isar.entrys.deleteAll(entryIds);
+      logger.i('deleted ${folderIds.length} folders');
+      isar.folders.deleteAll(folderIds);
     });
     Navigator.pushReplacement(
       context,
