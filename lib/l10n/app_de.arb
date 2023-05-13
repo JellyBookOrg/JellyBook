@@ -2,7 +2,7 @@
   "@@locale": "de",
   "appName": "JellyBook",
   "@appName": {},
-  "pageLoginAddress": "Deine Adresse",
+  "pageLoginAddress": "Web-Adresse",
   "@pageLoginAddress": {},
   "pageLoginUsername": "Benutzername",
   "@pageLoginUsername": {},
@@ -23,5 +23,11 @@
   "noContent": "Es tut mir leid, aber Sie haben noch keine Inhalte heruntergeladen.",
   "@noContent": {},
   "noBooks": "Keine Bücher gefunden",
-  "@noBooks": {}
+  "@noBooks": {},
+  "downloadRequired": "Download Erforderlich",
+  "@downloadRequired": {},
+  "unsupportedFileType": "Dateityp Nicht Unterstützt",
+  "@unsupportedFileType": {},
+  "collections": "Sammlungen",
+  "@collections": {}
 }
