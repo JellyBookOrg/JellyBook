@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
@@ -26,9 +23,7 @@ import 'package:jellybook/variables.dart';
 Future<String> get _localPath async {
   // get the directory that normally is located at /storage/emulated/0/Documents/
   var directory = await getExternalStorageDirectory();
-  if (directory == null) {
-    directory = await getApplicationDocumentsDirectory();
-  }
+  directory ??= await getApplicationDocumentsDirectory();
   return directory.path;
 }
 
@@ -146,8 +141,8 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: locale != null ? locale : Locale('en', 'US'),
-            theme: themeData != null ? themeData : ThemeData.dark(),
+            locale: locale,
+            theme: themeData,
             // darkTheme: ThemeData.dark(),
             home: FutureBuilder(
               future: Connectivity().checkConnectivity(),

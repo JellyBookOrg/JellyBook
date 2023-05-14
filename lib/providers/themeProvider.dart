@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeChangeNotifier extends ChangeNotifier {
   ThemeChangeNotifier(BuildContext context, SharedPreferences prefs) {
-    _theme = ThemeData.dark();
+    _theme = ThemeData.dark(useMaterial3: true);
     _theme = getTheme;
     _context = context;
   }
@@ -24,38 +24,34 @@ class ThemeChangeNotifier extends ChangeNotifier {
       String theme = prefs.getString("theme") ?? "dark";
       switch (theme) {
         case "dark":
-          _theme = ThemeData.dark();
-          return ThemeData.dark();
+          _theme = ThemeData.dark(useMaterial3: true);
+          return ThemeData.dark(useMaterial3: true);
         case "light":
-          _theme = ThemeData.light();
-          return ThemeData.light();
+          _theme = ThemeData.light(useMaterial3: true);
+          return ThemeData.light(useMaterial3: true);
         case "amoled":
           _theme = oledTheme;
           return oledTheme;
         case "system":
-          if (WidgetsBinding.instance.window.platformBrightness ==
-              Brightness.light) {
-            _theme = ThemeData.light();
-            return ThemeData.light();
+          if (Theme.of(_context).brightness == Brightness.light) {
+            _theme = ThemeData.light(useMaterial3: true);
+            return ThemeData.light(useMaterial3: true);
           } else {
-            _theme = ThemeData.dark();
-            return ThemeData.dark();
+            _theme = ThemeData.dark(useMaterial3: true);
+            return ThemeData.dark(useMaterial3: true);
           }
         default:
-          _theme = ThemeData.dark();
-          return ThemeData.dark();
+          _theme = ThemeData.dark(useMaterial3: true);
+          return ThemeData.dark(useMaterial3: true);
       }
     });
     return _theme;
   }
 
-  Future<String> get getThemeName async {
-    // print("getTheme() called ${_theme.toString()}");
-    String theme = "dark";
+  Future<String> get getThemeName async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    theme = prefs.getString("theme") ?? "dark";
-    // print("getTheme() called $theme");
-    switch (theme) {
+    String theme = prefs.getString("theme") ?? "dark";
+    switch (theme.toLowerCase()) {
       case "dark":
         return "Dark";
       case "light":
@@ -77,20 +73,19 @@ class ThemeChangeNotifier extends ChangeNotifier {
     // print("setTheme() called $theme");
     switch (theme) {
       case "dark":
-        _theme = ThemeData.dark();
+        _theme = ThemeData.dark(useMaterial3: true);
         break;
       case "light":
-        _theme = ThemeData.light();
+        _theme = ThemeData.light(useMaterial3: true);
         break;
       case "amoled":
         _theme = oledTheme;
         break;
       case "system":
-        if (WidgetsBinding.instance.window.platformBrightness ==
-            Brightness.light) {
-          _theme = ThemeData.light();
+        if (Theme.of(_context).brightness == Brightness.light) {
+          _theme = ThemeData.light(useMaterial3: true);
         } else {
-          _theme = ThemeData.dark();
+          _theme = ThemeData.dark(useMaterial3: true);
         }
         // _theme = ThemeData(
         //   primarySwatch: Colors.blue,
@@ -98,7 +93,7 @@ class ThemeChangeNotifier extends ChangeNotifier {
         // );
         break;
       default:
-        _theme = ThemeData.dark();
+        _theme = ThemeData.dark(useMaterial3: true);
     }
   }
 

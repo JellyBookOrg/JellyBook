@@ -1,19 +1,16 @@
 // The purpose of this file is to allow the user to change the settings of the app
 
-import 'dart:ffi';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:jellybook/providers/themeProvider.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:jellybook/themes/themeManager.dart';
+// import 'package:jellybook/themes/themeManager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/variables.dart';
 
@@ -49,7 +46,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   String version = '';
-  late String theme;
+
 
   Future<void> getPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -62,7 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text((AppLocalizations.of(context)?.settings ?? 'Settings'),
-            style: TextStyle(fontSize: 20)),
+            style: const TextStyle(fontSize: 20)),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -96,7 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // depends on screen size
               height: MediaQuery.of(context).size.height * 0.38,
             ),
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.25,
               child: ElevatedButton(
                 onPressed: () {
@@ -114,7 +111,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 },
                 child: Text(
-                  'Licenses',
+                 AppLocalizations.of(context)?.licenses ?? 'Licenses',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
@@ -129,33 +126,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+
   // theme settings (future builder to get the current theme and then change it)
   Widget themeSettings(BuildContext context) => DropDownSettingsTile(
         settingKey: 'theme',
         title: AppLocalizations.of(context)?.theme ?? 'theme',
-        // first letter of selected value is capitalized
-        selected: capitalize(Settings.getValue<String>('theme') ?? 'System'),
+        selected: 
+            Settings.getValue<String>('theme')?.toString() ?? AppLocalizations.of(context)?.systemTheme ?? 'System',
         leading: const Icon(Icons.color_lens),
-        // @TODO: Look into using AppLocalizations for the values
-        // Not sure if it'll work since the value won't be updated when the language is changed
         values: <String, String>{
-          'System': 'System',
-          'Light': 'Light',
-          'Dark': 'Dark',
-          'Amoled': 'Amoled',
+        AppLocalizations.of(context)?.systemTheme ?? 'System': 'System',
+        AppLocalizations.of(context)?.lightTheme ?? 'Light': 'Light',
+        AppLocalizations.of(context)?.darkTheme ?? 'Dark': 'Dark',
+        AppLocalizations.of(context)?.amoledTheme ?? 'Amoled': 'Amoled',
         },
+        // give the key and value of the selected theme
         onChange: (value) async {
+        debugPrint('Settings theme: ${Settings.getValue<String>('theme')}');
           // debugPrint('Theme changed to $value');
           SharedPreferences prefs = await SharedPreferences.getInstance();
           ThemeChangeNotifier themeChangeNotifier =
               Provider.of<ThemeChangeNotifier>(context, listen: false);
-          prefs.setString('theme', value.toString().toLowerCase());
-          Settings.setValue<String>('theme', value.toString().toLowerCase());
+              // set the theme to the english value of the selected theme
+              prefs.setString('theme', value.toString().toLowerCase());
           themeChangeNotifier.setTheme = value.toString().toLowerCase();
         },
       );
 
-  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+  // static String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
   static final isoLangs = {
     "ab": {"name": "Abkhaz", "nativeName": "аҧсуа"},
@@ -406,7 +404,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         selected: AppLocalizations.of(context)?.localeName.toString() ??
             Settings.getValue<String>('localeString') ??
             'System',
-        leading: Icon(Icons.language),
+        leading: const Icon(Icons.language),
         values: localesMap(
             context, Settings.getValue<String>('localeString') ?? 'System'),
         onChange: (value) async {
@@ -426,8 +424,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title:
             AppLocalizations.of(context)?.pageTransition ?? 'Page Transition',
         selected: Settings.getValue<String>('pageTransition') ?? 'Page Turn',
-        leading: Icon(Icons.pageview),
-        values: <String, String>{
+        leading: const Icon(Icons.pageview),
+        values: const <String, String>{
           'Page Turn': 'Page Turn',
           'Slide': 'Slide',
         },
@@ -442,7 +440,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         settingKey: 'experimentalFeatures',
         title: AppLocalizations.of(context)?.experimentalFeatures ??
             'Experimental Features',
-        leading: Icon(Icons.bug_report),
+        leading: const Icon(Icons.bug_report),
         onChange: (value) async {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setBool('experimentalFeatures', value);
@@ -450,9 +448,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
 
   // about settings (should contain the version number and the link to the github repo, and author)
-  Widget aboutSettings() => Container(
-        // future builder to get the version number
-        child: FutureBuilder(
+  Widget aboutSettings() => 
+        FutureBuilder(
           future: getPackageInfo(),
           builder: (context, snapshot) {
             return Column(
@@ -463,22 +460,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       (version.isNotEmpty
                           ? version
                           : AppLocalizations.of(context)?.unknown ?? 'Unknown'),
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  (AppLocalizations.of(context)?.madeBy ?? "Made by") +
-                      " Kara Wilson",
-                  style: TextStyle(fontSize: 20),
+                  "${AppLocalizations.of(context)?.madeBy ?? 'Made by'} Kara Wilson",
+                  style: const TextStyle(fontSize: 20),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 // insert https://github.com/Kara-Zor-El/JellyBook
                 InkWell(
-                  child: Text(
+                  child: const Text(
                     "https://github.com/Kara-Zor-El/JellyBook",
                     style: TextStyle(
                       fontSize: 20,
@@ -503,31 +499,5 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             );
           },
-        ),
       );
-
-  Widget logToFile() {
-    // this is a button that will log the current log to a file
-    // create a button that will log the current log to a file
-    return ElevatedButton(
-      child: Text("Log to File"),
-      onPressed: () async {
-        // get the current log
-        final log = logger.toString();
-
-        // write the log to a file in the app's directory
-        var file =
-            File((await getApplicationDocumentsDirectory()).path + "/log.txt");
-        await file.writeAsString(log);
-        // tell the user where the file is
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Log file written to ${file.path}",
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
