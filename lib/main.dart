@@ -23,8 +23,12 @@ import 'package:jellybook/variables.dart';
 
 Future<String> get _localPath async {
   // get the directory that normally is located at /storage/emulated/0/Documents/
-  var directory = await getExternalStorageDirectory();
-  directory ??= await getApplicationDocumentsDirectory();
+  var directory; 
+  if (Platform.isAndroid) {
+    directory = await getExternalStorageDirectory();
+  } else {
+    directory = await getApplicationDocumentsDirectory();
+  }
   return directory.path;
 }
 
