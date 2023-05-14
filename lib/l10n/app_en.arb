@@ -137,5 +137,7 @@
   "darkTheme": "Dark",
   "@darkTheme": {},
   "amoledTheme": "Amoled",
-  "@amoledTheme": {}
+  "@amoledTheme": {},
+  "licenses": "Licenses",
+  "@licenses": {}
 }
