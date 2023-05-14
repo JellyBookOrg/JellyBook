@@ -64,35 +64,17 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   void checkPermission(String comicId) async {
-    if (await Permission.storage.request().isGranted) {
-      // if the user has given us permission, we want to check if the comic has been downloaded
-      checkDownloaded();
-      // if it is, find the file extension and read it
-      try {
-        // get the entry
-        var entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+    // if (await Permission.storage.request().isGranted) {
+    // if the user has given us permission, we want to check if the comic has been downloaded
+    checkDownloaded();
+    // if it is, find the file extension and read it
+    try {
+      // get the entry
+      var entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
 
-        logger.i("entry of checkPermission: $entry");
-      } catch (e) {
-        logger.e("entry in checkPermission: $e");
-      }
-    } else {
-      // if the user hasn't given us permission, we want to tell them to do so
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(AppLocalizations.of(context)!.permissionRequired),
-          content: Text(AppLocalizations.of(context)!.permissionExplanation),
-          actions: [
-            TextButton(
-              child: Text(AppLocalizations.of(context)!.ok),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ),
-      );
+      logger.i("entry of checkPermission: $entry");
+    } catch (e) {
+      logger.e("entry in checkPermission: $e");
     }
   }
 

@@ -51,7 +51,7 @@ Future<Pair> getServerCategories(context) async {
 
   logger.d("got response");
   logger.d(response.statusCode.toString());
-  final data = response.data.items;
+  final data = response.data.items.where((element) => element.collectionType == 'books').toList();
 
   bool hasComics = true;
   if (hasComics) {
@@ -63,53 +63,14 @@ Future<Pair> getServerCategories(context) async {
       categories.add(element.name);
     });
 
-    categories.remove('Shows');
-    categories.remove('Movies');
-    categories.remove('Music');
-    categories.remove('Collections');
-    categories.remove('shows');
-    categories.remove('movies');
-    categories.remove('music');
-    categories.remove('collections');
-
-    List<String> selected = [];
-    List<String> includedAutomatically = [
-      'comics',
-      'book',
-      'comic book',
-      'book',
-      'books',
-      'comic books',
-      'manga',
-      'mangas',
-      'comics & graphic novels',
-      'graphic novels',
-      'graphic novel',
-      'novels',
-      'novel',
-      'ebook',
-      'ebooks',
-    ];
-    List<String> asked =
-        await askCategories(categories, includedAutomatically, context);
-    logger.d("asked cargories: $asked");
-    for (var i = 0; i < asked.length; i++) {
-      if (includedAutomatically.contains(categories[i].toLowerCase())) {
-        selected.add(asked[i]);
-        logger.d("added ${asked[i]} to selected");
-      }
-    }
-
     List<Future<List<Map<String, dynamic>>>> comicsArray = [];
     List<String> comicsIds = [];
-    logger.d("selected: " + selected.toString());
+    logger.d("selected: " + categories.toString());
     data.forEach((element) {
-      if (selected.contains(element.name)) {
         comicsId = element.id;
         comicsIds.add(comicsId);
         etag = element.etag;
         comicsArray.add(getComics(comicsId, etag));
-      }
     });
 
     List<Map<String, dynamic>> comics = [];
@@ -140,8 +101,8 @@ Future<Pair> getServerCategories(context) async {
 
     final isar = Isar.getInstance();
     List<String> categoriesList = [];
-    for (int i = 0; i < selected.length; i++) {
-      categoriesList.add(selected[i]);
+    for (int i = 0; i < data.length; i++) {
+      categoriesList.add(data[i].name);
     }
     logger.i("categoriesList: $categoriesList");
     prefs.setStringList('categories', categoriesList);
@@ -167,130 +128,6 @@ Future<Pair> getServerCategories(context) async {
 
     return Pair(comics, folderMap2);
   }
-}
-
-// ask user which categories they want to use
-Future<List<String>> askCategories(List<String> categories,
-    List<String> includedAutomatically, context) async {
-  logger.d("asking categories");
-
-  List<String> selected = [];
-  // if platform is iOS, use CupertinoAlertDialog
-  if (Platform.isIOS) {
-    await showCupertinoDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text(AppLocalizations.of(context)!.selectCategories),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 300,
-                child: ListView.builder(
-                  itemCount: categories.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // create rows with buttons and checkboxes
-                    return Row(
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              if (selected.contains(categories[index])) {
-                                selected.remove(categories[index]);
-                              } else {
-                                selected.add(categories[index]);
-                              }
-                            });
-                          },
-                          child: Text(categories[index]),
-                        ),
-                        const Spacer(),
-                        CupertinoSwitch(
-                          value: selected.contains(categories[index]),
-                          onChanged: (bool value) {
-                            setState(() {
-                              if (value) {
-                                selected.add(categories[index]);
-                              } else {
-                                selected.remove(categories[index]);
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            CupertinoDialogAction(
-              child: const Text("Ok"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  } else {
-    await showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Select Categories"),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 300,
-                child: ListView.builder(
-                  itemCount: categories.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return CheckboxListTile(
-                      title: Text(categories[index]),
-                      value: selected.contains(categories[index]),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            logger.d("added ${categories[index]} to asked");
-                            selected.add(categories[index]);
-                          } else {
-                            logger.d("removed ${categories[index]} from asked");
-                            selected.remove(categories[index]);
-                          }
-                        });
-                      },
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-  return selected;
 }
 
 // check to see if a folder isn't a subfolder of another folder

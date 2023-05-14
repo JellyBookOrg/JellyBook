@@ -112,10 +112,10 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
 
   Future<void> getChapters() async {
     logger.d("getting chapters");
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
+    // var status = await Permission.storage.status;
+    // if (!status.isGranted) {
+    //   await Permission.storage.request();
+    // }
 
     // get the file path from the database
     final isar = Isar.getInstance();

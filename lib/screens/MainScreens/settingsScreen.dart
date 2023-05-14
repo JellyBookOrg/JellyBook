@@ -157,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
-  final isoLangs = {
+  static final isoLangs = {
     "ab": {"name": "Abkhaz", "nativeName": "аҧсуа"},
     "aa": {"name": "Afar", "nativeName": "Afaraf"},
     "af": {"name": "Afrikaans", "nativeName": "Afrikaans"},
@@ -193,11 +193,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     },
     "zh": {"name": "Chinese", "nativeName": "中文 (Zhōngwén), 汉语, 漢語"},
     "zh_CHT": {
-      "name": "Chinese (Simplified)",
+      "name": "Chinese (Simplified CHT)",
       "nativeName": "中文 (Zhōngwén), 汉语, 漢語"
     },
     "zh_Hant": {
-      "name": "Chinese (Simplified)",
+      "name": "Chinese (Simplified Hant)",
       "nativeName": "中文 (Zhōngwén), 汉语, 漢語"
     },
     "cv": {"name": "Chuvash", "nativeName": "чӑваш чӗлхи"},
@@ -382,16 +382,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       locales.addAll({
         locale.toString():
             // get the language name (ex. English) from isoLangs map
-            isoLangs.containsKey(locale.toString())
-                ? languageCode == locale.toString()
-                    ? isoLangs[locale.toString()]!['name'].toString() ==
-                            locale.toString()
-                        ? isoLangs[locale.toString()]!['nativeName']!
-                        : isoLangs[locale.toString()]!['name']!
-                    : isoLangs[locale.toString()]!['name']!
-                : Intl.canonicalizedLocale(locale.toString())
-                    .split('_')[0]
-                    .toUpperCase()
+            isoLangs[locale.toString()]!['name'].toString() == locale.toString()
+                ? isoLangs[locale.toString()]!['nativeName'] ??
+                    locale.toString()
+                : isoLangs[locale.toString()]!['name'] ?? locale.toString()
       });
       // remove the entry that has en_pirate as the key
       if (locale.toString() == 'en_pirate') {
@@ -498,6 +492,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       )) {
                         await launchUrl(
                           Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
+                          mode: LaunchMode.inAppWebView,
                         );
                       }
                     } catch (e) {
