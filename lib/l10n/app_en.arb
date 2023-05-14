@@ -129,5 +129,13 @@
   "serverError": "Server error\nPlease check the server logs",
   "@serverError": {},
   "badGateway": "Bad gateway\nPlease check the server logs",
-  "@badGateway": {}
+  "@badGateway": {},
+  "systemTheme": "System",
+  "@systemTheme": {},
+  "lightTheme": "Light",
+  "@lightTheme": {},
+  "darkTheme": "Dark",
+  "@darkTheme": {},
+  "amoledTheme": "Amoled",
+  "@amoledTheme": {}
 }
