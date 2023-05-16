@@ -19,7 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 // have optional perameter to have the function return the list of folders
-Future<Pair> getServerCategories(context) async {
+Future<Pair> getServerCategories(context, {force = false}) async {
   logger.d("getting server categories");
   final p_info.PackageInfo packageInfo =
       await p_info.PackageInfo.fromPlatform();
@@ -31,6 +31,55 @@ Future<Pair> getServerCategories(context) async {
   final device = prefs.getString('device') ?? "";
   final deviceId = prefs.getString('deviceId') ?? "";
   final version = prefs.getString('version') ?? packageInfo.version;
+
+  // check if already has books and folders
+  final isar = Isar.getInstance();
+  final foldersTemp = await isar!.folders.where().findAll();
+  final booksTemp = await isar.entrys.where().findAll();
+  if (foldersTemp.length > 0 && booksTemp.length > 0 && !force) {
+    List<Map<String, dynamic>> folderMap = [];
+    for (int i = 0; i < foldersTemp.length; i++) {
+      folderMap.add({
+        'name': foldersTemp[i].name,
+        'id': foldersTemp[i].id,
+        'entries': foldersTemp[i].bookIds,
+        'image': foldersTemp[i].image,
+      });
+    }
+
+    logger.d("folderMap: " + folderMap.toString());
+    var folderMap2 = await compareFolders(folderMap);
+
+    List<Map<String, dynamic>> bookMap = [];
+    for (Entry book in booksTemp) {
+      if (book.type == EntryType.book) {
+        // check if name matches any of the folder names
+        bool isFolder = false;
+        for (int i = 0; i < folderMap2.length; i++) {
+          if (folderMap2[i]['name'] == book.title) {
+            isFolder = true;
+            break;
+          }
+          }
+          if (!isFolder) {
+            bookMap.add({
+              'name': book.title,
+              'id': book.id,
+              'description': book.description,
+              'imagePath': book.imagePath,
+              'tags': book.tags,
+              'url': book.url,
+              'releaseDate': book.releaseDate,
+              'rating': book.rating,
+              'path': book.path,
+              'isFavorite': book.isFavorited,
+              'downloaded': book.downloaded,
+            });
+        }
+      }
+    }
+    return Pair(bookMap, folderMap2);
+  }
 
   // turn all the previous logger.d's into a single logger.d with multiple lines
   logger.i(
@@ -51,7 +100,9 @@ Future<Pair> getServerCategories(context) async {
 
   logger.d("got response");
   logger.d(response.statusCode.toString());
-  final data = response.data.items.where((element) => element.collectionType == 'books').toList();
+  final data = response.data.items
+      .where((element) => element.collectionType == 'books')
+      .toList();
 
   bool hasComics = true;
   if (hasComics) {
@@ -67,10 +118,10 @@ Future<Pair> getServerCategories(context) async {
     List<String> comicsIds = [];
     logger.d("selected: " + categories.toString());
     data.forEach((element) {
-        comicsId = element.id;
-        comicsIds.add(comicsId);
-        etag = element.etag;
-        comicsArray.add(getComics(comicsId, etag));
+      comicsId = element.id;
+      comicsIds.add(comicsId);
+      etag = element.etag;
+      comicsArray.add(getComics(comicsId, etag));
     });
 
     List<Map<String, dynamic>> comics = [];
@@ -99,7 +150,7 @@ Future<Pair> getServerCategories(context) async {
 
     comics = likedComics + unlikedComics;
 
-    final isar = Isar.getInstance();
+    // final isar = Isar.getInstance();
     List<String> categoriesList = [];
     for (int i = 0; i < data.length; i++) {
       categoriesList.add(data[i].name);
@@ -109,7 +160,7 @@ Future<Pair> getServerCategories(context) async {
     // List<Entry> entries = await isar!.entrys.where().findAll();
 
     await CreateFolders.getFolders(categoriesList);
-    List<Folder> folders = await isar!.folders.where().findAll();
+    List<Folder> folders = await isar.folders.where().findAll();
 
     // turn into a map
     List<Map<String, dynamic>> folderMap = [];
@@ -261,14 +312,14 @@ Future<Pair> getServerCategoriesOffline(context) async {
   logger.d("getting server categories");
   final p_info.PackageInfo packageInfo =
       await p_info.PackageInfo.fromPlatform();
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('accessToken') ?? "";
-  final url = prefs.getString('server') ?? "";
-  final userId = prefs.getString('UserId') ?? "";
-  final client = prefs.getString('client') ?? "JellyBook";
-  final device = prefs.getString('device') ?? "";
-  final deviceId = prefs.getString('deviceId') ?? "";
-  final version = prefs.getString('version') ?? packageInfo.version;
+  // final prefs = await SharedPreferences.getInstance();
+  // final token = prefs.getString('accessToken') ?? "";
+  // final url = prefs.getString('server') ?? "";
+  // final userId = prefs.getString('UserId') ?? "";
+  // final client = prefs.getString('client') ?? "JellyBook";
+  // final device = prefs.getString('device') ?? "";
+  // final deviceId = prefs.getString('deviceId') ?? "";
+  // final version = prefs.getString('version') ?? packageInfo.version;
   logger.d("got prefs");
 
   bool hasComics = true;
