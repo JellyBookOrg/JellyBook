@@ -46,10 +46,10 @@
  - [ ] Vertical scrolling
  - [ ] Audiobooks
  - [ ] A more consistent experience between the rest of the formats and PDFs (PDFs work a bit differently)
- - [ ] Allow local caching of current files while viewing collection when offline (proper offline support)
- - [ ] Remember user support
+ - [X] Allow local caching of current files while viewing collection when offline (proper offline support)
+ - [X] Remember user support
  - [ ] Multiple server support
- - [ ] Settings page
+ - [X] Settings page
  - [ ] For the download completed screen I want to add a image or GIF of a jellyfish reading a book (credit to thornbill on the Matrix server for that idea)
  - [ ] UI overhaul in several areas of the app (will keep current as options for those who want it)
         - [ ] Part of the current issue is that it looks like an Android app made in Flutter; although it is made in Flutter, I want it to have a more cross-platform feel to it
@@ -58,7 +58,6 @@
 
 ## :warning: Known Issues
  - Due to the re-working of several components, you may need to reset the app's data after upgrading so that it still functions as intended
- - Weblate features are not currently implimented
 
 ## :telephone_receiver: Contact Me
  - Discord: `kmp3e#9430`
