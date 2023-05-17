@@ -129,7 +129,7 @@ Future<List<Map<String, dynamic>>> getComics(
     // for (var i = 0; i < responseData['Items'].length; i++) {
     try {
       List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
-      List<String> comicFileTypes = ['cbz', 'cbr'];
+      List<String> comicFileTypes = ['cbz', 'cbr', 'zip', 'rar'];
       String id = element.id ?? '0';
       String title = element.name ?? '';
       String isDownloaded = 'false';
