@@ -129,5 +129,9 @@
   "dontBrewCoffee": "不要用我煮咖啡。我是一个茶壶",
   "@dontBrewCoffee": {},
   "requestTimeout": "请求超时\n请检查服务器日志",
-  "@requestTimeout": {}
+  "@requestTimeout": {},
+  "systemTheme": "系统",
+  "@systemTheme": {},
+  "licenses": "许可",
+  "@licenses": {}
 }
