@@ -36,8 +36,7 @@ Future<List<Map<String, dynamic>>> getComics(
   };
   // make a built list of the fields
 
-  List<ItemFields> fieldsList = ([
-    ItemFields.primaryImageAspectRatio,
+  BuiltList<ItemFields> fieldsList = BuiltList<ItemFields>([
     ItemFields.sortName,
     ItemFields.path,
     ItemFields.childCount,
@@ -46,8 +45,12 @@ Future<List<Map<String, dynamic>>> getComics(
     ItemFields.overview,
     ItemFields.parentId
   ]);
+
+  BuiltList<BaseItemKind> excludeItemTypes = BuiltList<BaseItemKind>([
+    BaseItemKind.audio,
+    BaseItemKind.audioBook,
+  ]);
   // turn into built list
-  final fields = BuiltList<ItemFields>(fieldsList);
   final api = Openapi(basePathOverride: url).getItemsApi();
   var response;
   try {
@@ -55,12 +58,13 @@ Future<List<Map<String, dynamic>>> getComics(
       userId: userId!,
       headers: headers,
       startIndex: 0,
-      fields: fields,
+      fields: fieldsList,
       imageTypeLimit: 1,
       parentId: comicsId,
       recursive: true,
       sortBy: BuiltList<String>(["IsFolder", "SortName"]),
       sortOrder: BuiltList<SortOrder>([SortOrder.ascending]),
+      excludeItemTypes: excludeItemTypes,
     );
     // logger.d(response.data);
   } catch (e) {
