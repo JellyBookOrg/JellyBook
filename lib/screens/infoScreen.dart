@@ -260,6 +260,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                       .colorScheme!
                                       .primary
                                   : Colors.grey,
+                              foregroundColor: Colors.white,
                             ),
                             onPressed: () {
                               if (isDownloaded) {
