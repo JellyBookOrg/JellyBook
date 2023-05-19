@@ -63,6 +63,7 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   var connectivityResult = ConnectivityResult.none;
+  bool force = false;
 
   int _selectedIndex = 0;
 
@@ -88,7 +89,8 @@ class _MainMenuState extends State<MainMenu> {
           icon: const Icon(Icons.refresh_rounded),
           tooltip: AppLocalizations.of(context)?.refresh ?? 'Refresh',
           onPressed: () {
-            setState(() {});
+            setState(() {
+              force = true;});
           },
         ),
         title: Container(
@@ -137,7 +139,7 @@ class _MainMenuState extends State<MainMenu> {
         children: <Widget>[
           const SizedBox(height: 10),
           FutureBuilder(
-            future: getServerCategories(context),
+            future: getServerCategories(context, force: force),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {
@@ -147,11 +149,11 @@ class _MainMenuState extends State<MainMenu> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
-                        padding: EdgeInsets.only(left: 10),
+                        padding: const EdgeInsets.only(left: 10),
                         child: Text(
                           AppLocalizations.of(context)?.collections ??
                               "Collections",
-                          style: TextStyle(
+                          style: const TextStyle(
                             // size is the size of a title
                             fontSize: 30,
                             // decoration: TextDecoration.underline,

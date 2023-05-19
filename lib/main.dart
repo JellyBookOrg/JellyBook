@@ -67,6 +67,10 @@ Future<void> main() async {
   localPath = await _localPath;
   debugPrint("localPath: $localPath");
 
+  // set the logStoragePath variable
+  logStoragePath = "$localPath/Documents/";
+
+
   // set language to english
   // Settings.setValue<String>("localeString", "en");
 

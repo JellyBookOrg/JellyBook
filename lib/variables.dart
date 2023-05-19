@@ -11,15 +11,16 @@ import 'package:provider/provider.dart';
 // get the ApplicationDocumentsDirectory path
 
 late String localPath;
+String logStoragePath = "/storage/emulated/0/Documents/";
 
 Logger logger = Logger(
   output: kDebugMode == true
       ? ConsoleOutput()
       : FileOutput(
-          file: File("/storage/emulated/0/Documents/jellybook.log"),
+          file: File(logStoragePath + "jellybook.log"),
           overrideExisting: true,
           encoding: utf8,
-          sink: IOSink(File("/storage/emulated/0/Documents/jellybook.log")
+          sink: IOSink(File(logStoragePath + "jellybook.log")
               .openWrite(mode: FileMode.writeOnlyAppend, encoding: utf8)),
         ),
   level: Level.debug,

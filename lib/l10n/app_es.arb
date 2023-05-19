@@ -129,5 +129,15 @@
   "serverError": "Error del servidor\nPor favor, compruebe los registros del servidor",
   "@serverError": {},
   "badGateway": "Puerta de enlace incorrecta\nPor favor, revisa los registros del servidor",
-  "@badGateway": {}
+  "@badGateway": {},
+  "systemTheme": "Sistema",
+  "@systemTheme": {},
+  "lightTheme": "Claro",
+  "@lightTheme": {},
+  "amoledTheme": "Amoled",
+  "@amoledTheme": {},
+  "licenses": "Licencias",
+  "@licenses": {},
+  "darkTheme": "Oscuro",
+  "@darkTheme": {}
 }
