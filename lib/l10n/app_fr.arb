@@ -2,7 +2,7 @@
   "@@locale": "fr",
   "appName": "JellyBook",
   "@appName": {},
-  "pageLoginAddress": "Votre adresse",
+  "pageLoginAddress": "Adresse du serveur",
   "@pageLoginAddress": {},
   "pageLoginPassword": "Mot de passe",
   "@pageLoginPassword": {},
@@ -127,5 +127,15 @@
   "selectCategories": "Sélectionnez les catégories",
   "@selectCategories": {},
   "proxyAuthRequired": "Connexion au proxy requise\nVeuillez consulter les journaux du serveur",
-  "@proxyAuthRequired": {}
+  "@proxyAuthRequired": {},
+  "systemTheme": "Système",
+  "@systemTheme": {},
+  "lightTheme": "Clair",
+  "@lightTheme": {},
+  "darkTheme": "Sombre",
+  "@darkTheme": {},
+  "amoledTheme": "Amoled",
+  "@amoledTheme": {},
+  "licenses": "Licences",
+  "@licenses": {}
 }
