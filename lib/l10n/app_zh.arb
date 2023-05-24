@@ -18,7 +18,7 @@
   "@permissionExplanation": {},
   "unsupportedFileType": "不支持的文件类型",
   "@unsupportedFileType": {},
-  "unsupportedFileTypeExplanation": "JellyBook不支持此文件类型。请下载不同的文件",
+  "unsupportedFileTypeExplanation": "JellyBook不支持此文件类型。请下载其他文件",
   "@unsupportedFileTypeExplanation": {},
   "loadingComic": "请稍候，正在加载您的漫画/书",
   "@loadingComic": {},
@@ -133,5 +133,11 @@
   "systemTheme": "系统",
   "@systemTheme": {},
   "licenses": "许可",
-  "@licenses": {}
+  "@licenses": {},
+  "lightTheme": "浅色",
+  "@lightTheme": {},
+  "darkTheme": "深色",
+  "@darkTheme": {},
+  "amoledTheme": "Amoled深色模式",
+  "@amoledTheme": {}
 }
