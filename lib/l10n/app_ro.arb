@@ -1,3 +1,15 @@
 {
-        "@@locale": "ro"
+  "@@locale": "ro",
+  "connect": "Conectare",
+  "@connect": {},
+  "permissionRequired": "Permisiune necesară",
+  "@permissionRequired": {},
+  "permissionExplanation": "JellyBook are nevoie de permisiunea de a vă accesa fișierele pentru a vă citi benzile desenate",
+  "@permissionExplanation": {},
+  "downloadRequired": "Descărcare Obligatorie",
+  "@downloadRequired": {},
+  "downloadExplanation": "JellyBook trebuie să descarce benzile desenate înainte de a putea fi citite",
+  "@downloadExplanation": {},
+  "ok": "OK",
+  "@ok": {}
 }
