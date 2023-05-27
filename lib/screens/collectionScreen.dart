@@ -12,14 +12,32 @@ import 'package:jellybook/providers/fixRichText.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
+import 'package:jellybook/providers/pair.dart';
 
-class collectionScreen extends StatelessWidget {
+class collectionScreen extends StatefulWidget {
   final String folderId;
   final String name;
   final String image;
   final List<String> bookIds;
 
   collectionScreen({
+    required this.folderId,
+    required this.name,
+    required this.image,
+    required this.bookIds,
+  });
+
+  @override
+  _collectionScreenState createState() => _collectionScreenState(folderId: folderId, name: name, image: image, bookIds: bookIds);
+}
+
+class _collectionScreenState extends State<collectionScreen> { 
+  final String folderId;
+  final String name;
+  final String image;
+  final List<String> bookIds;
+
+  _collectionScreenState({
     required this.folderId,
     required this.name,
     required this.image,
@@ -78,9 +96,9 @@ class collectionScreen extends StatelessWidget {
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  onTap: () {
+                  onTap: () async {
                     if (snapshot.data[index]['type'] != "EntryType.folder") {
-                      Navigator.push(
+                      Pair result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => InfoScreen(
@@ -94,10 +112,13 @@ class collectionScreen extends StatelessWidget {
                             url: snapshot.data[index]['url'],
                             tags: snapshot.data[index]['tags'],
                             isLiked: snapshot.data[index]['isFavorited'],
-                            isDownloaded: false,
+                            isDownloaded: snapshot.data[index]['isDownloaded'],
                           ),
                         ),
                       );
+                          snapshot.data[index]['isFavorited'] =
+                              result.left;
+                          snapshot.data[index]['rating'] = result.right;
                     } else if (snapshot.data[index]['type'] ==
                         "EntryType.folder") {
                       logger.d("Tapped: ${snapshot.data[index].toString()}");

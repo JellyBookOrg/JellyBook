@@ -14,6 +14,7 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
+import 'package:jellybook/providers/pair.dart';
 
 class InfoScreen extends StatefulWidget {
   final String title;
@@ -116,7 +117,7 @@ class _InfoScreenState extends State<InfoScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // update the page so that the liked comics are at the top
-            Navigator.pop(context, checkLiked(comicId));
+            Navigator.pop(context, Pair(checkLiked(comicId), isDownloaded));
           },
         ),
         title: Text(title),
