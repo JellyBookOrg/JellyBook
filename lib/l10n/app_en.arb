@@ -139,5 +139,7 @@
   "amoledTheme": "Amoled",
   "@amoledTheme": {},
   "licenses": "Licenses",
-  "@licenses": {}
+  "@licenses": {},
+  "lookupMissingImages": "Lookup Missing Images",
+  "@lookupMissingImages": {}
 }
