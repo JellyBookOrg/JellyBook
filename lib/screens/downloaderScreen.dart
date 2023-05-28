@@ -409,6 +409,27 @@ class _DownloadScreenState extends State<DownloadScreen> {
       }
 
       logger.d('EPUB file extracted');
+    } else if (dir.contains('.mp3') ||
+        dir.contains('.m4a') ||
+        dir.contains('.m4b') ||
+        dir.contains('.flac')) {
+      logger.d('Audio file');
+      try {
+        var file = File(dirLocation + '/' + await fileNameFromTitle(fileName));
+        try {
+          await Directory('$dirLocation/$fileName2').create(recursive: true);
+        } catch (e) {
+          logger.d(e.toString());
+        }
+        file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
+        entry.folderPath = dirLocation + '/' + fileName2;
+        entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
+        logger.d('Audio file moved');
+        entry.downloaded = true;
+        entry.folderPath = dirLocation + '/' + fileName2;
+      } catch (e) {
+        logger.e(e.toString());
+      }
     } else {
       logger.e('Error');
     }

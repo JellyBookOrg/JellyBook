@@ -310,8 +310,8 @@ Future<List<String>> chooseCategories(List<String> categories, context) async {
 
 Future<Pair> getServerCategoriesOffline(context) async {
   logger.d("getting server categories");
-  final p_info.PackageInfo packageInfo =
-      await p_info.PackageInfo.fromPlatform();
+  // final p_info.PackageInfo packageInfo =
+  //     await p_info.PackageInfo.fromPlatform();
   // final prefs = await SharedPreferences.getInstance();
   // final token = prefs.getString('accessToken') ?? "";
   // final url = prefs.getString('server') ?? "";

@@ -9,6 +9,7 @@ enum EntryType {
   book,
   comic,
   folder,
+  audiobook,
 }
 
 @Collection()

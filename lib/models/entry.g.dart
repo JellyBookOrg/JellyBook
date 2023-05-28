@@ -274,11 +274,13 @@ const _EntrytypeEnumValueMap = {
   'book': 0,
   'comic': 1,
   'folder': 2,
+  'audiobook': 3,
 };
 const _EntrytypeValueEnumMap = {
   0: EntryType.book,
   1: EntryType.comic,
   2: EntryType.folder,
+  3: EntryType.audiobook,
 };
 
 Id _entryGetId(Entry object) {

@@ -23,7 +23,7 @@ import 'package:jellybook/variables.dart';
 
 Future<String> get _localPath async {
   // get the directory that normally is located at /storage/emulated/0/Documents/
-  var directory; 
+  var directory;
   if (Platform.isAndroid) {
     directory = await getExternalStorageDirectory();
   } else {
@@ -40,7 +40,6 @@ Future<void> main() async {
     SystemUiOverlay.top,
   ]);
 
-  //
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarBrightness: Brightness.dark,
@@ -69,7 +68,6 @@ Future<void> main() async {
 
   // set the logStoragePath variable
   logStoragePath = "$localPath/Documents/";
-
 
   // set language to english
   // Settings.setValue<String>("localeString", "en");
