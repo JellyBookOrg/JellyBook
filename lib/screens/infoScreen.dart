@@ -115,9 +115,9 @@ class _InfoScreenState extends State<InfoScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
+          onPressed: () async {
             // update the page so that the liked comics are at the top
-            Navigator.pop(context, Pair(checkLiked(comicId), isDownloaded));
+            Navigator.pop(context, Pair(await checkLiked(comicId), isDownloaded));
           },
         ),
         title: Text(title),

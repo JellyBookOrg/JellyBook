@@ -345,7 +345,7 @@ class _MainMenuState extends State<MainMenu> {
                                   onTap: () async {
                                     logger.i("tapped");
                                     // logger.i(snapshot.data.left[index]);
-                                    final result = await Navigator.push(
+                                    var result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => InfoScreen(
@@ -391,7 +391,9 @@ class _MainMenuState extends State<MainMenu> {
                                     if (result != null) {
                                       setState(() {
                                         snapshot.data.left![index]
-                                            ['isFavorite'] = result as bool;
+                                            ['isFavorite'] = result.left as bool;
+                                        snapshot.data.left![index]
+                                            ['downloaded'] = result.right as bool;
                                       });
                                     }
                                   },
