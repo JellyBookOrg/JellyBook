@@ -27,17 +27,20 @@ import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/variables.dart';
 
 class OfflineBookReader extends StatefulWidget {
-  const OfflineBookReader({Key? key}) : super(key: key);
+  SharedPreferences prefs;
+  OfflineBookReader({Key? key, required this.prefs}) : super(key: key);
 
   @override
-  _OfflineBookReaderState createState() => _OfflineBookReaderState();
+  _OfflineBookReaderState createState() => _OfflineBookReaderState(prefs);
 }
 
 class _OfflineBookReaderState extends State<OfflineBookReader> {
+  SharedPreferences prefs;
+  _OfflineBookReaderState(this.prefs);
+
   @override
   void initState() {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      // Get the network status
       var status = result;
       // if the user is online
       if (status == ConnectivityResult.wifi ||
@@ -54,13 +57,14 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                 url: url,
                 username: username,
                 password: password,
+                prefs: prefs,
               ),
             ),
           );
         } else {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const MyApp(),
+              builder: (context) => LoginScreen(),
             ),
           );
         }
@@ -74,6 +78,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
   void dispose() {
     super.dispose();
   }
+
 
   // create a listener to see if the user is online or offline
   Future<bool> checkConnectivity() async {
@@ -101,7 +106,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
               // find the ansestor of the context that is a navigator
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => const MyApp(),
+                  builder: (context) => MyApp(prefs: prefs), 
                 ),
               );
             });
@@ -366,7 +371,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                     if (result != null) {
                                       setState(() {
                                         snapshot.data.left![index]
-                                            ['isFavorite'] = result as bool;
+                                            ['isFavorite'] = result.left; 
                                       });
                                     }
                                   },

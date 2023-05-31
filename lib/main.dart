@@ -119,14 +119,15 @@ class MyApp extends StatelessWidget {
   final String? url;
   final String? username;
   final String? password;
-  final SharedPreferences? prefs;
+  final SharedPreferences prefs;
+
 
   const MyApp({
     Key? key,
     this.url,
     this.username,
     this.password,
-    this.prefs,
+    required this.prefs,
   }) : super(key: key);
 
   @override
@@ -134,9 +135,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<LocaleChangeNotifier>(
-            create: (context) => LocaleChangeNotifier(context, prefs!)),
+            create: (context) => LocaleChangeNotifier(context, prefs)),
         ChangeNotifierProvider<ThemeChangeNotifier>(
-            create: (context) => ThemeChangeNotifier(context, prefs!)),
+            create: (context) => ThemeChangeNotifier(context, prefs)),
       ],
       builder: (context, _) {
         return Consumer2<LocaleChangeNotifier, ThemeChangeNotifier>(
@@ -164,7 +165,7 @@ class MyApp extends StatelessWidget {
                 });
                 if (snapshot.hasData) {
                   if (snapshot.data == ConnectivityResult.none) {
-                    return OfflineBookReader();
+                    return OfflineBookReader(prefs: prefs);
                   } else {
                     // try to ping 1.1.1.1 or 8.8.8.8 or whatever their dns is and if network is reachable go to login screen
                     // if not, go to offline book reader
@@ -176,7 +177,7 @@ class MyApp extends StatelessWidget {
                         password: password,
                       );
                     }).catchError((e) {
-                      return OfflineBookReader();
+                      return OfflineBookReader(prefs: prefs);
                     });
                     return LoginScreen(
                       url: url,
