@@ -143,5 +143,9 @@
   "lookupMissingImages": "Lookup Missing Images",
   "@lookupMissingImages": {},
   "selectAudioFile": "Select Audio File",
-  "@selectAudioFile": {}
+  "@selectAudioFile": {},
+  "noAudiobooksDownloaded": "No Audiobooks Downloaded",
+  "@noAudiobooksDownloaded": {},
+  "pleaseDownloadAudiobookFirst": "Please download an audiobook first",
+  "@pleaseDownloadAudiobookFirst": {}
 }
