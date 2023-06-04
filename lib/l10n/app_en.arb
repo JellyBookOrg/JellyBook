@@ -141,5 +141,7 @@
   "licenses": "Licenses",
   "@licenses": {},
   "lookupMissingImages": "Lookup Missing Images",
-  "@lookupMissingImages": {}
+  "@lookupMissingImages": {},
+  "selectAudioFile": "Select Audio File",
+  "@selectAudioFile": {}
 }
