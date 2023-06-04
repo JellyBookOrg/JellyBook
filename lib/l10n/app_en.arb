@@ -141,5 +141,11 @@
   "licenses": "Licenses",
   "@licenses": {},
   "lookupMissingImages": "Lookup Missing Images",
-  "@lookupMissingImages": {}
+  "@lookupMissingImages": {},
+  "selectAudioFile": "Select Audio File",
+  "@selectAudioFile": {},
+  "noAudiobooksDownloaded": "No Audiobooks Downloaded",
+  "@noAudiobooksDownloaded": {},
+  "pleaseDownloadAudiobookFirst": "Please download an audiobook first",
+  "@pleaseDownloadAudiobookFirst": {}
 }

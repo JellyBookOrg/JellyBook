@@ -134,10 +134,12 @@
   "@systemTheme": {},
   "lightTheme": "Claro",
   "@lightTheme": {},
-  "amoledTheme": "Amoled",
+  "amoledTheme": "Pantalla Amoled",
   "@amoledTheme": {},
   "licenses": "Licencias",
   "@licenses": {},
   "darkTheme": "Oscuro",
-  "@darkTheme": {}
+  "@darkTheme": {},
+  "lookupMissingImages": "Buscar las imágenes que faltan",
+  "@lookupMissingImages": {}
 }
