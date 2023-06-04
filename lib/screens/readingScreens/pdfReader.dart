@@ -1,6 +1,7 @@
 // The purpose of this file is to allow the user to read pdf files
 
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
@@ -12,6 +13,10 @@ import 'package:pdfx/pdfx.dart';
 import 'package:jellybook/providers/progress.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:jellybook/screens/AudioPicker.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:jellybook/widgets/AudioPlayerWidget.dart';
 
 class PdfReader extends StatefulWidget {
   final String comicId;
@@ -42,6 +47,12 @@ class _PdfReaderState extends State<PdfReader> {
   String path = '';
   int page = 1;
   int total = 0;
+
+  String audioPath = '';
+  AudioPlayer audioPlayer = AudioPlayer();
+  bool isPlaying = false;
+  Duration audioPosition = Duration();
+  String audioId = '';
   // pages
   int _totalPages = 0;
   late PdfController pdfController;
@@ -58,6 +69,15 @@ class _PdfReaderState extends State<PdfReader> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // dispose of the pdf controller
+    pdfController.dispose();
+    audioPlayer.dispose();
+    // timer?.cancel();
+    super.dispose();
   }
 
   // get the path to the comic
@@ -90,13 +110,13 @@ class _PdfReaderState extends State<PdfReader> {
             // return an error message
             return Center(
               child: Text(
-                (AppLocalizations.of(context)?.error ?? 'Error:') +
-                    ' ${snapshot.error}',
+                '${snapshot.error}',
               ),
             );
           } else {
             return Scaffold(
               appBar: AppBar(
+                automaticallyImplyLeading: false,
                 title: Text(title),
                 leading: IconButton(
                   icon: Icon(Icons.arrow_back),
@@ -105,6 +125,12 @@ class _PdfReaderState extends State<PdfReader> {
                     Navigator.of(context).pop();
                   },
                 ),
+                actions: [
+                  audioPlayerWidget(),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                ],
               ),
               body: Center(
                 child: Container(
@@ -124,11 +150,103 @@ class _PdfReaderState extends State<PdfReader> {
           }
         } else {
           // return a loading indicator
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
       },
+    );
+  }
+
+  void onAudioPickerPressed() async {
+    var result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AudioPicker(),
+      ),
+    );
+    if (result != null) {
+      await getAudioId(result);
+      logger.d('result: $result');
+      setState(() => audioPath = result);
+    }
+  }
+
+  Future<void> playAudio(String audioPath, Duration position) async {
+    logger.d('audioPath: $audioPath');
+    await audioPlayer.play(DeviceFileSource(audioPath), position: position);
+    await audioPlayer.seek(position);
+    FlutterBackgroundService().invoke("setAsForeground");
+    setState(() {
+      isPlaying = true;
+    });
+
+    // Listen to audio position changes and update audioPosition variable
+    audioPlayer.onPositionChanged.listen((Duration newPosition) {
+      audioPosition = newPosition;
+    });
+  }
+
+  Future<void> savePosition() async {
+    Isar? isar = Isar.getInstance();
+    if (isar != null) {
+      var entry =
+          await isar.entrys.where().filter().idEqualTo(audioId).findFirst();
+      if (entry != null) {
+        await isar.writeTxn(() async {
+          entry.pageNum = audioPosition.inSeconds;
+          isar.entrys.put(entry);
+        });
+        logger.d('saved position: ${entry.pageNum}');
+      }
+    }
+  }
+
+  Future<void> pauseAudio() async {
+    await savePosition();
+    await audioPlayer.pause();
+    FlutterBackgroundService().invoke("setAsBackground");
+    setState(() {
+      isPlaying = false;
+    });
+  }
+
+  Future<void> stopAudio() async {
+    await savePosition();
+    await audioPlayer.stop();
+    FlutterBackgroundService().invoke("setAsBackground");
+    setState(() {
+      isPlaying = false;
+    });
+  }
+
+  Future<void> getAudioId(String audioPath) async {
+    Isar? isar = Isar.getInstance();
+    if (isar != null) {
+      var entry = await isar.entrys
+          .where()
+          .filter()
+          .filePathEqualTo(audioPath)
+          .findFirst();
+      if (entry != null) {
+        setState(() {
+          audioId = entry.id;
+        });
+      }
+    }
+  }
+
+  Widget audioPlayerWidget() {
+    if (audioPath == '') {
+      return IconButton(
+        icon: const Icon(Icons.audiotrack),
+        onPressed: onAudioPickerPressed,
+      );
+    }
+    return AudioPlayerWidget(
+      audioPath: audioPath,
+      isPlaying: isPlaying,
+      progress: progress,
+      onAudioPickerPressed: onAudioPickerPressed,
     );
   }
 }

@@ -79,7 +79,6 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
     super.dispose();
   }
 
-
   // create a listener to see if the user is online or offline
   Future<bool> checkConnectivity() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
@@ -106,7 +105,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
               // find the ansestor of the context that is a navigator
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => MyApp(prefs: prefs), 
+                  builder: (context) => MyApp(prefs: prefs),
                 ),
               );
             });
@@ -371,7 +370,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                     if (result != null) {
                                       setState(() {
                                         snapshot.data.left![index]
-                                            ['isFavorite'] = result.left; 
+                                            ['isFavorite'] = result.left;
                                       });
                                     }
                                   },

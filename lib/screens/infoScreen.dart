@@ -94,8 +94,8 @@ class _InfoScreenState extends State<InfoScreen> {
 // check if it is liked or not by checking the database
   Future<bool> checkLiked(String id) async {
     final isar = Isar.getInstance();
-    final entries = await isar!.entrys.where().idEqualTo(id).findFirst();
-    return entries!.isFavorited;
+    final entries = await isar?.entrys.where().idEqualTo(id).findFirst();
+    return entries?.isFavorited ?? false;
   }
 
   Future<bool> onLikeButtonTapped(bool isLiked) async {
