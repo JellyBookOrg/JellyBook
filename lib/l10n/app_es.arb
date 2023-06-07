@@ -141,5 +141,11 @@
   "darkTheme": "Oscuro",
   "@darkTheme": {},
   "lookupMissingImages": "Buscar las imágenes que faltan",
-  "@lookupMissingImages": {}
+  "@lookupMissingImages": {},
+  "selectAudioFile": "Seleccionar el archivo de audio",
+  "@selectAudioFile": {},
+  "noAudiobooksDownloaded": "No hay audiolibros descargados",
+  "@noAudiobooksDownloaded": {},
+  "pleaseDownloadAudiobookFirst": "Por favor, primero descargue un audiolibro",
+  "@pleaseDownloadAudiobookFirst": {}
 }
