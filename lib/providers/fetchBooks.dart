@@ -85,7 +85,7 @@ Future<List<Map<String, dynamic>>> getComics(
   }
 
   logger.d("got box");
-  var entries = await isar!.entrys.where().findAll();
+  final entries = await isar!.entrys.where().findAll();
   logger.d("got entries");
 
   List<Map<String, dynamic>> comics = [];

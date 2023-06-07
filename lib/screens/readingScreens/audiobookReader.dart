@@ -140,32 +140,6 @@ class _AudioBookReaderState extends State<AudioBookReader> {
     return '';
   }
 
-  // Future<void> playAudio(String audioPath) async {
-  //   logger.d('audioPath: $audioPath');
-  //   await audioPlayer.play(DeviceFileSource(audioPath));
-  //   await audioPlayer.seek(position);
-  //   setState(() {
-  //     isPlaying = true;
-  //   });
-  // }
-  //
-  // Future<void> pauseAudio() async {
-  //   await savePosition();
-  //   await audioPlayer.pause();
-  //   setState(() {
-  //     isPlaying = false;
-  //   });
-  // }
-  //
-  // Future<void> stopAudio() async {
-  //   await savePosition();
-  //   await audioPlayer.stop();
-  //   setState(() {
-  //     isPlaying = false;
-  //     playbackProgress = 0.0;
-  //   });
-  // }
-
   String formatDuration(double milliseconds) {
     Duration duration = Duration(milliseconds: milliseconds.toInt());
     String twoDigits(int n) => n.toString().padLeft(2, "0");
@@ -214,9 +188,6 @@ class _AudioBookReaderState extends State<AudioBookReader> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // a image of the book (as a square)
-        // Expanded(
-        // flex: 2,
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.4,
           width: MediaQuery.of(context).size.width * 0.8,
@@ -262,9 +233,6 @@ class _AudioBookReaderState extends State<AudioBookReader> {
           value: playbackProgress,
           min: 0.0,
           max: duration.inMilliseconds.toDouble(),
-          // max: 1.0,
-          // max: 100.0,
-          // max: audioPlayer.getDuration();
           onChanged: (value) {
             setState(() {
               playbackProgress = value;

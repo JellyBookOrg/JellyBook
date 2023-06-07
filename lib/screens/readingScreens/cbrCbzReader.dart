@@ -11,6 +11,10 @@ import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/providers/progress.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:jellybook/screens/AudioPicker.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:jellybook/widgets/AudioPlayerWidget.dart';
 
 // cbr/cbz reader
 class CbrCbzReader extends StatefulWidget {
@@ -36,6 +40,13 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   late String path;
   late List<String> chapters = [];
   late List<String> pages = [];
+
+  // audio variables
+  String audioPath = '';
+  AudioPlayer audioPlayer = AudioPlayer();
+  bool isPlaying = false;
+  Duration audioPosition = Duration();
+  String audioId = '';
 
   Future<void> createPageList() async {
     // create a list of chapters
@@ -89,6 +100,12 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
     title = widget.title;
     comicId = widget.comicId;
     getData();
+  }
+
+  @override
+  void dispose() {
+    audioPlayer.dispose();
+    super.dispose();
   }
 
   Future<void> saveProgress(int page) async {
@@ -184,6 +201,98 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
     }
   }
 
+  Future<void> onAudioPickerPressed() async {
+    var result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AudioPicker(),
+      ),
+    );
+    if (result != null) {
+      await getAudioId(result);
+      logger.d('result: $result');
+      setState(() => audioPath = result);
+    }
+  }
+
+  Future<void> playAudio(String audioPath, Duration position) async {
+    logger.d('audioPath: $audioPath');
+    await audioPlayer.play(DeviceFileSource(audioPath), position: position);
+    await audioPlayer.seek(position);
+    FlutterBackgroundService().invoke("setAsForeground");
+    setState(() {
+      isPlaying = true;
+    });
+
+    // Listen to audio position changes and update audioPosition variable
+    audioPlayer.onPositionChanged.listen((Duration newPosition) {
+      audioPosition = newPosition;
+    });
+  }
+
+  Future<void> savePosition() async {
+    Isar? isar = Isar.getInstance();
+    if (isar != null) {
+      var entry =
+          await isar.entrys.where().filter().idEqualTo(audioId).findFirst();
+      if (entry != null) {
+        await isar.writeTxn(() async {
+          entry.pageNum = audioPosition.inSeconds;
+          isar.entrys.put(entry);
+        });
+        logger.d('saved position: ${entry.pageNum}');
+      }
+    }
+  }
+
+  Future<void> pauseAudio() async {
+    await savePosition();
+    await audioPlayer.pause();
+    FlutterBackgroundService().invoke("setAsBackground");
+    setState(() {
+      isPlaying = false;
+    });
+  }
+
+  Future<void> stopAudio() async {
+    await savePosition();
+    await audioPlayer.stop();
+    FlutterBackgroundService().invoke("setAsBackground");
+    setState(() {
+      isPlaying = false;
+    });
+  }
+
+  Future<void> getAudioId(String audioPath) async {
+    Isar? isar = Isar.getInstance();
+    if (isar != null) {
+      var entry = await isar.entrys
+          .where()
+          .filter()
+          .filePathEqualTo(audioPath)
+          .findFirst();
+      if (entry != null) {
+        setState(() {
+          audioId = entry.id;
+        });
+      }
+    }
+  }
+
+  Widget audioPlayerWidget() {
+    if (audioPath == '') {
+      return IconButton(
+        icon: const Icon(Icons.audiotrack),
+        onPressed: onAudioPickerPressed,
+      );
+    }
+    return AudioPlayerWidget(
+      audioPath: audioPath,
+      isPlaying: isPlaying,
+      progress: progress,
+      onAudioPickerPressed: onAudioPickerPressed,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -194,12 +303,18 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
             appBar: AppBar(
               title: Text(title),
               leading: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.pop(context);
                 },
               ),
+              actions: [
+                audioPlayerWidget(),
+                const SizedBox(
+                  width: 10,
+                ),
+              ],
             ),
             body: FutureBuilder(
               // get progress requires the comicId
