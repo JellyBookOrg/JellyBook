@@ -7,6 +7,7 @@ import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AudioPicker extends StatefulWidget {
   AudioPicker();
@@ -39,7 +40,7 @@ class _AudioPickerState extends State<AudioPicker> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select Audio File'),
+        title: Text(AppLocalizations.of(context)?.selectAudioFile ?? 'Select Audio File'),
       ),
       body: FutureBuilder(
         future: getAudioFiles(),
@@ -49,14 +50,14 @@ class _AudioPickerState extends State<AudioPicker> {
             if (snapshot.data.toString() == "[]") {
               // have a popup saying that you must download audiobooks first
               return AlertDialog(
-                title: Text('No Audiobooks Downloaded'),
-                content: Text('Please download an audiobook first'),
+                title: Text(AppLocalizations.of(context)?.noAudiobooksDownloaded ?? 'No Audiobooks Downloaded'),
+                content: Text(AppLocalizations.of(context)?.pleaseDownloadAudiobookFirst ?? 'Please download an audiobook first'),
                 actions: [
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text('Ok'),
+                    child: Text(AppLocalizations.of(context)?.ok ?? 'Ok'),
                   ),
                 ],
               );
@@ -90,11 +91,13 @@ class _AudioPickerState extends State<AudioPicker> {
                                 fit: BoxFit.cover,
                               ),
                               width: MediaQuery.of(context).size.width * 0.1,
+                              height: MediaQuery.of(context).size.width * 0.1,
                               boxFit: BoxFit.fitWidth,
                             )
                           : Image.asset(
                               'assets/images/NoCoverArt.png',
                               width: MediaQuery.of(context).size.width * 0.1,
+                              height: MediaQuery.of(context).size.width * 0.1,
                               fit: BoxFit.fitWidth,
                             ),
                     ),

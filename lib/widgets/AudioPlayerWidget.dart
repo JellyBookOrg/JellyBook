@@ -29,14 +29,47 @@ class AudioPlayerWidget extends StatefulWidget {
 }
 
 class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
-  Duration audioPosition = Duration();
+  Duration audioPosition = const Duration();
   AudioPlayer audioPlayer = AudioPlayer();
   String audioId = '';
+  Timer? timer;
+  Duration duration = const Duration();
 
   @override
   void dispose() {
-    audioPlayer.dispose();
     super.dispose();
+    audioPlayer.stop();
+    audioPlayer.release();
+    audioPlayer.dispose();
+    timer?.cancel();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAudioId(widget.audioPath);
+    audioPlayer = AudioPlayer();
+    // timer every 10 seconds to update the progress
+    timer = Timer.periodic(
+        const Duration(seconds: 10), (Timer t) => savePosition());
+
+    audioPlayer.onPlayerStateChanged.listen((playerState) {
+      if (playerState == PlayerState.playing) {
+        widget.isPlaying = true;
+      } else {
+        widget.isPlaying = false;
+      }
+    });
+    audioPlayer.onDurationChanged.listen((duration) {
+      setState(() {
+        widget.progress = 0.0;
+      });
+    });
+    audioPlayer.onPositionChanged.listen((position) {
+      setState(() {
+        widget.progress = position.inMilliseconds.toDouble();
+      });
+    });
   }
 
   void onPlayPausePressed() async {
@@ -54,7 +87,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   }
 
   void onSliderChangeEnd(double value) async {
-    await audioPlayer.seek(Duration(seconds: value.toInt()));
+    await audioPlayer.seek(Duration(milliseconds: value.toInt()));
     await audioPlayer.resume();
   }
 
@@ -63,6 +96,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     await audioPlayer.play(DeviceFileSource(audioPath), position: position);
     await audioPlayer.seek(position);
     FlutterBackgroundService().invoke("setAsForeground");
+    duration = await audioPlayer.getDuration() ?? const Duration();
     setState(() {
       widget.isPlaying = true;
     });
@@ -73,6 +107,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
       });
     });
   }
+
 
   Future<void> pauseAudio() async {
     await savePosition();
@@ -118,6 +153,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
       if (entry != null) {
         setState(() {
           audioId = entry.id;
+          widget.progress = entry.pageNum.toDouble();
         });
       }
     }
@@ -152,6 +188,8 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               value: widget.progress,
               onChanged: onSliderChanged,
               onChangeEnd: onSliderChangeEnd,
+              min: 0.0,
+              max: duration.inMilliseconds.toDouble(),
             ),
           ),
           IconButton(

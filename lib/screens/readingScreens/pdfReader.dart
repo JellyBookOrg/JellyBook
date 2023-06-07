@@ -158,7 +158,7 @@ class _PdfReaderState extends State<PdfReader> {
     );
   }
 
-  void onAudioPickerPressed() async {
+  Future<void> onAudioPickerPressed() async {
     var result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => AudioPicker(),

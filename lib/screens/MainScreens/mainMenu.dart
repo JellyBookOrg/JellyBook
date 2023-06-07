@@ -1,5 +1,4 @@
 // The purpose of this file is to create the main menu screen (this is part of the list of screens in the bottom navigation bar)
-
 import 'package:flutter/material.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
