@@ -23,9 +23,10 @@ import 'package:jellybook/variables.dart';
 
 Future<String> get _localPath async {
   // get the directory that normally is located at /storage/emulated/0/Documents/
-  var directory;
+  Directory directory;
   if (Platform.isAndroid) {
-    directory = await getExternalStorageDirectory();
+    directory = await getExternalStorageDirectory() ??
+        await getApplicationDocumentsDirectory();
   } else {
     directory = await getApplicationDocumentsDirectory();
   }
@@ -54,7 +55,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   // dio allow self signed certificates
-  HttpOverrides.global = new MyHttpOverrides();
+  HttpOverrides.global = MyHttpOverrides();
 
   // path for isar database
   Directory dir = await getApplicationDocumentsDirectory();
@@ -121,7 +122,6 @@ class MyApp extends StatelessWidget {
   final String? password;
   final SharedPreferences prefs;
 
-
   const MyApp({
     Key? key,
     this.url,
@@ -177,6 +177,7 @@ class MyApp extends StatelessWidget {
                         password: password,
                       );
                     }).catchError((e) {
+                      logger.e(e);
                       return OfflineBookReader(prefs: prefs);
                     });
                     return LoginScreen(
