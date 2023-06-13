@@ -1,5 +1,6 @@
 // The purpose of this screen is to allow the user to search for a specific book/comic
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
@@ -29,7 +30,8 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  List<Map<String, dynamic>> searchResults = [];
+  List<Entry> searchResults = [];
+  // List<Map<String, dynamic>> searchResults = [];
 
   @override
   Widget build(BuildContext context) {
@@ -116,25 +118,16 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ],
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: searchResults[i]['imagePath'] != null
-                                      ? FancyShimmerImage(
-                                          imageUrl: searchResults[i]
-                                              ['imagePath'],
-                                          boxFit: BoxFit.cover,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.2,
-                                          errorWidget: Image.asset(
-                                              'assets/images/NoCoverArt.png',
-                                              fit: BoxFit.cover),
-                                        )
-                                      : Image.asset(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: FancyShimmerImage(
+                                      imageUrl: searchResults[i].imagePath,
+                                      boxFit: BoxFit.cover,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.2,
+                                      errorWidget: Image.asset(
                                           'assets/images/NoCoverArt.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                ),
+                                          fit: BoxFit.cover),
+                                    )),
                               ),
                             ),
                           ),
@@ -147,7 +140,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   padding: const EdgeInsets.only(
                                       top: 8.0, bottom: 4.0),
                                   child: AutoSizeText(
-                                    searchResults[i]['name'],
+                                    searchResults[i].title,
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -163,7 +156,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     TextSpan(
                                       text: "\t\t\t" +
                                           fixRichText(
-                                              searchResults[i]['description']),
+                                              searchResults[i].description),
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey,
@@ -180,26 +173,22 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       onTap: () async {
                         await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => InfoScreen(
-                              title: searchResults[i]['name'] ?? "null",
-                              imageUrl:
-                                  (searchResults[i]['imagePath'] ?? "Asset"),
-                              description:
-                                  searchResults[i]['description'] ?? "null",
-                              tags: searchResults[i]['tags'] ?? ["null"],
-                              url: searchResults[i]['url'] ?? "null",
-                              year: searchResults[i]['releaseDate'] ?? "null",
-                              stars: searchResults[i]['rating'] ?? -1,
-                              path: searchResults[i]['path'] ?? "null",
-                              comicId: searchResults[i]['id'] ?? "null",
-                              isLiked: searchResults[i]['isFavorite'] ?? false,
-                              isDownloaded:
-                                  searchResults[i]['isDownloaded'] ?? false,
-                            ),
-                          ),
-                        ).whenComplete(() async {
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InfoScreen(
+                                title: searchResults[i].title,
+                                imageUrl: searchResults[i].imagePath,
+                                description: searchResults[i].description,
+                                tags: searchResults[i].tags,
+                                url: searchResults[i].url,
+                                year: searchResults[i].releaseDate,
+                                stars: searchResults[i].rating,
+                                path: searchResults[i].path,
+                                comicId: searchResults[i].id,
+                                isLiked: searchResults[i].isFavorited,
+                                isDownloaded: searchResults[i].downloaded,
+                              ),
+                            )).whenComplete(() async {
                           // update the search results
                           await getSearchResults(
                               _searchController.text.toString());
@@ -234,25 +223,25 @@ class _SearchScreenState extends State<SearchScreen> {
     books = diceCoefficientRankings(searchQuery, books);
 
     // convert the results to a list of maps
-    List<Map<String, dynamic>> results = [];
-    books.forEach((element) {
-      results.add({
-        "name": element.title,
-        "imagePath": element.imagePath,
-        "description": element.description,
-        "tags": element.tags,
-        "url": element.url,
-        "year": element.releaseDate,
-        "rating": element.rating,
-        "stars": element.rating,
-        "path": element.path,
-        "id": element.id,
-        "isLiked": element.isFavorited,
-        "isDownloaded": element.downloaded,
-      });
-    });
+    // List<Map<String, dynamic>> results = [];
+    // books.forEach((element) {
+    //   results.add({
+    //     "name": element.title,
+    //     "imagePath": element.imagePath,
+    //     "description": element.description,
+    //     "tags": element.tags,
+    //     "url": element.url,
+    //     "year": element.releaseDate,
+    //     "rating": element.rating,
+    //     "stars": element.rating,
+    //     "path": element.path,
+    //     "id": element.id,
+    //     "isLiked": element.isFavorited,
+    //     "isDownloaded": element.downloaded,
+    //   });
+    // });
     setState(() {
-      searchResults = results;
+      searchResults = books;
     });
   }
 
@@ -343,10 +332,13 @@ class _SearchScreenState extends State<SearchScreen> {
     // remove anything before the decimal
     div = div - div.floor();
 
-    return results
-        .where((element) =>
-            rankings[results.indexOf(element)].keys.first >= 0.4 * (1 - div))
-        .toList();
+// return first 20 results (or less if there are less than 20 results)
+    return results.toList().sublist(0, min(20, results.length));
+
+    // return results
+    //     .where((element) =>
+    //         rankings[results.indexOf(element)].keys.first >= 0.4 * (1 - div))
+    //     .toList();
   }
 
   void quicksort(List<Map<double, Entry>> rankings, int low, int high) {
