@@ -47,7 +47,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   String version = '';
 
-
   Future<void> getPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     version = packageInfo.version;
@@ -79,7 +78,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
               height: 20,
             ),
             // pageTransitionSettings(),
-            themeSettings(context),
+            FutureBuilder(
+              future: themeSettings(context),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return snapshot.data;
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            FutureBuilder(
+              future: readingDirectionSettings(context),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return snapshot.data;
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            // readingDirectionSettings(context),
             const SizedBox(
               height: 20,
             ),
@@ -89,10 +111,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // const SizedBox(
             //   height: 20,
             // ),
-            SizedBox(
-              // depends on screen size
-              height: MediaQuery.of(context).size.height * 0.38,
-            ),
+            // SizedBox(
+            //   // depends on screen size
+            //   height: MediaQuery.of(context).size.height * 0.38,
+            // ),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.25,
               child: ElevatedButton(
@@ -111,7 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 },
                 child: Text(
-                 AppLocalizations.of(context)?.licenses ?? 'Licenses',
+                  AppLocalizations.of(context)?.licenses ?? 'Licenses',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
@@ -126,32 +148,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-
   // theme settings (future builder to get the current theme and then change it)
-  Widget themeSettings(BuildContext context) => DropDownSettingsTile(
-        settingKey: 'theme',
-        title: AppLocalizations.of(context)?.theme ?? 'theme',
-        selected: 
-            Settings.getValue<String>('theme')?.toString() ?? AppLocalizations.of(context)?.systemTheme ?? 'System',
-        leading: const Icon(Icons.color_lens),
-        values: <String, String>{
-        AppLocalizations.of(context)?.systemTheme ?? 'System': 'System',
-        AppLocalizations.of(context)?.lightTheme ?? 'Light': 'Light',
-        AppLocalizations.of(context)?.darkTheme ?? 'Dark': 'Dark',
-        AppLocalizations.of(context)?.amoledTheme ?? 'Amoled': 'Amoled',
-        },
-        // give the key and value of the selected theme
-        onChange: (value) async {
+  Future<Widget> themeSettings(BuildContext context) async {
+    return DropDownSettingsTile(
+      settingKey: 'theme',
+      title: AppLocalizations.of(context)?.theme ?? 'theme',
+      selected: Settings.getValue<String>('theme') ?? 'system',
+      leading: const Icon(Icons.color_lens),
+      values: <String, String>{
+        'system': AppLocalizations.of(context)?.systemTheme ?? 'System',
+        'light': AppLocalizations.of(context)?.lightTheme ?? 'Light',
+        'dark': AppLocalizations.of(context)?.darkTheme ?? 'Dark',
+        'amoled': AppLocalizations.of(context)?.amoledTheme ?? 'Amoled',
+      },
+      onChange: (value) async {
         debugPrint('Settings theme: ${Settings.getValue<String>('theme')}');
-          // debugPrint('Theme changed to $value');
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          ThemeChangeNotifier themeChangeNotifier =
-              Provider.of<ThemeChangeNotifier>(context, listen: false);
-              // set the theme to the english value of the selected theme
-              prefs.setString('theme', value.toString().toLowerCase());
-          themeChangeNotifier.setTheme = value.toString().toLowerCase();
-        },
-      );
+        debugPrint('Value: $value');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        ThemeChangeNotifier themeChangeNotifier =
+            Provider.of<ThemeChangeNotifier>(context, listen: false);
+        Settings.setValue<String>('theme', value.toString());
+        prefs.setString('theme', value.toString());
+        themeChangeNotifier.setTheme = value.toString().toLowerCase();
+      },
+    );
+  }
+
+  // Widget themeSettings(BuildContext context) => DropDownSettingsTile(
+  //       settingKey: 'theme',
+  //       title: AppLocalizations.of(context)?.theme ?? 'theme',
+  //       selected: Settings.getValue<String>('theme') ?? 'System',
+  //       leading: const Icon(Icons.color_lens),
+  //       values: <String, String>{
+  //         'System': AppLocalizations.of(context)?.systemTheme ?? 'System',
+  //         'Light': AppLocalizations.of(context)?.lightTheme ?? 'Light',
+  //         'Dark': AppLocalizations.of(context)?.darkTheme ?? 'Dark',
+  //         'Amoled': AppLocalizations.of(context)?.amoledTheme ?? 'Amoled',
+  //         // AppLocalizations.of(context)?.systemTheme ?? 'System': 'System',
+  //         // AppLocalizations.of(context)?.lightTheme ?? 'Light': 'Light',
+  //         // AppLocalizations.of(context)?.darkTheme ?? 'Dark': 'Dark',
+  //         // AppLocalizations.of(context)?.amoledTheme ?? 'Amoled': 'Amoled',
+  //       },
+  //       // give the key and value of the selected theme
+  //       onChange: (value) async {
+  //         debugPrint('Settings theme: ${Settings.getValue<String>('theme')}');
+  //         // debugPrint('Theme changed to $value');
+  //         SharedPreferences prefs = await SharedPreferences.getInstance();
+  //         ThemeChangeNotifier themeChangeNotifier =
+  //             Provider.of<ThemeChangeNotifier>(context, listen: false);
+  //         // set the theme to the english value of the selected theme
+  //         Settings.setValue<String>('theme', value.toString());
+  //         prefs.setString('theme', value.toString().toLowerCase());
+  //         themeChangeNotifier.setTheme = value.toString().toLowerCase();
+  //       },
+  //     );
 
   // static String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
@@ -435,6 +485,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
         },
       );
 
+  // Reading Direction settings
+  Future<Widget> readingDirectionSettings(BuildContext context) async =>
+      DropDownSettingsTile(
+        settingKey: 'readingDirection',
+        title: AppLocalizations.of(context)?.readingDirection ??
+            'Reading Direction',
+        selected: Settings.getValue<String>('readingDirection') ?? 'LTR',
+        leading: const Icon(Icons.format_textdirection_l_to_r_rounded),
+        values: <String, String>{
+          'LTR': AppLocalizations.of(context)?.ltr ?? 'Left to Right',
+          'RTL': AppLocalizations.of(context)?.rtl ?? 'Right to Left',
+          'Vertical': AppLocalizations.of(context)?.vertical ?? "Vertical",
+        },
+        onChange: (value) async {
+          debugPrint(value);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('readingDirection', value.toString());
+          Settings.setValue('readingDirection', value.toString());
+        },
+      );
+
   // experimental features settings
   Widget experimentalFeaturesSettings() => SwitchSettingsTile(
         settingKey: 'experimentalFeatures',
@@ -448,56 +519,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
 
   // about settings (should contain the version number and the link to the github repo, and author)
-  Widget aboutSettings() => 
-        FutureBuilder(
-          future: getPackageInfo(),
-          builder: (context, snapshot) {
-            return Column(
-              children: [
-                // version number (should be a future builder)
-                Text(
-                  (AppLocalizations.of(context)?.version ?? 'Version: ') +
-                      (version.isNotEmpty
-                          ? version
-                          : AppLocalizations.of(context)?.unknown ?? 'Unknown'),
-                  style: const TextStyle(fontSize: 20),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "${AppLocalizations.of(context)?.madeBy ?? 'Made by'} Kara Wilson",
-                  style: const TextStyle(fontSize: 20),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                // insert https://github.com/Kara-Zor-El/JellyBook
-                InkWell(
-                  child: const Text(
-                    "https://github.com/Kara-Zor-El/JellyBook",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.blue,
-                    ),
+  Widget aboutSettings() => FutureBuilder(
+        future: getPackageInfo(),
+        builder: (context, snapshot) {
+          return Column(
+            children: [
+              // version number (should be a future builder)
+              Text(
+                (AppLocalizations.of(context)?.version ?? 'Version: ') +
+                    (version.isNotEmpty
+                        ? version
+                        : AppLocalizations.of(context)?.unknown ?? 'Unknown'),
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                "${AppLocalizations.of(context)?.madeBy ?? 'Made by'} Kara Wilson",
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              // insert https://github.com/Kara-Zor-El/JellyBook
+              InkWell(
+                child: const Text(
+                  "https://github.com/Kara-Zor-El/JellyBook",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.blue,
                   ),
-                  onTap: () async {
-                    try {
-                      if (await canLaunchUrl(
-                        Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
-                      )) {
-                        await launchUrl(
-                          Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
-                          mode: LaunchMode.inAppWebView,
-                        );
-                      }
-                    } catch (e) {
-                      logger.e(e.toString());
-                    }
-                  },
                 ),
-              ],
-            );
-          },
+                onTap: () async {
+                  try {
+                    if (await canLaunchUrl(
+                      Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
+                    )) {
+                      await launchUrl(
+                        Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
+                        mode: LaunchMode.inAppWebView,
+                      );
+                    }
+                  } catch (e) {
+                    logger.e(e.toString());
+                  }
+                },
+              ),
+            ],
+          );
+        },
       );
 }
