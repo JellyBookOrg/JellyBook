@@ -149,5 +149,11 @@
   "pleaseDownloadAudiobookFirst": "Please download an audiobook first",
   "@pleaseDownloadAudiobookFirst": {},
   "readingDirection": "Reading Direction",
-  "@readingDirection": {}
+  "@readingDirection": {},
+  "ltr": "Left to Right",
+  "@ltr": {},
+  "rtl": "Right to Left",
+  "@rtl": {},
+  "vertical": "Vertical",
+  "@vertical": {}
 }
