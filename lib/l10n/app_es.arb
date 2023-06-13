@@ -147,5 +147,7 @@
   "noAudiobooksDownloaded": "No hay audiolibros descargados",
   "@noAudiobooksDownloaded": {},
   "pleaseDownloadAudiobookFirst": "Por favor, primero descargue un audiolibro",
-  "@pleaseDownloadAudiobookFirst": {}
+  "@pleaseDownloadAudiobookFirst": {},
+  "readingDirection": "Dirección de lectura",
+  "@readingDirection": {}
 }
