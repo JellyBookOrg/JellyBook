@@ -139,5 +139,13 @@
   "darkTheme": "深色",
   "@darkTheme": {},
   "amoledTheme": "Amoled深色模式",
-  "@amoledTheme": {}
+  "@amoledTheme": {},
+  "noAudiobooksDownloaded": "没有下载有声读物",
+  "@noAudiobooksDownloaded": {},
+  "pleaseDownloadAudiobookFirst": "请先下载有声读物",
+  "@pleaseDownloadAudiobookFirst": {},
+  "selectAudioFile": "选择音频文件",
+  "@selectAudioFile": {},
+  "lookupMissingImages": "查找缺失图像",
+  "@lookupMissingImages": {}
 }
