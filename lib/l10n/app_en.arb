@@ -147,5 +147,13 @@
   "noAudiobooksDownloaded": "No Audiobooks Downloaded",
   "@noAudiobooksDownloaded": {},
   "pleaseDownloadAudiobookFirst": "Please download an audiobook first",
-  "@pleaseDownloadAudiobookFirst": {}
+  "@pleaseDownloadAudiobookFirst": {},
+  "readingDirection": "Reading Direction",
+  "@readingDirection": {},
+  "ltr": "Left to Right",
+  "@ltr": {},
+  "rtl": "Right to Left",
+  "@rtl": {},
+  "vertical": "Vertical",
+  "@vertical": {}
 }
