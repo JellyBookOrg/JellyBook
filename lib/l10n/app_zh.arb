@@ -147,5 +147,13 @@
   "selectAudioFile": "选择音频文件",
   "@selectAudioFile": {},
   "lookupMissingImages": "查找缺失图像",
-  "@lookupMissingImages": {}
+  "@lookupMissingImages": {},
+  "readingDirection": "翻页方向",
+  "@readingDirection": {},
+  "ltr": "从左到右",
+  "@ltr": {},
+  "rtl": "从右到左",
+  "@rtl": {},
+  "vertical": "纵向",
+  "@vertical": {}
 }
