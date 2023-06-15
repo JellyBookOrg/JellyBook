@@ -501,7 +501,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onChange: (value) async {
           debugPrint(value);
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('readingDirection', value.toString());
+          prefs.setString('readingDirection', value.toString().toLowerCase());
           Settings.setValue('readingDirection', value.toString());
         },
       );

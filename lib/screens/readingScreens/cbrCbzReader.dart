@@ -15,6 +15,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:jellybook/screens/AudioPicker.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:jellybook/widgets/AudioPlayerWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // cbr/cbz reader
 class CbrCbzReader extends StatefulWidget {
@@ -40,6 +41,7 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   late String path;
   late List<String> chapters = [];
   late List<String> pages = [];
+  late String direction;
 
   // audio variables
   String audioPath = '';
@@ -47,6 +49,12 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   bool isPlaying = false;
   Duration audioPosition = Duration();
   String audioId = '';
+
+  void setDirection() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    direction = prefs.getString('readingDirection') ?? 'ltr';
+    logger.wtf("direction: $direction");
+  }
 
   Future<void> createPageList() async {
     // create a list of chapters
@@ -100,6 +108,7 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
     title = widget.title;
     comicId = widget.comicId;
     getData();
+    setDirection();
   }
 
   @override
@@ -329,6 +338,11 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
                           children: [
                             Expanded(
                               child: PageView.builder(
+                                scrollDirection:
+                                    direction.toLowerCase() == 'vertical'
+                                        ? Axis.vertical
+                                        : Axis.horizontal,
+                                reverse: direction == 'rtl',
                                 // scrollDirection: Axis.vertical,
                                 itemCount: pages.length,
                                 controller: PageController(
