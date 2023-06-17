@@ -28,10 +28,11 @@ class collectionScreen extends StatefulWidget {
   });
 
   @override
-  _collectionScreenState createState() => _collectionScreenState(folderId: folderId, name: name, image: image, bookIds: bookIds);
+  _collectionScreenState createState() => _collectionScreenState(
+      folderId: folderId, name: name, image: image, bookIds: bookIds);
 }
 
-class _collectionScreenState extends State<collectionScreen> { 
+class _collectionScreenState extends State<collectionScreen> {
   final String folderId;
   final String name;
   final String image;
@@ -98,7 +99,7 @@ class _collectionScreenState extends State<collectionScreen> {
                 return ListTile(
                   onTap: () async {
                     if (snapshot.data[index]['type'] != "EntryType.folder") {
-                      Pair result = await Navigator.push(
+                      Pair? result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => InfoScreen(
@@ -116,9 +117,10 @@ class _collectionScreenState extends State<collectionScreen> {
                           ),
                         ),
                       );
-                          snapshot.data[index]['isFavorited'] =
-                              result.left;
-                          snapshot.data[index]['rating'] = result.right;
+                      if (result != null) {
+                        snapshot.data[index]['isFavorited'] = result.left;
+                        snapshot.data[index]['isDownloaded'] = result.right;
+                      }
                     } else if (snapshot.data[index]['type'] ==
                         "EntryType.folder") {
                       logger.d("Tapped: ${snapshot.data[index].toString()}");
