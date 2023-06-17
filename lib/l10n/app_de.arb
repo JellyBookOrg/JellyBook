@@ -135,5 +135,21 @@
   "noSlash": "Die URL enthält kein \"/\"",
   "@noSlash": {},
   "proxyAuthRequired": "Proxy Authentifizierung benötigt\nBitte überprüfe die Server Logs",
-  "@proxyAuthRequired": {}
+  "@proxyAuthRequired": {},
+  "selectAudioFile": "Audiodatei auswählen",
+  "@selectAudioFile": {},
+  "pleaseDownloadAudiobookFirst": "Bitte laden Sie zuerst ein Hörbuch herunter",
+  "@pleaseDownloadAudiobookFirst": {},
+  "noAudiobooksDownloaded": "Keine Hörbücher heruntergeladen",
+  "@noAudiobooksDownloaded": {},
+  "lookupMissingImages": "Fehlende Bilder suchen",
+  "@lookupMissingImages": {},
+  "readingDirection": "Lese-Richtung",
+  "@readingDirection": {},
+  "ltr": "Links nach rechts",
+  "@ltr": {},
+  "rtl": "Rechts nach links",
+  "@rtl": {},
+  "vertical": "Vertikal",
+  "@vertical": {}
 }
