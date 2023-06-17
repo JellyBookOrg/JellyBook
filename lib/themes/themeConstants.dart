@@ -17,7 +17,6 @@ ThemeData lightTheme = ThemeData(
 ThemeData oled = ThemeData(
   brightness: Brightness.dark,
   primaryColor: Colors.black,
-  backgroundColor: Colors.black,
   scaffoldBackgroundColor: Colors.black,
   cardColor: Colors.black,
   textTheme: TextTheme(

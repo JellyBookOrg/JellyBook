@@ -100,6 +100,7 @@ Future<void> main() async {
   var logins = await isar.logins.where().findAll();
   if (logins.length != 0) {
     logger.d("login username: ${logins[0].username}");
+    prefs.setString("username", logins[0].username);
     if (kDebugMode) {
       logger.d("login url: ${logins[0].serverUrl}");
       logger.d("login password: ${logins[0].password}");

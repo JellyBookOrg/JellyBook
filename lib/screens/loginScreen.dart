@@ -58,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
       logger.d("url: " + url!);
       logger.d("username: " + username!);
+      prefs?.setString("username", username!);
       logger.d("password: " + password!);
       LoginProvider.loginStatic(
         url!,
@@ -240,7 +241,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       _loading = true;
                     });
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => OfflineBookReader(prefs: prefs!)));
+                        builder: (context) =>
+                            OfflineBookReader(prefs: prefs!)));
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
