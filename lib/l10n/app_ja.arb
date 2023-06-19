@@ -147,5 +147,13 @@
   "badGateway": "不正なゲートウェイ\nサーバーのログを確認してください",
   "@badGateway": {},
   "lookupMissingImages": "不足している画像を検索する",
-  "@lookupMissingImages": {}
+  "@lookupMissingImages": {},
+  "readingDirection": "読むときの方向",
+  "@readingDirection": {},
+  "ltr": "左から右へ",
+  "@ltr": {},
+  "rtl": "右から左へ",
+  "@rtl": {},
+  "vertical": "垂直",
+  "@vertical": {}
 }
