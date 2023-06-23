@@ -42,8 +42,7 @@ Future<void> getProgress(String comicId) async {
   // final isar = Isar.openSync([EntrySchema]);
 
   // get the entry
-  final entry =
-      await isar?.entrys.where().idEqualTo(comicId).findFirst() ?? null;
+  final entry = await isar?.entrys.where().idEqualTo(comicId).findFirst();
   if (entry == null) {
     logger.d("entry is null");
     return;
