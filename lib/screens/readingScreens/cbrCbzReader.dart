@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:jellybook/providers/updatePagenum.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:isar/isar.dart';
@@ -134,6 +135,7 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
 
     logger.d("saved progress");
     logger.d("page num: ${entry.pageNum}");
+    updatePagenum(entry.id, entry.pageNum);
   }
 
   Future<void> getChapters() async {

@@ -43,7 +43,7 @@ Future<List<Map<String, dynamic>>> getComics(
     ItemFields.mediaSourceCount,
     ItemFields.tags,
     ItemFields.overview,
-    ItemFields.parentId
+    ItemFields.parentId,
   ]);
 
   // turn into built list

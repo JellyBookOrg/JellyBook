@@ -88,8 +88,11 @@ class _MainMenuState extends State<MainMenu> {
           icon: const Icon(Icons.refresh_rounded),
           tooltip: AppLocalizations.of(context)?.refresh ?? 'Refresh',
           onPressed: () {
-            setState(() {
-              force = true;});
+            setState(
+              () {
+                force = true;
+              },
+            );
           },
         ),
         title: Container(
@@ -390,9 +393,11 @@ class _MainMenuState extends State<MainMenu> {
                                     if (result != null) {
                                       setState(() {
                                         snapshot.data.left![index]
-                                            ['isFavorite'] = result.left as bool;
+                                                ['isFavorite'] =
+                                            result.left as bool;
                                         snapshot.data.left![index]
-                                            ['downloaded'] = result.right as bool;
+                                                ['downloaded'] =
+                                            result.right as bool;
                                       });
                                     }
                                   },
