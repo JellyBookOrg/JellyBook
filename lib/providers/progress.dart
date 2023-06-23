@@ -5,6 +5,7 @@ import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/variables.dart';
+import 'package:jellybook/providers/updatePagenum.dart';
 
 Future<void> saveProgress({
   required int page,
@@ -32,6 +33,7 @@ Future<void> saveProgress({
 
   logger.d("saved progress");
   logger.d("page num: ${entry.pageNum}");
+  updatePagenum(entry.id, entry.pageNum);
 }
 
 Future<void> getProgress(String comicId) async {
