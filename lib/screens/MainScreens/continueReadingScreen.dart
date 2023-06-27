@@ -105,7 +105,6 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                                   stars: snapshot.data![index].rating,
                                   comicId: snapshot.data![index].id,
                                   url: snapshot.data![index].url,
-                                  tags: snapshot.data![index].tags,
                                   description:
                                       snapshot.data![index].description,
                                   imageUrl: snapshot.data![index].imagePath,

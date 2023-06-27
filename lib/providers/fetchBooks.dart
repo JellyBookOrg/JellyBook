@@ -190,6 +190,7 @@ Future<List<Map<String, dynamic>>> getComics(
         comics.indexWhere((comic) {
           if (comic['id'] == entry.id) {
             comic['downloaded'] = entry.downloaded;
+            comic['tags'] += entry.tags;
             return true;
           } else {
             return false;

@@ -336,9 +336,6 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                               snapshot.data.left![index]
                                                       ['description'] ??
                                                   "null",
-                                          tags: snapshot.data.left![index]
-                                                  ['tags'] ??
-                                              ["null"],
                                           url: snapshot.data.left![index]
                                                   ['url'] ??
                                               "null",

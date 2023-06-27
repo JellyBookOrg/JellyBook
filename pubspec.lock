@@ -535,13 +535,13 @@ packages:
     source: hosted
     version: "3.3.0"
   flutter_html:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_html
-      sha256: "342c7908f0a67bcec62b6e0f7cf23e23bafe7f64693665dd35be98d5e783bdfd"
+      sha256: "02ad69e813ecfc0728a455e4bf892b9379983e050722b1dce00192ee2e41d1ee"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0-alpha.6"
+    version: "3.0.0-beta.2"
   flutter_html_to_pdf:
     dependency: "direct main"
     description:
@@ -768,11 +768,9 @@ packages:
   jellybook_epub_view:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: e0b69af0c0e140aa49bde3d135057e95951b0ce0
-      url: "https://github.com/Kara-Zor-El/jellybook_epub_view.git"
-    source: git
+      path: "submodules/jellybook_epub_view"
+      relative: true
+    source: path
     version: "3.0.0"
   js:
     dependency: transitive
@@ -806,6 +804,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  list_counter:
+    dependency: transitive
+    description:
+      name: list_counter
+      sha256: c447ae3dfcd1c55f0152867090e67e219d42fe6d4f2807db4bbe8b8d69912237
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   logger:
     dependency: "direct main"
     description:
@@ -870,14 +876,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0"
-  numerus:
-    dependency: transitive
-    description:
-      name: numerus
-      sha256: "436759d84f233b40107d0cc31cfa92d24e0960afeb2e506be70926d4cddffd9e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   octo_image:
     dependency: transitive
     description:
@@ -1517,7 +1515,7 @@ packages:
     source: hosted
     version: "1.0.0"
   xml:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: xml
       sha256: "80d494c09849dc3f899d227a78c30c5b949b985ededf884cb3f3bcd39f4b447a"

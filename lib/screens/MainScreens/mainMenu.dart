@@ -361,9 +361,9 @@ class _MainMenuState extends State<MainMenu> {
                                               snapshot.data.left![index]
                                                       ['description'] ??
                                                   "null",
-                                          tags: snapshot.data.left![index]
-                                                  ['tags'] ??
-                                              ["null"],
+                                          // tags: snapshot.data.left![index]
+                                          //         ['tags'] ??
+                                          //     ["null"],
                                           url: snapshot.data.left![index]
                                                   ['url'] ??
                                               "null",
@@ -391,7 +391,7 @@ class _MainMenuState extends State<MainMenu> {
                                     // update state of the card
                                     logger.d(result);
                                     if (result != null) {
-                                      setState(() {
+                                      setState(() async {
                                         snapshot.data.left![index]
                                                 ['isFavorite'] =
                                             result.left as bool;

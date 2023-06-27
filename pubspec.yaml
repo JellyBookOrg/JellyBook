@@ -54,7 +54,8 @@ dependencies:
   # flutter_pdfview: ^1.2.5
   open_filex: ^4.3.1
   jellybook_epub_view:
-    git: https://github.com/Kara-Zor-El/jellybook_epub_view.git
+    path: ./submodules/jellybook_epub_view
+    # git: https://github.com/Kara-Zor-El/jellybook_epub_view.git
   flutter_html_to_pdf: ^0.7.0
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
@@ -79,6 +80,8 @@ dependencies:
   audioplayers: ^4.0.1
   flutter_background_service: ^2.4.6
   palette_generator: ^0.3.3+2
+  xml: ^5.4.1
+  flutter_html: ^3.0.0-beta.2
 
 dev_dependencies:
   flutter_test:

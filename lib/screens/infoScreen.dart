@@ -21,7 +21,6 @@ class InfoScreen extends StatefulWidget {
   final String imageUrl;
   final String url;
   final String description;
-  final List<dynamic> tags;
   final String year;
   final double stars;
   final String comicId;
@@ -35,7 +34,6 @@ class InfoScreen extends StatefulWidget {
     required this.title,
     required this.imageUrl,
     required this.description,
-    required this.tags,
     required this.url,
     required this.comicId,
     required this.stars,
@@ -51,7 +49,6 @@ class InfoScreen extends StatefulWidget {
         title: title,
         imageUrl: imageUrl,
         description: description,
-        tags: tags,
         url: url,
         comicId: comicId,
         stars: stars,
@@ -68,7 +65,6 @@ class _InfoScreenState extends State<InfoScreen> {
   final String imageUrl;
   final String url;
   final String description;
-  final List<dynamic> tags;
   final String year;
   final double stars;
   final String comicId;
@@ -80,7 +76,6 @@ class _InfoScreenState extends State<InfoScreen> {
     required this.title,
     required this.imageUrl,
     required this.description,
-    required this.tags,
     required this.url,
     required this.comicId,
     required this.stars,
@@ -90,6 +85,12 @@ class _InfoScreenState extends State<InfoScreen> {
     this.offline = false,
     required this.isDownloaded,
   });
+
+  Future<List<String>> getTags(String id) async {
+    final isar = Isar.getInstance();
+    Entry? entries = await isar?.entrys.where().idEqualTo(id).findFirst();
+    return entries?.tags ?? ["Error"];
+  }
 
 // check if it is liked or not by checking the database
   Future<bool> checkLiked(String id) async {
@@ -103,7 +104,9 @@ class _InfoScreenState extends State<InfoScreen> {
     return !isLiked;
   }
 
+  @override
   void initState() {
+    super.initState();
     checkLiked(comicId).then((value) {
       isLiked = value;
     });
@@ -117,7 +120,8 @@ class _InfoScreenState extends State<InfoScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () async {
             // update the page so that the liked comics are at the top
-            Navigator.pop(context, Pair(await checkLiked(comicId), isDownloaded));
+            bool isLiked = await checkLiked(comicId);
+            Navigator.pop(context, Pair(isLiked, isDownloaded));
           },
         ),
         title: Text(title),
@@ -405,16 +409,25 @@ class _InfoScreenState extends State<InfoScreen> {
             ),
             SizedBox(
               height: 50,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: tags.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding: const EdgeInsets.all(5),
-                    child: Chip(
-                      label: Text(tags[index]),
-                    ),
-                  );
+              child: FutureBuilder(
+                future: getTags(comicId),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: const EdgeInsets.all(5),
+                          child: Chip(
+                            label: Text(snapshot.data![index]),
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
                 },
               ),
             ),

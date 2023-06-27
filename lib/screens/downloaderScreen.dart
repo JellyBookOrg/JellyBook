@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:archive/archive.dart';
 import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
+import 'package:jellybook/providers/parseEpub.dart';
 import 'package:openapi/openapi.dart';
 
 // import the database
@@ -409,6 +410,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
       }
 
       logger.d('EPUB file extracted');
+      // get the OEBPS/content.opf file and parse it
+      logger.d('Now parsing the content.opf file');
+      parseEpub(entry);
     } else if (dir.contains('.mp3') ||
         dir.contains('.m4a') ||
         dir.contains('.m4b') ||

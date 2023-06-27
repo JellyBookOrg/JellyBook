@@ -286,12 +286,12 @@ class _EpubReaderState extends State<EpubReader> {
                 ),
               ),
               body: EpubView(
-                controller: _epubController,
-                onExternalLinkPressed: (url) {
+                (url) {
                   logger.d("External link pressed: $url");
                   // open url in browser
                   launchUrl(Uri.parse(url));
                 },
+                controller: _epubController,
                 onDocumentLoaded: (document) {
                   logger.d("Document loaded: ${document.Title}");
                   // wait 5 seconds and then go to the chapter
