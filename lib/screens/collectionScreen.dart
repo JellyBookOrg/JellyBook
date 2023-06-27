@@ -111,7 +111,6 @@ class _collectionScreenState extends State<collectionScreen> {
                             path: snapshot.data[index]['type'],
                             year: snapshot.data[index]['year'],
                             url: snapshot.data[index]['url'],
-                            tags: snapshot.data[index]['tags'],
                             isLiked: snapshot.data[index]['isFavorited'],
                             isDownloaded: snapshot.data[index]['isDownloaded'],
                           ),
