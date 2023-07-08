@@ -10,6 +10,7 @@ import 'package:like_button/like_button.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:jellybook/providers/updateLike.dart';
 import 'package:isar/isar.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -392,17 +393,39 @@ class _InfoScreenState extends State<InfoScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: RichText(
-                text: TextSpan(
-                  text: "\t\t\t${fixRichText(description)}",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
+              child: MarkdownBody(
+                data: fixRichText(description),
+                selectable: false,
+                shrinkWrap: true,
+                styleSheet:
+                    MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+                  p: const TextStyle(
+                    inherit: true,
+                    fontSize: 15,
+                    fontStyle: FontStyle.italic,
+                    height: 1.5,
+                  ),
+                  pPadding: const EdgeInsets.all(5),
+                  blockSpacing: 10,
+                  code: const TextStyle(
+                    inherit: true,
+                    fontSize: 15,
                     fontStyle: FontStyle.italic,
                     height: 1.5,
                   ),
                 ),
               ),
+              // child: RichText(
+              //   text: TextSpan(
+              //     text: "\t\t\t${fixRichText(description)}",
+              //     style: const TextStyle(
+              //       fontSize: 14,
+              //       color: Colors.grey,
+              //       fontStyle: FontStyle.italic,
+              //       height: 1.5,
+              //     ),
+              //   ),
+              // ),
             ),
             const SizedBox(
               height: 10,

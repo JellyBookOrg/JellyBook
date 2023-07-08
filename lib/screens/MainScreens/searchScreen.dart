@@ -179,6 +179,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 title: searchResults[i].title,
                                 imageUrl: searchResults[i].imagePath,
                                 description: searchResults[i].description,
+                                // tags: searchResults[i].tags,
                                 url: searchResults[i].url,
                                 year: searchResults[i].releaseDate,
                                 stars: searchResults[i].rating,
