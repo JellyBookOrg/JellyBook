@@ -44,6 +44,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
     required this.comicId,
     this.forceDownload = false,
   });
+
   String url = '';
   String imageUrl = '';
   double progress = 0.0;
@@ -53,11 +54,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
   String path = '';
   String platformVersion = 'Unknown';
   bool downloading = false;
+  bool downloaded = false;
   String comicFolder = 'Error';
+  DownloadStatus downloadStatus = DownloadStatus.NotDownloaded;
 
   final isar = Isar.getInstance();
   String dirLocation = '';
   late Entry entry;
+  bool isCompleted = false;
 
   @override
   void initState() {
@@ -66,10 +70,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> downloadFile(bool forceDown) async {
-    // var isar = await Isar.open([EntrySchema]);
-
+    // set the status to downloading
+    downloadStatus = DownloadStatus.Downloading;
     // get the entry that matches the comicId
     entry = await isar!.entrys.where().idEqualTo(comicId).findFirst() as Entry;
+    downloaded = entry.downloaded;
 
     final storage = FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
@@ -153,16 +158,40 @@ class _DownloadScreenState extends State<DownloadScreen> {
     logger.d('Attempting to download file');
     final api = Openapi(basePathOverride: url).getLibraryApi();
     Response<Uint8List> download;
-    download = await api.getDownload(
+    downloading = true;
+    download = await api
+        .getDownload(
       itemId: id,
       headers: headers,
       onReceiveProgress: (received, total) {
         setState(() {
-          downloading = true;
           progress = (received / total * 100);
         });
       },
-    );
+    )
+        .onError((error, stackTrace) {
+      logger.e(error);
+      logger.e(stackTrace);
+      setState(() {
+        downloading = false;
+        progress = 0.0;
+        downloadStatus = DownloadStatus.DownloadFailed;
+      });
+      return Response<Uint8List>(
+        data: Uint8List(0),
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 0,
+      );
+    });
+    if (download.statusCode != 200) {
+      logger.e('Download failed');
+      setState(() {
+        downloading = false;
+        progress = 0.0;
+        downloadStatus = DownloadStatus.DownloadFailed;
+      });
+      return;
+    }
     logger.d('File downloaded');
     // update to say writing file
     await writeToFile(download, dir);
@@ -188,6 +217,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> writeToFile(Response<Uint8List> data, String dir) async {
+    downloadStatus = DownloadStatus.Downloaded;
     final file = File(dir);
     await file.writeAsBytes(data.data!);
   }
@@ -259,7 +289,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   SizedBox(
                     height: 20,
                   ),
-                  if (progress < 100)
+                  if (progress < 100 &&
+                      downloadStatus == DownloadStatus.Downloading)
                     Text(
                       (AppLocalizations.of(context)?.downloadingFile ??
                               'Downloading File:') +
@@ -285,32 +316,62 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   ),
                 ],
               )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)?.fileDownloaded ??
-                        'File Downloaded',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
+            : downloadStatus != DownloadStatus.DownloadFailed &&
+                    downloadStatus != DownloadStatus.DecompressingFailed &&
+                    downloaded
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)?.fileDownloaded ??
+                            'File Downloaded',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      // Giant icon with check mark
+                      const Icon(
+                        Icons.check_circle,
+                        size: 100,
+                        color: Colors.green,
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)?.downloadFailed ??
+                            "The download was unable to complete. Please try again later.",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      // Giant icon with check mark
+                      const Icon(
+                        Icons.error,
+                        size: 100,
+                        color: Colors.red,
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  // Giant icon with check mark
-                  Icon(
-                    Icons.check_circle,
-                    size: 100,
-                    color: Colors.green,
-                  ),
-                ],
-              ),
       ),
     );
   }
 
   Future<void> extractFile(String dir) async {
+    logger.d('Extracting file');
+    downloadStatus = DownloadStatus.Decompressing;
     String fileName2 = await fileNameFromTitle(entry.title);
     // make directory
     try {
@@ -442,4 +503,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
       await isar!.entrys.put(entry);
     });
   }
+}
+
+enum DownloadStatus {
+  NotDownloaded,
+  Downloading,
+  Downloaded,
+  Decompressing,
+  DownloadFailed,
+  DecompressingFailed,
 }
