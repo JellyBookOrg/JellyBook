@@ -390,8 +390,10 @@ class _MainMenuState extends State<MainMenu> {
                                     );
                                     // update state of the card
                                     logger.d(result);
-                                    if (result != null) {
-                                      setState(() async {
+                                    if (result != null &&
+                                        result.left != null &&
+                                        result.right != null) {
+                                      setState(() {
                                         snapshot.data.left![index]
                                                 ['isFavorite'] =
                                             result.left as bool;
