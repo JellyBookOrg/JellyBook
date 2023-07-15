@@ -155,5 +155,7 @@
   "rtl": "De derecha a izquierda",
   "@rtl": {},
   "vertical": "Vertical",
-  "@vertical": {}
+  "@vertical": {},
+  "downloadFailed": "No se pudo completar la descarga. Por favor, inténtelo de nuevo más tarde.",
+  "@downloadFailed": {}
 }
