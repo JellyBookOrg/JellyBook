@@ -175,5 +175,7 @@
   "coverArtist": "Cover Artist",
   "@coverArtist": {},
   "imprint": "Imprint",
-  "@imprint": {}
+  "@imprint": {},
+  "read": "Read",
+  "@read": {}
 }
