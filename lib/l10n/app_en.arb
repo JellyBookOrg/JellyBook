@@ -157,5 +157,11 @@
   "vertical": "Vertical",
   "@vertical": {},
   "downloadFailed": "The download was unable to complete. Please try again later.",
-  "@downloadFailed": {}
+  "@downloadFailed": {},
+  "credits": "Credits",
+  "@credits": {},
+  "penciller": "Penciller",
+  "@penciller": {},
+  "writer": "Writer",
+  "@writer": {}
 }
