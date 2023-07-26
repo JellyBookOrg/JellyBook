@@ -163,5 +163,17 @@
   "penciller": "Penciller",
   "@penciller": {},
   "writer": "Writer",
-  "@writer": {}
+  "@writer": {},
+  "editor": "Editor",
+  "@editor": {},
+  "colorist": "Colorist",
+  "@colorist": {},
+  "letterer": "Letterer",
+  "@letterer": {},
+  "publisher": "Publisher",
+  "@publisher": {},
+  "coverArtist": "Cover Artist",
+  "@coverArtist": {},
+  "imprint": "Imprint",
+  "@imprint": {}
 }
