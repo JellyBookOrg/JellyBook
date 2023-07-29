@@ -177,5 +177,7 @@
   "imprint": "Imprint",
   "@imprint": {},
   "read": "Read",
-  "@read": {}
+  "@read": {},
+  "inker": "Inker",
+  "@inker": {}
 }
