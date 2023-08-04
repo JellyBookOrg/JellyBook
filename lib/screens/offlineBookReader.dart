@@ -326,38 +326,8 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => InfoScreen(
-                                          title: snapshot.data.left![index]
-                                                  ['name'] ??
-                                              "null",
-                                          imageUrl: (snapshot.data.left![index]
-                                                  ['imagePath'] ??
-                                              "Asset"),
-                                          description:
-                                              snapshot.data.left![index]
-                                                      ['description'] ??
-                                                  "null",
-                                          url: snapshot.data.left![index]
-                                                  ['url'] ??
-                                              "null",
-                                          year: snapshot.data.left![index]
-                                                  ['releaseDate'] ??
-                                              "null",
-                                          stars: snapshot.data.left![index]
-                                                  ['rating'] ??
-                                              -1,
-                                          path: snapshot.data.left![index]
-                                                  ['path'] ??
-                                              "null",
-                                          comicId: snapshot.data.left![index]
-                                                  ['id'] ??
-                                              "null",
-                                          isLiked: snapshot.data.left![index]
-                                                  ['isFavorite'] ??
-                                              false,
-                                          isDownloaded:
-                                              snapshot.data.left![index]
-                                                      ['isDownloaded'] ??
-                                                  false,
+                                          entry: Entry.fromJson(
+                                              snapshot.data.left![index]),
                                           offline: true,
                                         ),
                                       ),

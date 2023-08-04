@@ -6,6 +6,7 @@ import 'package:jellybook/screens/infoScreen.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
+import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 // import 'package:jellybook/providers/fixRichText.dart';
 import 'package:flutter_star/flutter_star.dart';
@@ -99,18 +100,7 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => InfoScreen(
-                                  year: snapshot.data![index].releaseDate,
-                                  title: snapshot.data![index].title,
-                                  path: snapshot.data![index].filePath,
-                                  stars: snapshot.data![index].rating,
-                                  comicId: snapshot.data![index].id,
-                                  url: snapshot.data![index].url,
-                                  description:
-                                      snapshot.data![index].description,
-                                  imageUrl: snapshot.data![index].imagePath,
-                                  isLiked: snapshot.data![index].isFavorited,
-                                  isDownloaded:
-                                      snapshot.data![index].downloaded,
+                                  entry: snapshot.data![index],
                                 ),
                               ),
                             );
@@ -127,47 +117,9 @@ class _ContinueReadingScreenState extends State<ContinueReadingScreen> {
                           leading: Stack(
                             children: [
                               Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.grey[900]!.withOpacity(0.5)
-                                          : Colors.grey[300]!.withOpacity(0.5),
-                                      // color: Colors.black.withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 3,
-                                      offset: const Offset(2, 3),
-                                    ),
-                                  ],
-                                ),
-                                // if (snapshot.data![index].pageNum != 0)
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: snapshot.data![index].imagePath !=
-                                          "Asset"
-                                      ? FancyShimmerImage(
-                                          imageUrl:
-                                              snapshot.data![index].imagePath,
-                                          errorWidget: Image.asset(
-                                            "assets/images/NoCoverArt.png",
-                                            fit: BoxFit.cover,
-                                          ),
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.1,
-                                          boxFit: BoxFit.fitWidth,
-                                        )
-                                      : Image.asset(
-                                          'assets/images/NoCoverArt.png',
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.1,
-                                          fit: BoxFit.fitWidth,
-                                        ),
+                                child: RoundedImageWithShadow(
+                                  imageUrl: snapshot.data![index].imagePath,
+                                  radius: 5,
                                 ),
                               ),
                               snapshot.data![index].progress != 0

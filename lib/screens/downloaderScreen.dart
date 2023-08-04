@@ -13,6 +13,7 @@ import 'package:archive/archive.dart';
 import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:jellybook/providers/parseEpub.dart';
+import 'package:jellybook/providers/ComicInfoXML.dart';
 import 'package:openapi/openapi.dart';
 
 // import the database
@@ -318,7 +319,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
               )
             : downloadStatus != DownloadStatus.DownloadFailed &&
                     downloadStatus != DownloadStatus.DecompressingFailed &&
-                    downloaded
+                    !downloaded
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -417,6 +418,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       entry.folderPath = dirLocation + '/' + fileName2;
 
       logger.d('Zip file extracted');
+      parseXML(entry);
     } else if (dir.contains('.rar') || dir.contains('.cbr')) {
       try {
         await UnrarFile.extract_rar(
@@ -429,6 +431,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       } catch (e) {
         logger.d(e.toString());
       }
+      parseXML(entry);
     } else if (entry.path.contains('.pdf')) {
       logger.d('PDF file');
 

@@ -13,6 +13,7 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/providers/pair.dart';
+import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
 class collectionScreen extends StatefulWidget {
   final String folderId;
@@ -47,37 +48,17 @@ class _collectionScreenState extends State<collectionScreen> {
 
   final isar = Isar.getInstance();
   // make a list of entries from the the list of bookIds
-  Future<List<Map<String, dynamic>>> getEntries() async {
-    // final isar = Isar.openSync([EntrySchema]);
-    List<Map<String, dynamic>> entries = [];
-    // get the entries from the database
-    final entryList = await isar!.entrys.where().findAll();
-    // var entryList = box.values.toList();
-    logger.d("bookIds: ${bookIds.length}");
-    for (int i = 0; i < bookIds.length; i++) {
-      // get the first entry that matches the bookId
-      var entry = entryList.firstWhere((element) => element.id == bookIds[i]);
-      entries.add({
-        'id': entry.id,
-        'title': entry.title,
-        'imagePath': entry.imagePath != '' ? entry.imagePath : 'Asset',
-        'rating': entry.rating,
-        'description': entry.description,
-        'path': entry.path,
-        'year': entry.releaseDate,
-        'type': entry.type.toString(),
-        'tags': entry.tags,
-        'url': entry.url,
-        'isFavorited': entry.isFavorited,
-        'isDownloaded': entry.downloaded,
-      });
-    }
-    return entries;
+  Future<List<Entry>> getEntries() async {
+    List<Entry> entryList = await isar!.entrys
+        .where()
+        .filter()
+        .anyOf(bookIds, (q, String id) => q.idEqualTo(id))
+        .findAll();
+    return entryList;
     // checkeach field of the entry to make sure it is not null
   }
 
-  // getter for the list of entries calling getEntries()
-  Future<List<Map<String, dynamic>>> get entries async {
+  Future<List<Entry>> get entries async {
     return await getEntries();
   }
 
@@ -98,35 +79,29 @@ class _collectionScreenState extends State<collectionScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   onTap: () async {
-                    if (snapshot.data[index]['type'] != "EntryType.folder") {
+                    if (snapshot.data[index].type != "EntryType.folder") {
                       Pair? result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => InfoScreen(
-                            comicId: snapshot.data[index]['id'],
-                            title: snapshot.data[index]['title'],
-                            imageUrl: snapshot.data[index]['imagePath'],
-                            stars: snapshot.data[index]['rating'],
-                            description: snapshot.data[index]['description'],
-                            path: snapshot.data[index]['type'],
-                            year: snapshot.data[index]['year'],
-                            url: snapshot.data[index]['url'],
-                            isLiked: snapshot.data[index]['isFavorited'],
-                            isDownloaded: snapshot.data[index]['isDownloaded'],
+                            entry: snapshot.data[index],
                           ),
                         ),
                       );
                       if (result != null) {
-                        snapshot.data[index]['isFavorited'] = result.left;
-                        snapshot.data[index]['isDownloaded'] = result.right;
+                        snapshot.data[index].isFavorited = result.left;
+                        snapshot.data[index].downloaded = result.right;
+                        await isar?.writeTxn(() async {
+                          await isar?.entrys.put(snapshot.data[index]);
+                        });
                       }
-                    } else if (snapshot.data[index]['type'] ==
+                    } else if (snapshot.data[index].type ==
                         "EntryType.folder") {
                       logger.d("Tapped: ${snapshot.data[index].toString()}");
                       var folder = isar!.folders
                           .where()
                           .filter()
-                          .idEqualTo(snapshot.data[index]['id'])
+                          .idEqualTo(snapshot.data[index].id)
                           .findFirstSync();
                       Navigator.push(
                         context,
@@ -141,43 +116,15 @@ class _collectionScreenState extends State<collectionScreen> {
                       );
                     }
                   },
-                  title: Text(snapshot.data[index]['title']),
-                  leading: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context).shadowColor.withOpacity(0.5),
-                          // color: Colors.black.withOpacity(0.5),
-                          spreadRadius: 1,
-                          blurRadius: 3,
-                          offset: const Offset(2, 3),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: snapshot.data[index]['imagePath'] != "Asset"
-                          ? FancyShimmerImage(
-                              imageUrl: snapshot.data[index]['imagePath'],
-                              errorWidget: Image.asset(
-                                'assets/images/NoCoverArt.png',
-                                fit: BoxFit.cover,
-                              ),
-                              boxFit: BoxFit.fitWidth,
-                              width: MediaQuery.of(context).size.width * 0.1,
-                            )
-                          : Image.asset(
-                              'assets/images/NoCoverArt.png',
-                              width: MediaQuery.of(context).size.width * 0.1,
-                              fit: BoxFit.fitWidth,
-                            ),
-                    ),
+                  title: Text(snapshot.data[index].title),
+                  leading: RoundedImageWithShadow(
+                    imageUrl: snapshot.data[index].imagePath,
+                    radius: 5,
                   ),
                   subtitle: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      if (snapshot.data[index]['rating'] >= 0)
+                      if (snapshot.data[index].rating >= 0)
                         IgnorePointer(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -186,12 +133,12 @@ class _collectionScreenState extends State<collectionScreen> {
                                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                                 child: CustomRating(
                                   max: 5,
-                                  score: snapshot.data[index]['rating'] / 2,
+                                  score: snapshot.data[index].rating / 2,
                                   star: Star(
                                     fillColor: Color.lerp(
                                         Colors.red,
                                         Colors.yellow,
-                                        snapshot.data[index]['rating'] / 10)!,
+                                        snapshot.data[index].rating / 10)!,
                                     emptyColor: Colors.grey.withOpacity(0.5),
                                   ),
                                   onRating: (double score) {},
@@ -200,7 +147,7 @@ class _collectionScreenState extends State<collectionScreen> {
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                                 child: Text(
-                                  "${(snapshot.data[index]['rating'] / 2).toStringAsFixed(2)} / 5.00",
+                                  "${(snapshot.data[index].rating / 2).toStringAsFixed(2)} / 5.00",
                                   style: const TextStyle(
                                     fontStyle: FontStyle.italic,
                                     fontSize: 15,
@@ -210,13 +157,13 @@ class _collectionScreenState extends State<collectionScreen> {
                             ],
                           ),
                         ),
-                      if (snapshot.data[index]['rating'] < 0 &&
-                          snapshot.data[index]['description'] != '')
+                      if (snapshot.data[index].rating < 0 &&
+                          snapshot.data[index].description != '')
                         Flexible(
                           child: RichText(
                             text: TextSpan(
-                              text: fixRichText(
-                                  snapshot.data[index]['description']),
+                              text:
+                                  fixRichText(snapshot.data[index].description),
                               // prevent overflow
                               style: const TextStyle(
                                 fontStyle: FontStyle.italic,

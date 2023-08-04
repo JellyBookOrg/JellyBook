@@ -5,11 +5,23 @@ import 'package:flutter/material.dart';
 // Dark theme
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
+  popupMenuTheme: PopupMenuThemeData(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(50.0),
+    ),
+    color: Colors.grey[800],
+  ),
 );
 
 // Light theme
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
+  popupMenuTheme: PopupMenuThemeData(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(50.0),
+    ),
+    color: Colors.grey[800],
+  ),
 );
 
 // OLED theme
@@ -19,6 +31,12 @@ ThemeData oled = ThemeData(
   primaryColor: Colors.black,
   scaffoldBackgroundColor: Colors.black,
   cardColor: Colors.black,
+  popupMenuTheme: PopupMenuThemeData(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(50.0),
+    ),
+    color: Colors.grey[800],
+  ),
   textTheme: TextTheme(
     headline1: TextStyle(
       color: Colors.white,

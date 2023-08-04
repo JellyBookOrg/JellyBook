@@ -176,17 +176,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => InfoScreen(
-                                title: searchResults[i].title,
-                                imageUrl: searchResults[i].imagePath,
-                                description: searchResults[i].description,
-                                // tags: searchResults[i].tags,
-                                url: searchResults[i].url,
-                                year: searchResults[i].releaseDate,
-                                stars: searchResults[i].rating,
-                                path: searchResults[i].path,
-                                comicId: searchResults[i].id,
-                                isLiked: searchResults[i].isFavorited,
-                                isDownloaded: searchResults[i].downloaded,
+                                entry: searchResults[i],
                               ),
                             )).whenComplete(() async {
                           // update the search results
