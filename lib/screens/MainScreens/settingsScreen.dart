@@ -668,6 +668,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     fontSize: 20,
                     color: Colors.blue,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 onTap: () async {
                   try {
