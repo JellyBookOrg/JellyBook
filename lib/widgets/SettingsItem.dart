@@ -90,6 +90,7 @@ class _SettingsItemState extends State<SettingsItem> {
             overflow: TextOverflow.ellipsis,
           ),
           trailing: DropdownButton<String>(
+            alignment: Alignment.centerRight,
             underline: Container(),
             value: widget.values!.keys.firstWhere(
               (key) => widget.values![key] == widget.selected,
