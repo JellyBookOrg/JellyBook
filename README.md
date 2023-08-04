@@ -12,9 +12,9 @@
 </p>
 
 <p align="center">
-  Hi, this is a passion project I am working on.
-  Its an app that's meant to allow you to read your files from Jellyfin on mobile.
-  It is in a state where I do beleive it's usable for most comic reading and some books, but it still has a long way to go.
+  Hi, this is a passion project I'm working on.
+  It's an app that's meant to allow you to read your files from Jellyfin on mobile devices.
+  It's in a state where I do beleive it's usable for most comic reading and some books, but it still has a long way to go.
 </p>
 
 ## :zap: Installation:
