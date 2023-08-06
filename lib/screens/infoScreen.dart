@@ -47,7 +47,6 @@ class _InfoScreenState extends State<InfoScreen> {
     required this.entry,
     this.offline = false,
   });
-  List<(String, String, String)> authors = [];
   double imageWidth = 0;
   bool updatedImageWidth = false;
 
@@ -76,7 +75,12 @@ class _InfoScreenState extends State<InfoScreen> {
   }
 
   /// get the authors from the entry (List of Author, Role)
-  Future<void> getAuthors() async {
+  Future<List<(String, String, String)>> getAuthors() async {
+    List<(String, String, String)> authors = [];
+    if (updatedImageWidth == false) {
+      imageWidth = MediaQuery.of(context).size.width * 0.3;
+      updatedImageWidth = true;
+    }
     if (entry.writer != null) {
       final image = await getAuthorImage(entry.writer!);
       authors.add((
@@ -158,6 +162,7 @@ class _InfoScreenState extends State<InfoScreen> {
       ));
       logger.i("imprint: ${entry.imprint}");
     }
+    return authors;
   }
 
   Future<String> getAuthorImage(String author) async {
@@ -578,7 +583,7 @@ class _InfoScreenState extends State<InfoScreen> {
             FutureBuilder(
               future: getAuthors(),
               builder: (context, snapshot) {
-                if (authors.isNotEmpty) {
+                if (snapshot.hasData && snapshot.data != null) {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                     child: Column(
@@ -605,12 +610,12 @@ class _InfoScreenState extends State<InfoScreen> {
                           spacing: 20,
                           runSpacing: 10,
                           children: List.generate(
-                            authors.length,
+                            snapshot.data!.length,
                             (index) {
                               // Calculate the number of items to display in each row based on the available width
                               int itemsPerRow =
                                   (MediaQuery.of(context).size.width / 200 -
-                                          (authors.length - 1) * 20)
+                                          (snapshot.data!.length - 1) * 20)
                                       .floor();
 
                               // Set a minimum item width to ensure at least 3 items per row on a normal smartphone
@@ -632,7 +637,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                 children: [
                                   ClipOval(
                                     child: FancyShimmerImage(
-                                      imageUrl: authors[index].$3,
+                                      imageUrl: snapshot.data![index].$3,
                                       boxFit: BoxFit.fitWidth,
                                       width: itemWidth - 7,
                                       height: itemWidth - 7,
@@ -649,7 +654,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   SizedBox(
                                     width: itemWidth - 10,
                                     child: AutoSizeText(
-                                      authors[index].$1,
+                                      snapshot.data![index].$1,
                                       style: const TextStyle(
                                         fontSize: 15,
                                       ),
@@ -659,7 +664,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   SizedBox(
                                     width: itemWidth - 10,
                                     child: AutoSizeText(
-                                      authors[index].$2,
+                                      snapshot.data![index].$2,
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey,
@@ -672,65 +677,6 @@ class _InfoScreenState extends State<InfoScreen> {
                             },
                           ),
                         )
-                        // Wrap(
-                        //   alignment: WrapAlignment.spaceEvenly,
-                        //   spacing: 20,
-                        //   runSpacing: 10,
-                        //   children: List.generate(
-                        //     authors.length,
-                        //     (index) {
-                        //       // a image of the author with their name below it and their role below that
-                        //       return Column(
-                        //         children: [
-                        //           ClipOval(
-                        //             child: FancyShimmerImage(
-                        //               imageUrl: authors[index].$3,
-                        //               boxFit: BoxFit.fitWidth,
-                        //               width: 117,
-                        //               height: 117,
-                        //               // width: MediaQuery.of(context).size.width /
-                        //               //         4 +
-                        //               //     7,
-                        //               // height:
-                        //               //     MediaQuery.of(context).size.width /
-                        //               //             4 +
-                        //               //         7,
-                        //               errorWidget: // rounded image asset
-                        //                   const Image(
-                        //                 image: AssetImage(
-                        //                   "assets/images/ProfilePicture.png",
-                        //                 ),
-                        //                 fit: BoxFit.scaleDown,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //           // make these text fields auto size so that they don't overflow and width should less than the image
-                        //           SizedBox(
-                        //             width:
-                        //                 MediaQuery.of(context).size.width / 4 -
-                        //                     10,
-                        //             child: AutoSizeText(authors[index].$1,
-                        //                 style: const TextStyle(
-                        //                   fontSize: 15,
-                        //                 ),
-                        //                 textAlign: TextAlign.center),
-                        //           ),
-                        //           SizedBox(
-                        //             width:
-                        //                 MediaQuery.of(context).size.width / 4 -
-                        //                     10,
-                        //             child: AutoSizeText(authors[index].$2,
-                        //                 style: const TextStyle(
-                        //                   fontSize: 12,
-                        //                   color: Colors.grey,
-                        //                 ),
-                        //                 textAlign: TextAlign.center),
-                        //           ),
-                        //         ],
-                        //       );
-                        //     },
-                        //   ),
-                        // ),
                       ],
                     ),
                   );
