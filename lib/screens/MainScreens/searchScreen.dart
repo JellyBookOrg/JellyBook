@@ -13,6 +13,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
+import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -117,17 +118,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                                   ],
                                 ),
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: FancyShimmerImage(
-                                      imageUrl: searchResults[i].imagePath,
-                                      boxFit: BoxFit.cover,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.2,
-                                      errorWidget: Image.asset(
-                                          'assets/images/NoCoverArt.png',
-                                          fit: BoxFit.cover),
-                                    )),
+                                child: RoundedImageWithShadow(
+                                  imageUrl: searchResults[i].imagePath,
+                                ),
                               ),
                             ),
                           ),

@@ -11,6 +11,7 @@ import 'package:jellybook/variables.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
 // audiobook reader
 class AudioBookReader extends StatefulWidget {
@@ -205,24 +206,9 @@ class _AudioBookReaderState extends State<AudioBookReader> {
                   ),
                 ],
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: imageUrl.isNotEmpty && imageUrl != "Asset"
-                    ? FancyShimmerImage(
-                        imageUrl: imageUrl,
-                        boxFit: BoxFit.cover,
-                        errorWidget: Image.asset(
-                          "assets/images/NoCoverArt.png",
-                          width: MediaQuery.of(context).size.width / 4 * 0.8,
-                          fit: BoxFit.cover,
-                        ),
-                        width: MediaQuery.of(context).size.width / 4 * 0.8,
-                      )
-                    : Image.asset(
-                        'assets/images/NoCoverArt.png',
-                        width: MediaQuery.of(context).size.width / 4 * 0.8,
-                        fit: BoxFit.cover,
-                      ),
+              child: RoundedImageWithShadow(
+                imageUrl: imageUrl,
+                ratio: 1,
               ),
             ),
           ),

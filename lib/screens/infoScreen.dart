@@ -383,37 +383,40 @@ class _InfoScreenState extends State<InfoScreen> {
               }
             },
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              backgroundColor: // grey
-                  Colors.grey[800],
-              padding: EdgeInsets.zero,
-              fixedSize: const Size(40, 40),
-            ),
-            onPressed: () {},
-            child: PopupMenuButton(
-              onSelected: (value) async {
-                if (value == "delete") {
-                  logger.d("deleting comic");
-                  await deleteComic(entry.id, context);
-                }
-              },
-              child: const Icon(Icons.more_vert, color: Colors.white),
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    value: "delete",
-                    child: Row(
-                      children: [
-                        const Icon(Icons.delete_rounded),
-                        const SizedBox(width: 10),
-                        Text(AppLocalizations.of(context)?.delete ?? "Delete"),
-                      ],
+          Expanded(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                backgroundColor: // grey
+                    Colors.grey[800],
+                padding: EdgeInsets.zero,
+                fixedSize: const Size(40, 40),
+              ),
+              onPressed: () {},
+              child: PopupMenuButton(
+                onSelected: (value) async {
+                  if (value == "delete") {
+                    logger.d("deleting comic");
+                    await deleteComic(entry.id, context);
+                  }
+                },
+                child: const Icon(Icons.more_vert, color: Colors.white),
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      value: "delete",
+                      child: Row(
+                        children: [
+                          const Icon(Icons.delete_rounded),
+                          const SizedBox(width: 10),
+                          Text(
+                              AppLocalizations.of(context)?.delete ?? "Delete"),
+                        ],
+                      ),
                     ),
-                  ),
-                ];
-              },
+                  ];
+                },
+              ),
             ),
           ),
         ],

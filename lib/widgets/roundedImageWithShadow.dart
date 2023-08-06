@@ -9,7 +9,7 @@ class RoundedImageWithShadow extends StatefulWidget {
   final Key? key;
   final Function(Size)? onImageSizeAvailable;
 
-  RoundedImageWithShadow({
+  const RoundedImageWithShadow({
     this.key,
     required this.imageUrl,
     this.ratio = 0.64,

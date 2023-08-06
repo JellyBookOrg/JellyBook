@@ -25,6 +25,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/variables.dart';
+import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
 class OfflineBookReader extends StatefulWidget {
   SharedPreferences prefs;
@@ -228,32 +229,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                               ),
                                             ],
                                           ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: snapshot.data.right[index]
-                                                            ['image'] !=
-                                                        null &&
-                                                    snapshot.data.right[index]
-                                                            ['image'] !=
-                                                        "Asset"
-                                                ? FancyShimmerImage(
-                                                    imageUrl: snapshot.data
-                                                        .right[index]['image'],
-                                                    errorWidget: Image.asset(
-                                                        'assets/images/NoCoverArt.png',
-                                                        fit: BoxFit.cover),
-                                                    boxFit: BoxFit.cover,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            5,
-                                                  )
-                                                : Image.asset(
-                                                    "assets/images/NoCoverArt.png",
-                                                    fit: BoxFit.fitWidth,
-                                                  ),
+                                          child: RoundedImageWithShadow(
+                                            imageUrl: snapshot.data.right[index]
+                                                ['image'],
                                           ),
                                         ),
                                       ),
@@ -373,49 +351,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                                   ),
                                                 ],
                                               ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: snapshot.data.left![
-                                                                    index]
-                                                                ['imagePath'] !=
-                                                            null &&
-                                                        snapshot.data.left![
-                                                                    index]
-                                                                ['imagePath'] !=
-                                                            "Asset"
-                                                    ? FancyShimmerImage(
-                                                        imageUrl: snapshot.data
-                                                                .left[index]
-                                                            ['imagePath'],
-                                                        errorWidget:
-                                                            Image.asset(
-                                                          "assets/images/NoCoverArt.png",
-                                                          fit: BoxFit.fitWidth,
-                                                        ),
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width /
-                                                            5,
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height /
-                                                            5,
-                                                        boxFit:
-                                                            BoxFit.fitHeight,
-                                                      )
-                                                    : Image.asset(
-                                                        "assets/images/NoCoverArt.png",
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height /
-                                                            6 *
-                                                            0.8,
-                                                        fit: BoxFit.fitWidth,
-                                                      ),
+                                              child: RoundedImageWithShadow(
+                                                imageUrl: snapshot.data.left![
+                                                    index]['imagePath'],
                                               ),
                                             ),
                                           ),
