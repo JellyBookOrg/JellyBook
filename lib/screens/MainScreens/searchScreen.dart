@@ -81,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Text(
                       AppLocalizations.of(context)?.searchBook ??
                           'Please search for a book',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
                       )),
                 )
@@ -89,7 +89,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Text(
                       AppLocalizations.of(context)?.noResults ??
                           'No results found',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
                       )),
                 )
