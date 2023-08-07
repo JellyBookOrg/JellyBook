@@ -74,94 +74,173 @@ class _InfoScreenState extends State<InfoScreen> {
     });
   }
 
-  /// get the authors from the entry (List of Author, Role)
-  Future<List<(String, String, String)>> getAuthors() async {
-    List<(String, String, String)> authors = [];
+  Future<Set<Author>> getAuthors() async {
+    Set<Author> authors = {};
+
     if (updatedImageWidth == false) {
-      imageWidth = MediaQuery.of(context).size.width * 0.3;
       updatedImageWidth = true;
+      imageWidth = MediaQuery.of(context).size.width * 0.2;
+      setState(() {});
     }
+
     if (entry.writer != null) {
       final image = await getAuthorImage(entry.writer!);
-      authors.add((
-        entry.writer!,
-        AppLocalizations.of(context)?.writer ?? "Writer",
-        image
-      ));
+      Author author = Author(
+        name: entry.writer!,
+        link: image,
+      );
+      authors.add(author);
+      final index = authors
+          .toList()
+          .indexWhere((element) => element.name == entry.writer);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.writer ?? "Writer");
       logger.i("writer: ${entry.writer}");
     }
+
     if (entry.penciller != null) {
       final image = await getAuthorImage(entry.penciller!);
-      authors.add((
-        entry.penciller!,
-        AppLocalizations.of(context)?.penciller ?? "Penciller",
-        image
-      ));
+      Author author = Author(
+        name: entry.penciller!,
+        link: image,
+      );
+      authors.add(author);
+      final index = authors
+          .toList()
+          .indexWhere((element) => element.name == entry.penciller);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.penciller ?? "Penciller");
       logger.i("penciller: ${entry.penciller}");
     }
+
     if (entry.inker != null) {
       final image = await getAuthorImage(entry.inker!);
-      authors.add((
-        entry.inker!,
-        AppLocalizations.of(context)?.inker ?? "Inker",
-        image
-      ));
+      Author author = Author(
+        name: entry.inker!,
+        link: image,
+      );
+      authors.add(author);
+      final index =
+          authors.toList().indexWhere((element) => element.name == entry.inker);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.inker ?? "Inker");
       logger.i("inker: ${entry.inker}");
     }
+
     if (entry.colorist != null) {
       final image = await getAuthorImage(entry.colorist!);
-      authors.add((
-        entry.colorist!,
-        AppLocalizations.of(context)?.colorist ?? "Colorist",
-        image
-      ));
+      Author author = Author(
+        name: entry.colorist!,
+        link: image,
+      );
+      authors.add(author);
+      final index = authors
+          .toList()
+          .indexWhere((element) => element.name == entry.colorist);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.colorist ?? "Colorist");
       logger.i("colorist: ${entry.colorist}");
     }
+
     if (entry.letterer != null) {
       final image = await getAuthorImage(entry.letterer!);
-      authors.add((
-        entry.letterer!,
-        AppLocalizations.of(context)?.letterer ?? "Letterer",
-        image
-      ));
+      Author author = Author(
+        name: entry.letterer!,
+        link: image,
+      );
+      authors.add(author);
+      final index = authors
+          .toList()
+          .indexWhere((element) => element.name == entry.letterer);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.letterer ?? "Letterer");
       logger.i("letterer: ${entry.letterer}");
     }
+
     if (entry.coverArtist != null) {
       final image = await getAuthorImage(entry.coverArtist!);
-      authors.add((
-        entry.coverArtist!,
-        AppLocalizations.of(context)?.coverArtist ?? "Cover Artist",
-        image
-      ));
+      Author author = Author(
+        name: entry.coverArtist!,
+        link: image,
+      );
+      authors.add(author);
+      final index = authors
+          .toList()
+          .indexWhere((element) => element.name == entry.coverArtist);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.coverArtist ?? "Cover Artist");
       logger.i("coverArtist: ${entry.coverArtist}");
     }
+
     if (entry.editor != null) {
       final image = await getAuthorImage(entry.editor!);
-      authors.add((
-        entry.editor!,
-        AppLocalizations.of(context)?.editor ?? "Editor",
-        image
-      ));
+      Author author = Author(
+        name: entry.editor!,
+        link: image,
+      );
+      authors.add(author);
+      final index = authors
+          .toList()
+          .indexWhere((element) => element.name == entry.editor);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.editor ?? "Editor");
       logger.i("editor: ${entry.editor}");
     }
+
     if (entry.publisher != null) {
       final image = await getAuthorImage(entry.publisher!);
-      authors.add((
-        entry.publisher!,
-        AppLocalizations.of(context)?.publisher ?? "Publisher",
-        image
-      ));
+      Author author = Author(
+        name: entry.publisher!,
+        link: image,
+      );
+      authors.add(author);
+      final index = authors
+          .toList()
+          .indexWhere((element) => element.name == entry.publisher);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.publisher ?? "Publisher");
       logger.i("publisher: ${entry.publisher}");
     }
+
     if (entry.imprint != null) {
       final image = await getAuthorImage(entry.imprint!);
-      authors.add((
-        entry.imprint!,
-        AppLocalizations.of(context)?.imprint ?? "Imprint",
-        image
-      ));
+      Author author = Author(
+        name: entry.imprint!,
+        link: image,
+      );
+      authors.add(author);
+      final index = authors
+          .toList()
+          .indexWhere((element) => element.name == entry.imprint);
+      authors
+          .toList()[index]
+          .addRole(AppLocalizations.of(context)?.imprint ?? "Imprint");
       logger.i("imprint: ${entry.imprint}");
     }
+    // check if any authors don't have a role and remove them
+    for (int i = 0; i < authors.length; i++) {
+      if (authors.toList()[i].roles.isEmpty) {
+        authors.remove(authors.toList()[i]);
+      }
+    }
+    // merge authors with the same name
+    for (int i = 0; i < authors.length; i++) {
+      for (int j = 0; j < authors.length; j++) {
+        if (i != j && authors.toList()[i].name == authors.toList()[j].name) {
+          authors.toList()[i].roles.addAll(authors.toList()[j].roles);
+          authors.remove(authors.toList()[j]);
+        }
+      }
+    }
+
     return authors;
   }
 
@@ -215,11 +294,10 @@ class _InfoScreenState extends State<InfoScreen> {
     // Do something with the image size obtained from the callback
     logger.wtf('Image size: ${imageSize.width} x ${imageSize.height}');
     // wait until build is done then set state but do it only once
-    if (imageWidth == 0) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          imageWidth = imageSize.width;
-        });
+    if (!updatedImageWidth) {
+      setState(() {
+        imageWidth = imageSize.width;
+        updatedImageWidth = true;
       });
     }
   }
@@ -361,13 +439,13 @@ class _InfoScreenState extends State<InfoScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => DownloadScreen(
-                      comicId: entry.id,
+                      entry: entry,
                     ),
                   ),
                 ).then((value) {
                   if (value != null) {
                     setState(() {
-                      entry.downloaded = value;
+                      entry = value;
                     });
                   }
                 });
@@ -460,7 +538,11 @@ class _InfoScreenState extends State<InfoScreen> {
                         imageUrl: entry.imagePath,
                         radius: 15,
                         ratio: 0.75,
-                        onImageSizeAvailable: handleImageSize,
+                        onImageSizeAvailable: (size) {
+                          setState(() {
+                            imageWidth = size.width;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -505,27 +587,31 @@ class _InfoScreenState extends State<InfoScreen> {
                               Container(
                                 padding: const EdgeInsets.fromLTRB(0, 5, 10, 5),
                                 // use auto size text to make the text responsive
-                                child: Text(
+                                child: AutoSizeText(
                                   entry.releaseDate,
+                                  maxLines: 1,
+                                  minFontSize: 15,
                                   // autosize the text
-                                  style: TextStyle(
-                                      fontSize: 15, color: Colors.grey[400]),
+                                  style: TextStyle(color: Colors.grey[400]),
                                 ),
                               ),
                             if (entry.rating >= 0)
-                              IgnorePointer(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                  child: CustomRating(
-                                    max: 5,
-                                    score: entry.rating / 2,
-                                    star: Star(
-                                      fillColor: Color.lerp(Colors.red,
-                                          Colors.yellow, entry.rating / 10)!,
-                                      emptyColor: Colors.grey.withOpacity(0.5),
+                              FittedBox(
+                                child: IgnorePointer(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    child: CustomRating(
+                                      max: 5,
+                                      score: entry.rating / 2,
+                                      star: Star(
+                                        fillColor: Color.lerp(Colors.red,
+                                            Colors.yellow, entry.rating / 10)!,
+                                        emptyColor:
+                                            Colors.grey.withOpacity(0.5),
+                                      ),
+                                      onRating: (double score) {},
                                     ),
-                                    onRating: (double score) {},
                                   ),
                                 ),
                               ),
@@ -565,27 +651,33 @@ class _InfoScreenState extends State<InfoScreen> {
               ),
             ),
             if (entry.tags.isNotEmpty)
-              SizedBox(
-                height: 50,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: entry.tags.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: Chip(
-                        label: Text(entry.tags[index]),
-                      ),
-                    );
-                  },
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: SizedBox(
+                  height: 50,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: entry.tags.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Chip(
+                          label: Text(entry.tags[index]),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             FutureBuilder(
               future: getAuthors(),
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
+                if (snapshot.hasData &&
+                    snapshot.data != null &&
+                    snapshot.data!.length > 0 &&
+                    snapshot.data?.first != null) {
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: Column(
                       // align the text to the left
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -612,67 +704,54 @@ class _InfoScreenState extends State<InfoScreen> {
                           children: List.generate(
                             snapshot.data!.length,
                             (index) {
-                              // Calculate the number of items to display in each row based on the available width
-                              int itemsPerRow =
-                                  (MediaQuery.of(context).size.width / 200 -
-                                          (snapshot.data!.length - 1) * 20)
-                                      .floor();
-
-                              // Set a minimum item width to ensure at least 3 items per row on a normal smartphone
                               double minWidth =
-                                  MediaQuery.of(context).size.width / 3 - 20;
+                                  MediaQuery.of(context).size.width / 5 - 20;
 
                               // Calculate the width for each item based on the number of items per row and the minimum width
-                              double itemWidth =
-                                  (MediaQuery.of(context).size.width -
-                                          (itemsPerRow - 1) * 20) /
-                                      itemsPerRow;
-                              itemWidth = itemWidth.clamp(
-                                  minWidth,
-                                  double
-                                      .infinity); // Ensure it's at least minWidth
-
-                              // A image of the author with their name below it and their role below that
-                              return Column(
-                                children: [
-                                  ClipOval(
-                                    child: FancyShimmerImage(
-                                      imageUrl: snapshot.data![index].$3,
-                                      boxFit: BoxFit.fitWidth,
-                                      width: itemWidth - 7,
-                                      height: itemWidth - 7,
-                                      errorWidget: // rounded image asset
-                                          const Image(
-                                        image: AssetImage(
-                                          "assets/images/ProfilePicture.png",
-                                        ),
-                                        fit: BoxFit.scaleDown,
-                                      ),
+                              // A card with the image of the author with their name below it and their role(s) next to it
+                              return ListTile(
+                                minLeadingWidth: 0,
+                                contentPadding: const EdgeInsets.all(0),
+                                // set up color for the card
+                                tileColor: Theme.of(context).cardColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                // set up the shape of the card
+                                leading: RoundedImageWithShadow(
+                                  imageUrl:
+                                      snapshot.data!.elementAt(index).link ??
+                                          "",
+                                  radius: 30,
+                                  ratio: 1,
+                                  errorWidgetAsset:
+                                      "assets/images/ProfilePicture.png",
+                                  onImageSizeAvailable: handleImageSize,
+                                ),
+                                title: SizedBox(
+                                  width: minWidth - 10,
+                                  child: AutoSizeText(
+                                    snapshot.data!.elementAt(index).name,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
                                     ),
+                                    textAlign: TextAlign.left,
                                   ),
-                                  // make these text fields auto size so that they don't overflow and width should less than the image
-                                  SizedBox(
-                                    width: itemWidth - 10,
-                                    child: AutoSizeText(
-                                      snapshot.data![index].$1,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                ),
+                                subtitle: SizedBox(
+                                  width: minWidth - 10,
+                                  child: AutoSizeText(
+                                    snapshot.data!
+                                        .elementAt(index)
+                                        .roles
+                                        .join(", "),
+                                    style: const TextStyle(
+                                      fontSize: 15,
                                     ),
+                                    textAlign: TextAlign.left,
                                   ),
-                                  SizedBox(
-                                    width: itemWidth - 10,
-                                    child: AutoSizeText(
-                                      snapshot.data![index].$2,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               );
                             },
                           ),
@@ -689,5 +768,20 @@ class _InfoScreenState extends State<InfoScreen> {
         ),
       ),
     );
+  }
+}
+
+class Author {
+  final String name;
+  String? link;
+  List<String> roles = [];
+
+  Author({
+    required this.name,
+    this.link,
+  });
+
+  void addRole(String role) {
+    roles.add(role);
   }
 }

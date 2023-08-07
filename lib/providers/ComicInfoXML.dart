@@ -30,84 +30,60 @@ Future<void> parseXML(Entry entry) async {
     return;
   }
 
-  Map<int, String> monthMap = {
-    1: 'January',
-    2: 'Febuary',
-    3: 'March',
-    4: 'April',
-    5: 'May',
-    6: 'June',
-    7: 'July',
-    8: 'August',
-    9: 'September',
-    10: 'October',
-    11: 'Novemeber',
-    12: 'December',
-  };
-
-  logger.d('xmlFileContent: $xmlFileContent');
-  // add the release date
-  if (xmlFileContent.findAllElements('Month').isNotEmpty &&
-      xmlFileContent.findAllElements('Year').isNotEmpty) {
-    String? month = xmlFileContent.findAllElements('Month').first.text;
-    final year = xmlFileContent.findAllElements('Year').first.text;
-    final monthInt = int.parse(month);
-    final monthString = monthMap[monthInt];
-    String releaseDate = '';
-    if (monthString != null) {
-      releaseDate = '$monthString $year';
-    } else {
-      releaseDate = year;
-    }
-    entry.releaseDate = releaseDate;
-  }
-  logger.d('releaseDate: ${entry.releaseDate}');
-
   // add authors
   if (xmlFileContent.findAllElements('Writer').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Writer');
     // add the author
     entry.writer = author.first.text;
+    logger.d('writer: ${entry.writer}');
   }
   if (xmlFileContent.findAllElements('Penciller').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Penciller');
     // add the author
     entry.penciller = author.first.text;
+    logger.d('penciller: ${entry.penciller}');
   }
   if (xmlFileContent.findAllElements('Inker').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Inker');
     // add the author
     entry.inker = author.first.text;
+    logger.d('inker: ${entry.inker}');
   }
   if (xmlFileContent.findAllElements('Colorist').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Colorist');
     // add the author
     entry.colorist = author.first.text;
+    logger.d('colorist: ${entry.colorist}');
   }
   if (xmlFileContent.findAllElements('Letterer').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Letterer');
     // add the author
     entry.letterer = author.first.text;
+    logger.d('letterer: ${entry.letterer}');
   }
   if (xmlFileContent.findAllElements('CoverArtist').isNotEmpty) {
     final author = xmlFileContent.findAllElements('CoverArtist');
     // add the author
     entry.coverArtist = author.first.text;
+    logger.d('coverArtist: ${entry.coverArtist}');
   }
   if (xmlFileContent.findAllElements('Editor').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Editor');
     // add the author
     entry.editor = author.first.text;
+    logger.d('editor: ${entry.editor}');
   }
   if (xmlFileContent.findAllElements('Publisher').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Publisher');
     // add the author
     entry.publisher = author.first.text;
+    logger.d('publisher: ${entry.publisher}');
   }
   if (xmlFileContent.findAllElements('Imprint').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Imprint');
     // add the author
     entry.imprint = author.first.text;
+    logger.d('imprint: ${entry.imprint}');
   }
 
   // save to database

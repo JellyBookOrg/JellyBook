@@ -8,6 +8,7 @@ class RoundedImageWithShadow extends StatefulWidget {
   final Color shadowColor;
   final Key? key;
   final Function(Size)? onImageSizeAvailable;
+  final String errorWidgetAsset;
 
   const RoundedImageWithShadow({
     this.key,
@@ -16,6 +17,7 @@ class RoundedImageWithShadow extends StatefulWidget {
     this.radius = 10,
     this.shadowColor = Colors.black,
     this.onImageSizeAvailable,
+    this.errorWidgetAsset = 'assets/images/NoCoverArt.png',
   }) : super(key: key);
 
   @override
@@ -28,14 +30,13 @@ class _RoundedImageWithShadowState extends State<RoundedImageWithShadow> {
   @override
   void initState() {
     super.initState();
-    if (widget.onImageSizeAvailable != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Use addPostFrameCallback to wait for the frame to be rendered before obtaining the size
-        final RenderBox renderBox = context.findRenderObject() as RenderBox;
-        imageSize = renderBox.size;
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      // The callback will be executed after the widget has finished building.
+      if (widget.onImageSizeAvailable != null) {
         widget.onImageSizeAvailable!(imageSize!);
-      });
-    }
+      }
+    });
+    
   }
 
   @override
@@ -65,27 +66,29 @@ class _RoundedImageWithShadowState extends State<RoundedImageWithShadow> {
               widget.imageUrl == '' || widget.imageUrl.toLowerCase() == 'asset'
                   ? LayoutBuilder(
                       builder: (context, constraints) {
-                        if (widget.onImageSizeAvailable != null) {
+                        // callback to get the image size once rendered
+                        // if (widget.onImageSizeAvailable != null) {
                           imageSize = constraints.biggest;
-                          widget.onImageSizeAvailable!(imageSize!);
-                        }
+                        //   widget.onImageSizeAvailable!(imageSize!);
+                        // }
                         return Image.asset(
-                          'assets/images/NoCoverArt.png',
+                          widget.errorWidgetAsset,
                           fit: BoxFit.cover,
                         );
                       },
                     )
                   : LayoutBuilder(
                       builder: (context, constraints) {
-                        if (widget.onImageSizeAvailable != null) {
+                        // if (widget.onImageSizeAvailable != null) {
                           imageSize = constraints.biggest;
-                          widget.onImageSizeAvailable!(imageSize!);
-                        }
+                          // widget.onImageSizeAvailable!(imageSize!);
+                        // }
                         return FancyShimmerImage(
+                          width: constraints.biggest.width,
                           imageUrl: widget.imageUrl,
                           boxFit: BoxFit.cover,
                           errorWidget: Image.asset(
-                            'assets/images/NoCoverArt.png',
+                             widget.errorWidgetAsset,
                           ),
                         );
                       },

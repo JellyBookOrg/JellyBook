@@ -25,29 +25,26 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 class DownloadScreen extends StatefulWidget {
-  final String comicId;
-
+  final Entry entry;
   DownloadScreen({
-    required this.comicId,
+    required this.entry,
   });
 
   @override
   _DownloadScreenState createState() => _DownloadScreenState(
-        comicId: comicId,
+        entry: entry,
       );
 }
 
 class _DownloadScreenState extends State<DownloadScreen> {
-  final String comicId;
+  // final String comicId;
+  Entry entry;
   bool forceDownload = false;
 
   _DownloadScreenState({
-    required this.comicId,
+    required this.entry,
     this.forceDownload = false,
   });
-
-  String url = '';
-  String imageUrl = '';
   double progress = 0.0;
   String token = '';
   String id = '';
@@ -61,7 +58,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
   final isar = Isar.getInstance();
   String dirLocation = '';
-  late Entry entry;
   bool isCompleted = false;
 
   @override
@@ -74,7 +70,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
     // set the status to downloading
     downloadStatus = DownloadStatus.Downloading;
     // get the entry that matches the comicId
-    entry = await isar!.entrys.where().idEqualTo(comicId).findFirst() as Entry;
     downloaded = entry.downloaded;
 
     final storage = FlutterSecureStorage();
@@ -116,8 +111,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
     }
     logger.d('About to download file');
 
-    url = entry.url;
-    imageUrl = entry.imagePath;
     id = entry.id.toString();
 
     // get stuff from the secure storage
@@ -157,7 +150,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
     entry.filePath = dir;
     logger.d('Directory created');
     logger.d('Attempting to download file');
-    final api = Openapi(basePathOverride: url).getLibraryApi();
+    final api = Openapi(basePathOverride: entry.url).getLibraryApi();
     Response<Uint8List> download;
     downloading = true;
     download = await api
@@ -200,11 +193,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
     await extractFile(dir);
 
     setState(() {
-      downloading = true;
-      progress = 0.0;
-      path = dirLocation + '/' + fileName;
+      entry.downloaded = true;
+      entry.progress = 0.0;
+      entry.filePath = dirLocation + '/' + fileName;
       // pop the navigator but pass in the value of true
-      Navigator.pop(context, true);
+      Navigator.pop(context, entry);
     });
     // }
     logger.d('title: ' + entry.title);
