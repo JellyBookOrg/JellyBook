@@ -155,5 +155,11 @@
   "rtl": "右から左へ",
   "@rtl": {},
   "vertical": "垂直",
-  "@vertical": {}
+  "@vertical": {},
+  "credits": "クレジット",
+  "@credits": {},
+  "penciller": "ペンシラー",
+  "@penciller": {},
+  "downloadFailed": "ダウンロードが完了できませんでした。 もう一度お試しください。",
+  "@downloadFailed": {}
 }
