@@ -6,11 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeManager with ChangeNotifier {
   ThemeManager(this._themeData);
 // get the theme data from system
-  ThemeData _themeData =
-      ThemeMode.system == ThemeMode.dark ? ThemeData.dark() : ThemeData.light();
-  // ThemeMode _themeMode = ThemeMode.system;
+  ThemeData _themeData = ThemeMode.system == ThemeMode.dark
+      ? ThemeData.dark(useMaterial3: true)
+      : ThemeData.light(useMaterial3: true);
 
-  // get themeMode => _themeMode;
 
   ThemeData getTheme() {
     SharedPreferences.getInstance().then((prefs) {
@@ -18,11 +17,30 @@ class ThemeManager with ChangeNotifier {
         return ThemeMode.system;
       } else if (prefs.getString('theme') == 'dark') {
         return ThemeMode.dark;
-      } else {
+      } else if (prefs.getString('theme') == 'light') {
         return ThemeMode.light;
+      } else {
+        return ThemeMode.dark;
       }
     });
     return _themeData;
+  }
+
+  String getThemeName() {
+    SharedPreferences.getInstance().then((prefs) {
+      if (prefs.getString('theme') == 'system') {
+        return 'System';
+      } else if (prefs.getString('theme') == 'dark') {
+        return 'Dark';
+      } else if (prefs.getString('theme') == 'light') {
+        return 'Light';
+      } else if (prefs.getString('theme') == 'amoled') {
+        return 'Amoled';
+      } else {
+        return 'Dark';
+      }
+    });
+    return 'Dark';
   }
 
   void setTheme(ThemeData theme) {
@@ -33,19 +51,4 @@ class ThemeManager with ChangeNotifier {
       prefs.setString('theme', theme.brightness.toString());
     });
   }
-
-  // Future<void> setThemeMode(ThemeMode theme) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   if (theme == ThemeMode.dark) {
-  //     prefs.setString("theme", "dark");
-  //     _themeMode = ThemeMode.dark;
-  //   } else if (theme == ThemeMode.light) {
-  //     prefs.setString("theme", "light");
-  //     _themeMode = ThemeMode.light;
-  //   } else if (theme == ThemeMode.system) {
-  //     prefs.setString("theme", "system");
-  //     _themeMode = ThemeMode.system;
-  //   }
-  //   notifyListeners();
-  // }
 }

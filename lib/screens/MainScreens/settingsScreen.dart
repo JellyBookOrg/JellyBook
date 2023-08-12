@@ -1,40 +1,39 @@
 // The purpose of this file is to allow the user to change the settings of the app
 
-import 'dart:ffi';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:jellybook/providers/themeProvider.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:jellybook/themes/themeManager.dart';
+import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:jellybook/providers/languageProvider.dart';
+import 'package:jellybook/widgets/SimpleUserCard.dart';
+import 'package:jellybook/widgets/SettingsItem.dart';
 import 'package:jellybook/variables.dart';
+import 'package:palette_generator/palette_generator.dart';
+
+import 'package:openapi/openapi.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-/* The following are the settings that the user can change
-   - the theme of the app (System, Light, Dark, Amoled, Custom)
-   - the language of the app (English will be the only one for now)
-   - page transition (page turn, slide)
-   - Enable experimental features
-   */
-
 class _SettingsScreenState extends State<SettingsScreen> {
+  String userName = '';
+  String serverUrl = '';
+  Color textColor = Colors.black;
+  SharedPreferences? prefs;
+
   @override
   void initState() {
     getPackageInfo();
     super.initState();
-    Settings.init();
+    // Settings.init();
+    setSharedPrefs();
   }
 
   themeListener() {
@@ -48,11 +47,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
+  Future<void> setSharedPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
   String version = '';
-  late String theme;
 
   Future<void> getPackageInfo() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    p_info.PackageInfo packageInfo = await p_info.PackageInfo.fromPlatform();
     version = packageInfo.version;
   }
 
@@ -61,15 +63,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // ThemeManager themeManager = Provider.of<ThemeManager>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text((AppLocalizations.of(context)?.settings ?? 'Settings'),
-            style: TextStyle(fontSize: 20)),
+        title: Text(
+          (AppLocalizations.of(context)?.settings ?? 'Settings'),
+        ),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-            const SizedBox(
-              height: 10,
+            FutureBuilder(
+              future: getProfilePic(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return FutureBuilder<Color>(
+                    future: getComplementaryColor(snapshot.data),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<Color> colorSnapshot) {
+                      if (colorSnapshot.hasData) {
+                        Color complementaryColor = colorSnapshot.data ??
+                            Colors
+                                .black; // if the color is null, set it to black
+                        return SimpleUserCard(
+                          cardColor: complementaryColor,
+                          userProfilePic: snapshot.data,
+                          userName: userName,
+                          userNameColor: textColor,
+                          onTap: () {},
+                          backgroundMotifColor: complementaryColor,
+                          subtitle: InkWell(
+                            onTap: () async {
+                              if (await canLaunchUrl(Uri.parse(serverUrl))) {
+                                await launchUrl(
+                                  Uri.parse(serverUrl),
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              } else {
+                                throw 'Could not launch $serverUrl';
+                              }
+                            },
+                            child: Text(
+                              serverUrl,
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: textColor,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  );
+                } else {
+                  return Container();
+                }
+              },
             ),
             // should be comprised of widgets
             /* themeSettings(context),
@@ -77,12 +126,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
               height: 20,
             ),
             */
+            const SizedBox(
+              height: 10,
+            ),
             languageSettings(context),
             const SizedBox(
               height: 20,
             ),
             // pageTransitionSettings(),
-            themeSettings(context),
+            FutureBuilder(
+              future: themeSettings(context),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return snapshot.data;
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            FutureBuilder(
+              future: readingDirectionSettings(context),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return snapshot.data;
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            // readingDirectionSettings(context),
             const SizedBox(
               height: 20,
             ),
@@ -92,11 +167,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // const SizedBox(
             //   height: 20,
             // ),
+            // SizedBox(
+            //   // depends on screen size
+            //   height: MediaQuery.of(context).size.height * 0.38,
+            // ),
             SizedBox(
-              // depends on screen size
-              height: MediaQuery.of(context).size.height * 0.38,
-            ),
-            Container(
               width: MediaQuery.of(context).size.width * 0.25,
               child: ElevatedButton(
                 onPressed: () {
@@ -114,7 +189,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 },
                 child: Text(
-                  'Licenses',
+                  AppLocalizations.of(context)?.licenses ?? 'Licenses',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
@@ -130,32 +205,133 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // theme settings (future builder to get the current theme and then change it)
-  Widget themeSettings(BuildContext context) => DropDownSettingsTile(
-        settingKey: 'theme',
-        title: AppLocalizations.of(context)?.theme ?? 'theme',
-        // first letter of selected value is capitalized
-        selected: capitalize(Settings.getValue<String>('theme') ?? 'System'),
-        leading: const Icon(Icons.color_lens),
-        // @TODO: Look into using AppLocalizations for the values
-        // Not sure if it'll work since the value won't be updated when the language is changed
-        values: <String, String>{
-          'System': 'System',
-          'Light': 'Light',
-          'Dark': 'Dark',
-          'Amoled': 'Amoled',
-        },
-        onChange: (value) async {
-          // debugPrint('Theme changed to $value');
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          ThemeChangeNotifier themeChangeNotifier =
-              Provider.of<ThemeChangeNotifier>(context, listen: false);
-          prefs.setString('theme', value.toString().toLowerCase());
-          Settings.setValue<String>('theme', value.toString().toLowerCase());
-          themeChangeNotifier.setTheme = value.toString().toLowerCase();
-        },
-      );
+  Future<Widget> themeSettings(BuildContext context) async {
+    return SettingsItem(
+      title: AppLocalizations.of(context)?.theme ?? 'theme',
+      selected: prefs?.getString('theme') ?? 'system',
+      backgroundColor: Theme.of(context).splashColor,
+      icon: Icons.color_lens,
+      values: <String, String>{
+        'system': AppLocalizations.of(context)?.systemTheme ?? 'System',
+        'light': AppLocalizations.of(context)?.lightTheme ?? 'Light',
+        'dark': AppLocalizations.of(context)?.darkTheme ?? 'Dark',
+        'amoled': AppLocalizations.of(context)?.amoledTheme ?? 'Amoled',
+      },
+      onChange: (value) async {
+        debugPrint('Value: $value');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        ThemeChangeNotifier themeChangeNotifier =
+            Provider.of<ThemeChangeNotifier>(context, listen: false);
+        prefs.setString('theme', value.toString().toLowerCase());
+        themeChangeNotifier.setTheme = value.toString().toLowerCase();
+        setState(() {});
+      },
+    );
+  }
 
-  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+  Future<Color> getComplementaryColor(ImageProvider ip) async {
+    PaletteGenerator pg = await PaletteGenerator.fromImageProvider(ip);
+    Color color = pg.lightMutedColor?.color ?? Colors.white;
+    double hue = HSVColor.fromColor(color).hue;
+    double saturation = HSVColor.fromColor(color).saturation;
+    double value = HSVColor.fromColor(color).value;
+
+    double complementaryHue = (hue + 180) % 360;
+
+    // convert back to RGB
+    Color complementaryColor =
+        HSVColor.fromAHSV(1.0, complementaryHue, saturation, value).toColor();
+    int red = complementaryColor.red;
+    int green = complementaryColor.green;
+    int blue = complementaryColor.blue;
+    textColor = Color.fromARGB(255, 255 - red, 255 - green, 255 - blue);
+    return complementaryColor;
+
+    //
+    // logger.i('red: $red, green: $green, blue: $blue');
+    // red = 255 - red;
+    // green = 255 - green;
+    // blue = 255 - blue;
+    // return Color.fromARGB(255, red, green, blue);
+  }
+
+  Future<ImageProvider> getProfilePic() async {
+    p_info.PackageInfo packageInfo = await p_info.PackageInfo.fromPlatform();
+    final prefs = await SharedPreferences.getInstance();
+    final server = prefs.getString('server') ?? '';
+    final userId = prefs.getString('UserId') ?? '';
+    final token = prefs.getString('accessToken') ?? '';
+    final username = prefs.getString('username') ?? '';
+    final version = packageInfo.version;
+    const _client = "JellyBook";
+    const _device = "Unknown Device";
+    const _deviceId = "Unknown Device id";
+
+    userName = username;
+    serverUrl = server;
+
+    final headers = {
+      'Accept': 'application/json',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Accept-Encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+      "X-Emby-Authorization":
+          "MediaBrowser Client=\"$_client\", Device=\"$_device\", DeviceId=\"$_deviceId\", Version=\"$version\", Token=\"$token\"",
+      'Connection': 'keep-alive',
+      'Origin': server,
+      'Host': server.substring(server.indexOf("//") + 2, server.length),
+      'Content-Length': '0',
+    };
+    final api = Openapi(basePathOverride: server).getImageApi();
+    Uint8List image = Uint8List(0);
+    ImageProvider imageProvider = Image.asset('assets/images/Logo.png').image;
+    try {
+      var response = await api.getUserImage(
+          userId: userId, imageType: ImageType.primary, headers: headers);
+      logger.i(response.statusCode);
+      if (response != null && response.statusCode == 200) {
+        image = response.data!;
+      }
+    } catch (e) {
+      logger.e(e.toString());
+    }
+    if (image.isNotEmpty) {
+      imageProvider = MemoryImage(image);
+    }
+    // scale the image to 50% of the original size
+    return imageProvider;
+  }
+
+  // Widget themeSettings(BuildContext context) => DropDownSettingsTile(
+  //       settingKey: 'theme',
+  //       title: AppLocalizations.of(context)?.theme ?? 'theme',
+  //       selected: Settings.getValue<String>('theme') ?? 'System',
+  //       leading: const Icon(Icons.color_lens),
+  //       values: <String, String>{
+  //         'System': AppLocalizations.of(context)?.systemTheme ?? 'System',
+  //         'Light': AppLocalizations.of(context)?.lightTheme ?? 'Light',
+  //         'Dark': AppLocalizations.of(context)?.darkTheme ?? 'Dark',
+  //         'Amoled': AppLocalizations.of(context)?.amoledTheme ?? 'Amoled',
+  //         // AppLocalizations.of(context)?.systemTheme ?? 'System': 'System',
+  //         // AppLocalizations.of(context)?.lightTheme ?? 'Light': 'Light',
+  //         // AppLocalizations.of(context)?.darkTheme ?? 'Dark': 'Dark',
+  //         // AppLocalizations.of(context)?.amoledTheme ?? 'Amoled': 'Amoled',
+  //       },
+  //       // give the key and value of the selected theme
+  //       onChange: (value) async {
+  //         debugPrint('Settings theme: ${Settings.getValue<String>('theme')}');
+  //         // debugPrint('Theme changed to $value');
+  //         SharedPreferences prefs = await SharedPreferences.getInstance();
+  //         ThemeChangeNotifier themeChangeNotifier =
+  //             Provider.of<ThemeChangeNotifier>(context, listen: false);
+  //         // set the theme to the english value of the selected theme
+  //         Settings.setValue<String>('theme', value.toString());
+  //         prefs.setString('theme', value.toString().toLowerCase());
+  //         themeChangeNotifier.setTheme = value.toString().toLowerCase();
+  //       },
+  //     );
+
+  // static String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
   static final isoLangs = {
     "ab": {"name": "Abkhaz", "nativeName": "аҧсуа"},
@@ -388,7 +564,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 : isoLangs[locale.toString()]!['name'] ?? locale.toString()
       });
       // remove the entry that has en_pirate as the key
-      if (locale.toString() == 'en_pirate') {
+      if (locale.toString() == 'en_pirate' || locale.toString() == 'zh_CHT') {
         locales.remove(locale.toString());
       }
     }
@@ -400,34 +576,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // language settings Widget
-  Widget languageSettings(BuildContext context) => DropDownSettingsTile(
-        settingKey: 'language',
+  Widget languageSettings(BuildContext context) => SettingsItem(
+        // settingKey: 'language',
         title: AppLocalizations.of(context)?.language ?? 'Language',
-        selected: AppLocalizations.of(context)?.localeName.toString() ??
-            Settings.getValue<String>('localeString') ??
-            'System',
-        leading: Icon(Icons.language),
-        values: localesMap(
-            context, Settings.getValue<String>('localeString') ?? 'System'),
+        selected:
+            AppLocalizations.of(context)?.localeName.toString() ?? 'System',
+        backgroundColor: Theme.of(context).splashColor,
+        icon: Icons.language,
+        values:
+            localesMap(context, prefs?.getString('localeString') ?? 'System'),
         onChange: (value) async {
           logger.d(value);
           // change the locale
           final localeProvider =
               Provider.of<LocaleChangeNotifier>(context, listen: false);
           localeProvider.setLocale = value.toString();
+          prefs?.setString('localeString', value.toString());
 
           setState(() {});
         },
       );
 
   // page transition settings
-  Widget pageTransitionSettings() => DropDownSettingsTile(
-        settingKey: 'pageTransition',
+  Widget pageTransitionSettings() => SettingsItem(
+        // settingKey: 'pageTransition',
         title:
             AppLocalizations.of(context)?.pageTransition ?? 'Page Transition',
-        selected: Settings.getValue<String>('pageTransition') ?? 'Page Turn',
-        leading: Icon(Icons.pageview),
-        values: <String, String>{
+        selected: prefs?.getString('pageTransition') ?? 'Page Turn',
+        backgroundColor: Theme.of(context).splashColor,
+        icon: Icons.pageview,
+        values: const <String, String>{
           'Page Turn': 'Page Turn',
           'Slide': 'Slide',
         },
@@ -437,97 +615,78 @@ class _SettingsScreenState extends State<SettingsScreen> {
         },
       );
 
-  // experimental features settings
-  Widget experimentalFeaturesSettings() => SwitchSettingsTile(
-        settingKey: 'experimentalFeatures',
-        title: AppLocalizations.of(context)?.experimentalFeatures ??
-            'Experimental Features',
-        leading: Icon(Icons.bug_report),
+  // Reading Direction settings
+  Future<Widget> readingDirectionSettings(BuildContext context) async =>
+      SettingsItem(
+        // settingKey: 'readingDirection',
+        title: AppLocalizations.of(context)?.readingDirection ??
+            'Reading Direction',
+        selected: prefs?.getString('readingDirection') ?? 'LTR',
+        backgroundColor: Theme.of(context).splashColor,
+        icon: Icons.format_textdirection_l_to_r_rounded,
+        values: <String, String>{
+          'LTR': AppLocalizations.of(context)?.ltr ?? 'Left to Right',
+          'RTL': AppLocalizations.of(context)?.rtl ?? 'Right to Left',
+          'Vertical': AppLocalizations.of(context)?.vertical ?? "Vertical",
+        },
         onChange: (value) async {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setBool('experimentalFeatures', value);
+          debugPrint(value);
+          prefs?.setString('readingDirection', value.toString());
+          setState(() {});
         },
       );
 
   // about settings (should contain the version number and the link to the github repo, and author)
-  Widget aboutSettings() => Container(
-        // future builder to get the version number
-        child: FutureBuilder(
-          future: getPackageInfo(),
-          builder: (context, snapshot) {
-            return Column(
-              children: [
-                // version number (should be a future builder)
-                Text(
-                  (AppLocalizations.of(context)?.version ?? 'Version: ') +
-                      (version.isNotEmpty
-                          ? version
-                          : AppLocalizations.of(context)?.unknown ?? 'Unknown'),
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  (AppLocalizations.of(context)?.madeBy ?? "Made by") +
-                      " Kara Wilson",
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                // insert https://github.com/Kara-Zor-El/JellyBook
-                InkWell(
-                  child: Text(
-                    "https://github.com/Kara-Zor-El/JellyBook",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.blue,
-                    ),
+  Widget aboutSettings() => FutureBuilder(
+        future: getPackageInfo(),
+        builder: (context, snapshot) {
+          return Column(
+            children: [
+              // version number (should be a future builder)
+              Text(
+                (AppLocalizations.of(context)?.version ?? 'Version: ') +
+                    (version.isNotEmpty
+                        ? version
+                        : AppLocalizations.of(context)?.unknown ?? 'Unknown'),
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                "${AppLocalizations.of(context)?.madeBy ?? 'Made by'} Kara Wilson",
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              // insert https://github.com/Kara-Zor-El/JellyBook
+              InkWell(
+                child: const Text(
+                  "https://github.com/Kara-Zor-El/JellyBook",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.blue,
                   ),
-                  onTap: () async {
-                    try {
-                      if (await canLaunchUrl(
-                        Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
-                      )) {
-                        await launchUrl(
-                          Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
-                          mode: LaunchMode.inAppWebView,
-                        );
-                      }
-                    } catch (e) {
-                      logger.e(e.toString());
-                    }
-                  },
+                  textAlign: TextAlign.center,
                 ),
-              ],
-            );
-          },
-        ),
+                onTap: () async {
+                  try {
+                    if (await canLaunchUrl(
+                      Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
+                    )) {
+                      await launchUrl(
+                        Uri.parse("https://github.com/Kara-Zor-El/JellyBook"),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
+                  } catch (e) {
+                    logger.e(e.toString());
+                  }
+                },
+              ),
+            ],
+          );
+        },
       );
-
-  Widget logToFile() {
-    // this is a button that will log the current log to a file
-    // create a button that will log the current log to a file
-    return ElevatedButton(
-      child: Text("Log to File"),
-      onPressed: () async {
-        // get the current log
-        final log = logger.toString();
-
-        // write the log to a file in the app's directory
-        var file =
-            File((await getApplicationDocumentsDirectory()).path + "/log.txt");
-        await file.writeAsString(log);
-        // tell the user where the file is
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Log file written to ${file.path}",
-            ),
-          ),
-        );
-      },
-    );
-  }
 }

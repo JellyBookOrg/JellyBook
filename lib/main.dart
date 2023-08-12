@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
@@ -17,6 +14,7 @@ import 'package:jellybook/models/login.dart';
 import 'dart:io';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:jellybook/providers/languageProvider.dart';
@@ -25,8 +23,11 @@ import 'package:jellybook/variables.dart';
 
 Future<String> get _localPath async {
   // get the directory that normally is located at /storage/emulated/0/Documents/
-  var directory = await getExternalStorageDirectory();
-  if (directory == null) {
+  Directory directory;
+  if (Platform.isAndroid) {
+    directory = await getExternalStorageDirectory() ??
+        await getApplicationDocumentsDirectory();
+  } else {
     directory = await getApplicationDocumentsDirectory();
   }
   return directory.path;
@@ -40,7 +41,6 @@ Future<void> main() async {
     SystemUiOverlay.top,
   ]);
 
-  //
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarBrightness: Brightness.dark,
@@ -55,7 +55,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   // dio allow self signed certificates
-  HttpOverrides.global = new MyHttpOverrides();
+  HttpOverrides.global = MyHttpOverrides();
 
   // path for isar database
   Directory dir = await getApplicationDocumentsDirectory();
@@ -66,6 +66,9 @@ Future<void> main() async {
   // set the localPath variable
   localPath = await _localPath;
   debugPrint("localPath: $localPath");
+
+  // set the logStoragePath variable
+  logStoragePath = "$localPath/Documents/";
 
   // set language to english
   // Settings.setValue<String>("localeString", "en");
@@ -96,10 +99,11 @@ Future<void> main() async {
 
   var logins = await isar.logins.where().findAll();
   if (logins.length != 0) {
-    logger.d("login username: " + logins[0].username);
+    logger.d("login username: ${logins[0].username}");
+    prefs.setString("username", logins[0].username);
     if (kDebugMode) {
-      logger.d("login url: " + logins[0].serverUrl);
-      logger.d("login password: " + logins[0].password);
+      logger.d("login url: ${logins[0].serverUrl}");
+      logger.d("login password: ${logins[0].password}");
     }
     logger.d("login found");
     runApp(MyApp(
@@ -117,14 +121,14 @@ class MyApp extends StatelessWidget {
   final String? url;
   final String? username;
   final String? password;
-  final SharedPreferences? prefs;
+  final SharedPreferences prefs;
 
   const MyApp({
     Key? key,
     this.url,
     this.username,
     this.password,
-    this.prefs,
+    required this.prefs,
   }) : super(key: key);
 
   @override
@@ -132,9 +136,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<LocaleChangeNotifier>(
-            create: (context) => LocaleChangeNotifier(context, prefs!)),
+            create: (context) => LocaleChangeNotifier(context, prefs)),
         ChangeNotifierProvider<ThemeChangeNotifier>(
-            create: (context) => ThemeChangeNotifier(context, prefs!)),
+            create: (context) => ThemeChangeNotifier(context, prefs)),
       ],
       builder: (context, _) {
         return Consumer2<LocaleChangeNotifier, ThemeChangeNotifier>(
@@ -146,8 +150,8 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: locale != null ? locale : Locale('en', 'US'),
-            theme: themeData != null ? themeData : ThemeData.dark(),
+            locale: locale,
+            theme: themeData,
             // darkTheme: ThemeData.dark(),
             home: FutureBuilder(
               future: Connectivity().checkConnectivity(),
@@ -162,25 +166,26 @@ class MyApp extends StatelessWidget {
                 });
                 if (snapshot.hasData) {
                   if (snapshot.data == ConnectivityResult.none) {
-                    return OfflineBookReader();
+                    return OfflineBookReader(prefs: prefs);
                   } else {
                     // try to ping 1.1.1.1 or 8.8.8.8 or whatever their dns is and if network is reachable go to login screen
                     // if not, go to offline book reader
-                    Socket.connect('1.1.1.1', 53).then((socket) {
-                      socket.destroy();
-                      return LoginScreen(
-                        url: url,
-                        username: username,
-                        password: password,
-                      );
-                    }).catchError((e) {
-                      return OfflineBookReader();
-                    });
+                    // Socket.connect('1.1.1.1', 53).then((socket) {
+                    // socket.destroy();
                     return LoginScreen(
                       url: url,
                       username: username,
                       password: password,
                     );
+                    // }).catchError((e) {
+                    //   logger.e(e);
+                    //   return OfflineBookReader(prefs: prefs);
+                    // });
+                    // return LoginScreen(
+                    //   url: url,
+                    //   username: username,
+                    //   password: password,
+                    // );
                   }
                 } else {
                   return const CircularProgressIndicator();

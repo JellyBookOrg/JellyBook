@@ -65,7 +65,6 @@ Future<void> confirmedDelete(String id, context) async {
       await isar.entrys.put(entry);
     });
 
-    await isar.close();
   } else {
     logger.d("Comic not downloaded");
     ScaffoldMessenger.of(context).showSnackBar(

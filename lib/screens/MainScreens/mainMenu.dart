@@ -1,5 +1,4 @@
 // The purpose of this file is to create the main menu screen (this is part of the list of screens in the bottom navigation bar)
-
 import 'package:flutter/material.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/providers/fetchCategories.dart';
@@ -17,6 +16,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
+import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -63,6 +63,7 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   var connectivityResult = ConnectivityResult.none;
+  bool force = false;
 
   int _selectedIndex = 0;
 
@@ -88,7 +89,11 @@ class _MainMenuState extends State<MainMenu> {
           icon: const Icon(Icons.refresh_rounded),
           tooltip: AppLocalizations.of(context)?.refresh ?? 'Refresh',
           onPressed: () {
-            setState(() {});
+            setState(
+              () {
+                force = true;
+              },
+            );
           },
         ),
         title: Container(
@@ -137,21 +142,19 @@ class _MainMenuState extends State<MainMenu> {
         children: <Widget>[
           const SizedBox(height: 10),
           FutureBuilder(
-            future: getServerCategories(context),
+            future: getServerCategories(context, force: force),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  logger.i("Snapshot Data");
-                  // logger.i("Collections: ${snapshot.data.left}");
                   List<Widget> collectionChildren = [
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
-                        padding: EdgeInsets.only(left: 10),
+                        padding: const EdgeInsets.only(left: 10),
                         child: Text(
                           AppLocalizations.of(context)?.collections ??
                               "Collections",
-                          style: TextStyle(
+                          style: const TextStyle(
                             // size is the size of a title
                             fontSize: 30,
                             // decoration: TextDecoration.underline,
@@ -233,47 +236,10 @@ class _MainMenuState extends State<MainMenu> {
                                     ),
                                     Flexible(
                                       child: SizedBox(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.4),
-                                                spreadRadius: 5,
-                                                blurRadius: 7,
-                                                offset: const Offset(0, 3),
-                                              ),
-                                            ],
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: snapshot.data.right[index]
-                                                            ['image'] !=
-                                                        null &&
-                                                    snapshot.data.right[index]
-                                                            ['image'] !=
-                                                        "Asset"
-                                                ? FancyShimmerImage(
-                                                    imageUrl: snapshot.data
-                                                        .right[index]['image'],
-                                                    errorWidget: Image.asset(
-                                                        'assets/images/NoCoverArt.png',
-                                                        fit: BoxFit.cover),
-                                                    boxFit: BoxFit.cover,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            5,
-                                                  )
-                                                : Image.asset(
-                                                    "assets/images/NoCoverArt.png",
-                                                    fit: BoxFit.fitWidth,
-                                                  ),
-                                          ),
+                                        child: RoundedImageWithShadow(
+                                          imageUrl: snapshot.data.right[index]
+                                                  ['image'] ??
+                                              'Asset',
                                         ),
                                       ),
                                     ),
@@ -343,53 +309,26 @@ class _MainMenuState extends State<MainMenu> {
                                   onTap: () async {
                                     logger.i("tapped");
                                     // logger.i(snapshot.data.left[index]);
-                                    final result = await Navigator.push(
+                                    var result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => InfoScreen(
-                                          title: snapshot.data.left![index]
-                                                  ['name'] ??
-                                              "null",
-                                          imageUrl: (snapshot.data.left![index]
-                                                  ['imagePath'] ??
-                                              "Asset"),
-                                          description:
-                                              snapshot.data.left![index]
-                                                      ['description'] ??
-                                                  "null",
-                                          tags: snapshot.data.left![index]
-                                                  ['tags'] ??
-                                              ["null"],
-                                          url: snapshot.data.left![index]
-                                                  ['url'] ??
-                                              "null",
-                                          year: snapshot.data.left![index]
-                                                  ['releaseDate'] ??
-                                              "null",
-                                          stars: snapshot.data.left![index]
-                                                  ['rating'] ??
-                                              -1,
-                                          path: snapshot.data.left![index]
-                                                  ['path'] ??
-                                              "null",
-                                          comicId: snapshot.data.left![index]
-                                                  ['id'] ??
-                                              "null",
-                                          isLiked: snapshot.data.left![index]
-                                                  ['isFavorite'] ??
-                                              false,
-                                          isDownloaded: snapshot.data
-                                                  .left![index]['downloaded'] ??
-                                              false,
-                                        ),
+                                            entry: Entry.fromJson(
+                                                snapshot.data.left[index])),
                                       ),
                                     );
                                     // update state of the card
                                     logger.d(result);
-                                    if (result != null) {
+                                    if (result != null &&
+                                        result.left != null &&
+                                        result.right != null) {
                                       setState(() {
                                         snapshot.data.left![index]
-                                            ['isFavorite'] = result as bool;
+                                                ['isFavorite'] =
+                                            result.left as bool;
+                                        snapshot.data.left![index]
+                                                ['downloaded'] =
+                                            result.right as bool;
                                       });
                                     }
                                   },
@@ -401,74 +340,17 @@ class _MainMenuState extends State<MainMenu> {
                                       Stack(
                                         children: <Widget>[
                                           SizedBox(
+                                            // height should be 80% of the card
                                             height: MediaQuery.of(context)
                                                     .size
                                                     .height /
                                                 6 *
                                                 0.8,
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                5,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Theme.of(context)
-                                                        .shadowColor
-                                                        .withOpacity(0.4),
-                                                    spreadRadius: 5,
-                                                    blurRadius: 7,
-                                                    offset: const Offset(0, 3),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: snapshot.data.left![
-                                                                    index]
-                                                                ['imagePath'] !=
-                                                            null &&
-                                                        snapshot.data.left![
-                                                                    index]
-                                                                ['imagePath'] !=
-                                                            "Asset"
-                                                    ? FancyShimmerImage(
-                                                        imageUrl: snapshot.data
-                                                                .left[index]
-                                                            ['imagePath'],
-                                                        errorWidget:
-                                                            Image.asset(
-                                                          "assets/images/NoCoverArt.png",
-                                                          fit: BoxFit.fitWidth,
-                                                        ),
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width /
-                                                            5,
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height /
-                                                            5,
-                                                        boxFit:
-                                                            BoxFit.fitHeight,
-                                                      )
-                                                    : Image.asset(
-                                                        "assets/images/NoCoverArt.png",
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height /
-                                                            6 *
-                                                            0.8,
-                                                        fit: BoxFit.fitWidth,
-                                                      ),
-                                              ),
+                                            child: RoundedImageWithShadow(
+                                              imageUrl:
+                                                  snapshot.data.left[index]
+                                                          ['imagePath'] ??
+                                                      'Asset',
                                             ),
                                           ),
                                           if (snapshot.data.left![index]

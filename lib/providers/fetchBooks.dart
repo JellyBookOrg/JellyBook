@@ -36,18 +36,17 @@ Future<List<Map<String, dynamic>>> getComics(
   };
   // make a built list of the fields
 
-  List<ItemFields> fieldsList = ([
-    ItemFields.primaryImageAspectRatio,
+  BuiltList<ItemFields> fieldsList = BuiltList<ItemFields>([
     ItemFields.sortName,
     ItemFields.path,
     ItemFields.childCount,
     ItemFields.mediaSourceCount,
     ItemFields.tags,
     ItemFields.overview,
-    ItemFields.parentId
+    ItemFields.parentId,
   ]);
+
   // turn into built list
-  final fields = BuiltList<ItemFields>(fieldsList);
   final api = Openapi(basePathOverride: url).getItemsApi();
   var response;
   try {
@@ -55,7 +54,7 @@ Future<List<Map<String, dynamic>>> getComics(
       userId: userId!,
       headers: headers,
       startIndex: 0,
-      fields: fields,
+      fields: fieldsList,
       imageTypeLimit: 1,
       parentId: comicsId,
       recursive: true,
@@ -86,7 +85,7 @@ Future<List<Map<String, dynamic>>> getComics(
   }
 
   logger.d("got box");
-  var entries = await isar!.entrys.where().findAll();
+  final entries = await isar!.entrys.where().findAll();
   logger.d("got entries");
 
   List<Map<String, dynamic>> comics = [];
@@ -129,10 +128,10 @@ Future<List<Map<String, dynamic>>> getComics(
     // for (var i = 0; i < responseData['Items'].length; i++) {
     try {
       List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
-      List<String> comicFileTypes = ['cbz', 'cbr'];
+      List<String> comicFileTypes = ['cbz', 'cbr', 'zip', 'rar'];
+      List<String> audioFileTypes = ['mp3', 'm4a', 'm4b', 'flac'];
       String id = element.id ?? '0';
       String title = element.name ?? '';
-      String isDownloaded = 'false';
       // String imagePath =
       //     "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}";
       String imagePath =
@@ -162,6 +161,9 @@ Future<List<Map<String, dynamic>>> getComics(
       } else if (comicFileTypes
           .contains(element.path.toString().split('.').last.toLowerCase())) {
         type = EntryType.comic;
+      } else if (audioFileTypes
+          .contains(element.path.toString().split('.').last.toLowerCase())) {
+        type = EntryType.audiobook;
       }
       var entryExists = await isar.entrys.where().idEqualTo(id).findFirst();
       bool entryExists1 = entryExists != null;
@@ -188,6 +190,7 @@ Future<List<Map<String, dynamic>>> getComics(
         comics.indexWhere((comic) {
           if (comic['id'] == entry.id) {
             comic['downloaded'] = entry.downloaded;
+            comic['tags'] += entry.tags;
             return true;
           } else {
             return false;

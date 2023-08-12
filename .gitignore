@@ -49,3 +49,4 @@ app.*.map.json
 libisar.so
 android/app/build.gradle
 android/app/src/main/AndroidManifest.xml
+sha1sums.txt

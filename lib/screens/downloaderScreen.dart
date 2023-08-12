@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:archive/archive.dart';
 import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
+import 'package:jellybook/providers/parseEpub.dart';
+import 'package:jellybook/providers/ComicInfoXML.dart';
 import 'package:openapi/openapi.dart';
 
 // import the database
@@ -23,28 +25,26 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 class DownloadScreen extends StatefulWidget {
-  final String comicId;
-
+  Entry entry;
   DownloadScreen({
-    required this.comicId,
+    required this.entry,
   });
 
   @override
   _DownloadScreenState createState() => _DownloadScreenState(
-        comicId: comicId,
+        entry: entry,
       );
 }
 
 class _DownloadScreenState extends State<DownloadScreen> {
-  final String comicId;
+  // final String comicId;
+  Entry entry;
   bool forceDownload = false;
 
   _DownloadScreenState({
-    required this.comicId,
+    required this.entry,
     this.forceDownload = false,
   });
-  String url = '';
-  String imageUrl = '';
   double progress = 0.0;
   String token = '';
   String id = '';
@@ -52,11 +52,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
   String path = '';
   String platformVersion = 'Unknown';
   bool downloading = false;
+  bool downloaded = false;
   String comicFolder = 'Error';
+  DownloadStatus downloadStatus = DownloadStatus.NotDownloaded;
 
   final isar = Isar.getInstance();
   String dirLocation = '';
-  late Entry entry;
+  bool isCompleted = false;
 
   @override
   void initState() {
@@ -65,10 +67,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> downloadFile(bool forceDown) async {
-    // var isar = await Isar.open([EntrySchema]);
-
+    // set the status to downloading
+    downloadStatus = DownloadStatus.Downloading;
     // get the entry that matches the comicId
-    entry = await isar!.entrys.where().idEqualTo(comicId).findFirst() as Entry;
+    downloaded = entry.downloaded;
 
     final storage = FlutterSecureStorage();
     final prefs = await SharedPreferences.getInstance();
@@ -109,8 +111,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
     }
     logger.d('About to download file');
 
-    url = entry.url;
-    imageUrl = entry.imagePath;
     id = entry.id.toString();
 
     // get stuff from the secure storage
@@ -150,18 +150,42 @@ class _DownloadScreenState extends State<DownloadScreen> {
     entry.filePath = dir;
     logger.d('Directory created');
     logger.d('Attempting to download file');
-    final api = Openapi(basePathOverride: url).getLibraryApi();
+    final api = Openapi(basePathOverride: entry.url).getLibraryApi();
     Response<Uint8List> download;
-    download = await api.getDownload(
+    downloading = true;
+    download = await api
+        .getDownload(
       itemId: id,
       headers: headers,
       onReceiveProgress: (received, total) {
         setState(() {
-          downloading = true;
           progress = (received / total * 100);
         });
       },
-    );
+    )
+        .onError((error, stackTrace) {
+      logger.e(error);
+      logger.e(stackTrace);
+      setState(() {
+        downloading = false;
+        progress = 0.0;
+        downloadStatus = DownloadStatus.DownloadFailed;
+      });
+      return Response<Uint8List>(
+        data: Uint8List(0),
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 0,
+      );
+    });
+    if (download.statusCode != 200) {
+      logger.e('Download failed');
+      setState(() {
+        downloading = false;
+        progress = 0.0;
+        downloadStatus = DownloadStatus.DownloadFailed;
+      });
+      return;
+    }
     logger.d('File downloaded');
     // update to say writing file
     await writeToFile(download, dir);
@@ -169,11 +193,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
     await extractFile(dir);
 
     setState(() {
-      downloading = true;
-      progress = 0.0;
-      path = dirLocation + '/' + fileName;
+      entry.downloaded = true;
+      entry.progress = 0.0;
+      entry.filePath = dirLocation + '/' + fileName;
       // pop the navigator but pass in the value of true
-      Navigator.pop(context, true);
+      Navigator.pop(context, entry);
     });
     // }
     logger.d('title: ' + entry.title);
@@ -187,6 +211,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> writeToFile(Response<Uint8List> data, String dir) async {
+    downloadStatus = DownloadStatus.Downloaded;
     final file = File(dir);
     await file.writeAsBytes(data.data!);
   }
@@ -258,7 +283,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   SizedBox(
                     height: 20,
                   ),
-                  if (progress < 100)
+                  if (progress < 100 &&
+                      downloadStatus == DownloadStatus.Downloading)
                     Text(
                       (AppLocalizations.of(context)?.downloadingFile ??
                               'Downloading File:') +
@@ -284,32 +310,62 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   ),
                 ],
               )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)?.fileDownloaded ??
-                        'File Downloaded',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
+            : downloadStatus != DownloadStatus.DownloadFailed &&
+                    downloadStatus != DownloadStatus.DecompressingFailed &&
+                    !downloaded
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)?.fileDownloaded ??
+                            'File Downloaded',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      // Giant icon with check mark
+                      const Icon(
+                        Icons.check_circle,
+                        size: 100,
+                        color: Colors.green,
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)?.downloadFailed ??
+                            "The download was unable to complete. Please try again later.",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      // Giant icon with check mark
+                      const Icon(
+                        Icons.error,
+                        size: 100,
+                        color: Colors.red,
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  // Giant icon with check mark
-                  Icon(
-                    Icons.check_circle,
-                    size: 100,
-                    color: Colors.green,
-                  ),
-                ],
-              ),
       ),
     );
   }
 
   Future<void> extractFile(String dir) async {
+    logger.d('Extracting file');
+    downloadStatus = DownloadStatus.Decompressing;
     String fileName2 = await fileNameFromTitle(entry.title);
     // make directory
     try {
@@ -355,6 +411,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       entry.folderPath = dirLocation + '/' + fileName2;
 
       logger.d('Zip file extracted');
+      parseXML(entry);
     } else if (dir.contains('.rar') || dir.contains('.cbr')) {
       try {
         await UnrarFile.extract_rar(
@@ -367,6 +424,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       } catch (e) {
         logger.d(e.toString());
       }
+      parseXML(entry);
     } else if (entry.path.contains('.pdf')) {
       logger.d('PDF file');
 
@@ -409,12 +467,49 @@ class _DownloadScreenState extends State<DownloadScreen> {
       }
 
       logger.d('EPUB file extracted');
+      // get the OEBPS/content.opf file and parse it
+      logger.d('Now parsing the content.opf file');
+      parseEpub(entry);
+    } else if (dir.contains('.mp3') ||
+        dir.contains('.m4a') ||
+        dir.contains('.m4b') ||
+        dir.contains('.flac')) {
+      logger.d('Audio file');
+      try {
+        var file = File(dirLocation + '/' + await fileNameFromTitle(fileName));
+        try {
+          await Directory('$dirLocation/$fileName2').create(recursive: true);
+        } catch (e) {
+          logger.d(e.toString());
+        }
+        file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
+        entry.folderPath = dirLocation + '/' + fileName2;
+        entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
+        logger.d('Audio file moved');
+        entry.downloaded = true;
+        entry.folderPath = dirLocation + '/' + fileName2;
+      } catch (e) {
+        logger.e(e.toString());
+      }
     } else {
       logger.e('Error');
     }
 
-    await isar!.writeTxn(() async {
-      await isar!.entrys.put(entry);
+    logger.d('IsarId: ${entry.isarId}');
+    await isar?.writeTxn(() async {
+      await isar?.entrys.put(entry).then((value) {
+        logger.d('Entry updated');
+        logger.d('isarId: ${entry.isarId}');
+      });
     });
   }
+}
+
+enum DownloadStatus {
+  NotDownloaded,
+  Downloading,
+  Downloaded,
+  Decompressing,
+  DownloadFailed,
+  DecompressingFailed,
 }

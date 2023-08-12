@@ -154,7 +154,19 @@ class LoginProvider {
       final entry =
           await isar!.logins.where().serverUrlEqualTo(url).findFirst();
       if (entry == null) {
-        // if the user does not exist, create a new one
+        // if the user does not exist but a different user does, delete the different user
+        List<Login> entry2 = await isar.logins.where().findAll();
+        List<int> entry2Ids = [];
+        for (var i = 0; i < entry2.length; i++) {
+          if (entry2[i].serverUrl != url) {
+            entry2Ids.add(entry2[i].isarId);
+          }
+        }
+
+        await isar.writeTxn(() async {
+          isar.logins.deleteAll(entry2Ids);
+        });
+
         Login login = Login(
           serverUrl: url,
           username: username,
