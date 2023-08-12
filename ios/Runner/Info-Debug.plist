@@ -32,12 +32,51 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>afh</string>
+		<string>ca</string>
+		<string>ar</string>
+		<string>cs</string>
+		<string>da</string>
+		<string>en_pirate</string>
+		<string>es</string>
+		<string>eu</string>
+		<string>fr</string>
+		<string>fr</string>
+		<string>hr</string>
+		<string>hu</string>
+		<string>id</string>
+		<string>it</string>
+		<string>ja</string>
+		<string>kk</string>
+		<string>ko</string>
+		<string>nl</string>
+		<string>nn</string>
+		<string>nl</string>
+		<string>pl</string>
+		<string>lb</string>
+		<string>pt</string>
+		<string>ro</string>
+		<string>ru</string>
+		<string>sk</string>
+		<string>sl</string>
+		<string>sq</string>
+		<string>sv</string>
+		<string>ta</string>
+		<string>tr</string>
+		<string>uk</string>
+		<string>vi</string>
+		<string>zh</string>
+		<string>zh_CHT</string>
+	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-        <key>LSSupportsOpeningDocumentsInPlace</key>
-        <true/>
-        <key>UIFileSharingEnabled</key>
-        <true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

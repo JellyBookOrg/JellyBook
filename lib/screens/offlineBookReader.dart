@@ -25,19 +25,23 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/variables.dart';
+import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
 class OfflineBookReader extends StatefulWidget {
-  const OfflineBookReader({Key? key}) : super(key: key);
+  SharedPreferences prefs;
+  OfflineBookReader({Key? key, required this.prefs}) : super(key: key);
 
   @override
-  _OfflineBookReaderState createState() => _OfflineBookReaderState();
+  _OfflineBookReaderState createState() => _OfflineBookReaderState(prefs);
 }
 
 class _OfflineBookReaderState extends State<OfflineBookReader> {
+  SharedPreferences prefs;
+  _OfflineBookReaderState(this.prefs);
+
   @override
   void initState() {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      // Get the network status
       var status = result;
       // if the user is online
       if (status == ConnectivityResult.wifi ||
@@ -54,13 +58,14 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                 url: url,
                 username: username,
                 password: password,
+                prefs: prefs,
               ),
             ),
           );
         } else {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const MyApp(),
+              builder: (context) => LoginScreen(),
             ),
           );
         }
@@ -101,7 +106,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
               // find the ansestor of the context that is a navigator
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => const MyApp(),
+                  builder: (context) => MyApp(prefs: prefs),
                 ),
               );
             });
@@ -224,32 +229,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                               ),
                                             ],
                                           ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: snapshot.data.right[index]
-                                                            ['image'] !=
-                                                        null &&
-                                                    snapshot.data.right[index]
-                                                            ['image'] !=
-                                                        "Asset"
-                                                ? FancyShimmerImage(
-                                                    imageUrl: snapshot.data
-                                                        .right[index]['image'],
-                                                    errorWidget: Image.asset(
-                                                        'assets/images/NoCoverArt.png',
-                                                        fit: BoxFit.cover),
-                                                    boxFit: BoxFit.cover,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            5,
-                                                  )
-                                                : Image.asset(
-                                                    "assets/images/NoCoverArt.png",
-                                                    fit: BoxFit.fitWidth,
-                                                  ),
+                                          child: RoundedImageWithShadow(
+                                            imageUrl: snapshot.data.right[index]
+                                                ['image'],
                                           ),
                                         ),
                                       ),
@@ -322,41 +304,8 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => InfoScreen(
-                                          title: snapshot.data.left![index]
-                                                  ['name'] ??
-                                              "null",
-                                          imageUrl: (snapshot.data.left![index]
-                                                  ['imagePath'] ??
-                                              "Asset"),
-                                          description:
-                                              snapshot.data.left![index]
-                                                      ['description'] ??
-                                                  "null",
-                                          tags: snapshot.data.left![index]
-                                                  ['tags'] ??
-                                              ["null"],
-                                          url: snapshot.data.left![index]
-                                                  ['url'] ??
-                                              "null",
-                                          year: snapshot.data.left![index]
-                                                  ['releaseDate'] ??
-                                              "null",
-                                          stars: snapshot.data.left![index]
-                                                  ['rating'] ??
-                                              -1,
-                                          path: snapshot.data.left![index]
-                                                  ['path'] ??
-                                              "null",
-                                          comicId: snapshot.data.left![index]
-                                                  ['id'] ??
-                                              "null",
-                                          isLiked: snapshot.data.left![index]
-                                                  ['isFavorite'] ??
-                                              false,
-                                          isDownloaded:
-                                              snapshot.data.left![index]
-                                                      ['isDownloaded'] ??
-                                                  false,
+                                          entry: Entry.fromJson(
+                                              snapshot.data.left![index]),
                                           offline: true,
                                         ),
                                       ),
@@ -366,7 +315,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                     if (result != null) {
                                       setState(() {
                                         snapshot.data.left![index]
-                                            ['isFavorite'] = result as bool;
+                                            ['isFavorite'] = result.left;
                                       });
                                     }
                                   },
@@ -402,49 +351,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                                   ),
                                                 ],
                                               ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: snapshot.data.left![
-                                                                    index]
-                                                                ['imagePath'] !=
-                                                            null &&
-                                                        snapshot.data.left![
-                                                                    index]
-                                                                ['imagePath'] !=
-                                                            "Asset"
-                                                    ? FancyShimmerImage(
-                                                        imageUrl: snapshot.data
-                                                                .left[index]
-                                                            ['imagePath'],
-                                                        errorWidget:
-                                                            Image.asset(
-                                                          "assets/images/NoCoverArt.png",
-                                                          fit: BoxFit.fitWidth,
-                                                        ),
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width /
-                                                            5,
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height /
-                                                            5,
-                                                        boxFit:
-                                                            BoxFit.fitHeight,
-                                                      )
-                                                    : Image.asset(
-                                                        "assets/images/NoCoverArt.png",
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height /
-                                                            6 *
-                                                            0.8,
-                                                        fit: BoxFit.fitWidth,
-                                                      ),
+                                              child: RoundedImageWithShadow(
+                                                imageUrl: snapshot.data.left![
+                                                    index]['imagePath'],
                                               ),
                                             ),
                                           ),

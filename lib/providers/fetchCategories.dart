@@ -52,7 +52,7 @@ Future<Pair> getServerCategories(context, {force = false}) async {
 
     List<Map<String, dynamic>> bookMap = [];
     for (Entry book in booksTemp) {
-      if (book.type == EntryType.book) {
+      if (book.type != EntryType.folder) {
         // check if name matches any of the folder names
         bool isFolder = false;
         for (int i = 0; i < folderMap2.length; i++) {
@@ -60,21 +60,21 @@ Future<Pair> getServerCategories(context, {force = false}) async {
             isFolder = true;
             break;
           }
-          }
-          if (!isFolder) {
-            bookMap.add({
-              'name': book.title,
-              'id': book.id,
-              'description': book.description,
-              'imagePath': book.imagePath,
-              'tags': book.tags,
-              'url': book.url,
-              'releaseDate': book.releaseDate,
-              'rating': book.rating,
-              'path': book.path,
-              'isFavorite': book.isFavorited,
-              'downloaded': book.downloaded,
-            });
+        }
+        if (!isFolder) {
+          bookMap.add({
+            'name': book.title,
+            'id': book.id,
+            'description': book.description,
+            'imagePath': book.imagePath,
+            'tags': book.tags,
+            'url': book.url,
+            'releaseDate': book.releaseDate,
+            'rating': book.rating,
+            'path': book.path,
+            'isFavorite': book.isFavorited,
+            'downloaded': book.downloaded,
+          });
         }
       }
     }
@@ -310,8 +310,8 @@ Future<List<String>> chooseCategories(List<String> categories, context) async {
 
 Future<Pair> getServerCategoriesOffline(context) async {
   logger.d("getting server categories");
-  final p_info.PackageInfo packageInfo =
-      await p_info.PackageInfo.fromPlatform();
+  // final p_info.PackageInfo packageInfo =
+  //     await p_info.PackageInfo.fromPlatform();
   // final prefs = await SharedPreferences.getInstance();
   // final token = prefs.getString('accessToken') ?? "";
   // final url = prefs.getString('server') ?? "";

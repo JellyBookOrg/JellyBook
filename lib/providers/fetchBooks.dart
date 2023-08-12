@@ -43,13 +43,9 @@ Future<List<Map<String, dynamic>>> getComics(
     ItemFields.mediaSourceCount,
     ItemFields.tags,
     ItemFields.overview,
-    ItemFields.parentId
+    ItemFields.parentId,
   ]);
 
-  BuiltList<BaseItemKind> excludeItemTypes = BuiltList<BaseItemKind>([
-    BaseItemKind.audio,
-    BaseItemKind.audioBook,
-  ]);
   // turn into built list
   final api = Openapi(basePathOverride: url).getItemsApi();
   var response;
@@ -64,7 +60,6 @@ Future<List<Map<String, dynamic>>> getComics(
       recursive: true,
       sortBy: BuiltList<String>(["IsFolder", "SortName"]),
       sortOrder: BuiltList<SortOrder>([SortOrder.ascending]),
-      excludeItemTypes: excludeItemTypes,
     );
     // logger.d(response.data);
   } catch (e) {
@@ -90,7 +85,7 @@ Future<List<Map<String, dynamic>>> getComics(
   }
 
   logger.d("got box");
-  var entries = await isar!.entrys.where().findAll();
+  final entries = await isar!.entrys.where().findAll();
   logger.d("got entries");
 
   List<Map<String, dynamic>> comics = [];
@@ -134,9 +129,9 @@ Future<List<Map<String, dynamic>>> getComics(
     try {
       List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
       List<String> comicFileTypes = ['cbz', 'cbr', 'zip', 'rar'];
+      List<String> audioFileTypes = ['mp3', 'm4a', 'm4b', 'flac'];
       String id = element.id ?? '0';
       String title = element.name ?? '';
-      String isDownloaded = 'false';
       // String imagePath =
       //     "$url/Items/${responseData['Items'][i]['Id']}/Images/Primary?&quality=90&Tag=${responseData['Items'][i]['ImageTags']['Primary']}";
       String imagePath =
@@ -166,6 +161,9 @@ Future<List<Map<String, dynamic>>> getComics(
       } else if (comicFileTypes
           .contains(element.path.toString().split('.').last.toLowerCase())) {
         type = EntryType.comic;
+      } else if (audioFileTypes
+          .contains(element.path.toString().split('.').last.toLowerCase())) {
+        type = EntryType.audiobook;
       }
       var entryExists = await isar.entrys.where().idEqualTo(id).findFirst();
       bool entryExists1 = entryExists != null;
@@ -192,6 +190,7 @@ Future<List<Map<String, dynamic>>> getComics(
         comics.indexWhere((comic) {
           if (comic['id'] == entry.id) {
             comic['downloaded'] = entry.downloaded;
+            comic['tags'] += entry.tags;
             return true;
           } else {
             return false;

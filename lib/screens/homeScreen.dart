@@ -19,6 +19,7 @@ import 'package:jellybook/screens/offlineBookReader.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/variables.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Cupertino imports
 import 'package:flutter/cupertino.dart';
@@ -44,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 - a search section
                 - a settings section
         */
+  SharedPreferences? prefs;
 
   @override
   void initState() {
@@ -55,7 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
         // show the offline book reader
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => OfflineBookReader()),
+          MaterialPageRoute(
+              builder: (context) => OfflineBookReader(
+                    prefs: prefs!,
+                  )),
         );
       }
     });
@@ -65,6 +70,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> setSharedPrefs() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   // create a listener to see if the user is online or offline

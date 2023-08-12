@@ -45,10 +45,12 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
   bool _loading = false;
   String _error = '';
+  SharedPreferences? prefs;
 
   @override
   void initState() {
     super.initState();
+    setSharedPrefs();
     // check_url();
     _passwordVisible = false;
     // check if url and username are provided
@@ -56,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
       logger.d("url: " + url!);
       logger.d("username: " + username!);
+      prefs?.setString("username", username!);
       logger.d("password: " + password!);
       LoginProvider.loginStatic(
         url!,
@@ -78,6 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       });
     }
+  }
+
+  Future<void> setSharedPrefs() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   // FocusNodes
@@ -234,7 +241,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       _loading = true;
                     });
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => OfflineBookReader()));
+                        builder: (context) =>
+                            OfflineBookReader(prefs: prefs!)));
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
