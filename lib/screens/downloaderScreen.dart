@@ -25,7 +25,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 class DownloadScreen extends StatefulWidget {
-  final Entry entry;
+  Entry entry;
   DownloadScreen({
     required this.entry,
   });
@@ -495,8 +495,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
       logger.e('Error');
     }
 
-    await isar!.writeTxn(() async {
-      await isar!.entrys.put(entry);
+    logger.d('IsarId: ${entry.isarId}');
+    await isar?.writeTxn(() async {
+      await isar?.entrys.put(entry).then((value) {
+        logger.d('Entry updated');
+        logger.d('isarId: ${entry.isarId}');
+      });
     });
   }
 }
