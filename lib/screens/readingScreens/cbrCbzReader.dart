@@ -206,7 +206,6 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
       } catch (e) {
         logger.d(
           "Error: not a valid directory, its a file",
-          e.toString().split("'")[1],
         );
       }
     }

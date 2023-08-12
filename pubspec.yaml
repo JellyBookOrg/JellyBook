@@ -60,12 +60,12 @@ dependencies:
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
   pdfx: ^2.3.0
-  package_info_plus: ^3.1.2
+  package_info_plus: ^4.1.0
   auto_size_text: ^3.0.0
   google_nav_bar: ^5.0.6
   cached_network_image: ^3.2.3
   fancy_shimmer_image: ^2.0.2
-  logger: ^1.1.0
+  logger: ^2.0.1
   openapi:
     git: https://github.com/Kara-Zor-El/jellyfin_api.git
   string_similarity: ^2.0.0
@@ -76,9 +76,9 @@ dependencies:
     sdk: flutter
   intl: ^0.18.0
   intl_utils: ^2.8.2
-  device_info_plus: ^4.1.3
-  audioplayers: ^4.1.0
-  flutter_background_service: ^3.0.1
+  device_info_plus: ^9.0.3
+  audioplayers: ^5.1.0
+  flutter_background_service: ^5.0.0
   palette_generator: ^0.3.3+2
   xml: ^5.3.1
   flutter_html: ^3.0.0-beta.2

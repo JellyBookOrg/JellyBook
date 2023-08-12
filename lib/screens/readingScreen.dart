@@ -143,7 +143,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
     // use a switch statement to determine how to read the file
     switch (fileExtension) {
       case 'pdf':
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           // for the route, have no transition
           PageRouteBuilder(
@@ -173,7 +173,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
       case 'cbr':
       case 'zip':
       case 'rar':
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           // for the route, have no transition
           PageRouteBuilder(
@@ -201,7 +201,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         );
         break;
       case 'epub':
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           // for the route, have no transition
           PageRouteBuilder(
@@ -226,36 +226,37 @@ class _ReadingScreenState extends State<ReadingScreen> {
             },
           ),
         );
-        // audiobook
-        case 'mp3':
-        case 'm4a':
-        case 'm4b':
-        case 'flac':
-          Navigator.push(
-            context,
-            // for the route, have no transition
-            PageRouteBuilder(
-              transitionDuration: const Duration(milliseconds: 0),
-              pageBuilder: (context, animation, secondaryAnimation) => AudioBookReader(
-                audioBookId: comicId,
-                title: title,
-              ),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                var begin = const Offset(1.0, 0.0);
-                var end = Offset.zero;
-                var curve = Curves.ease;
-
-                var tween =
-                    Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
+      // audiobook
+      case 'mp3':
+      case 'm4a':
+      case 'm4b':
+      case 'flac':
+        Navigator.pushReplacement(
+          context,
+          // for the route, have no transition
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 0),
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                AudioBookReader(
+              audioBookId: comicId,
+              title: title,
             ),
-          );
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              var begin = const Offset(1.0, 0.0);
+              var end = Offset.zero;
+              var curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+          ),
+        );
 
         break;
       default:
@@ -276,7 +277,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
               ),
             ],
           ),
-        );
+        ).then((value) => Navigator.of(context).pop());
     }
   }
 

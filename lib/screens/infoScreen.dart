@@ -354,117 +354,125 @@ class _InfoScreenState extends State<InfoScreen> {
               ),
             ),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey[800],
-              foregroundColor:
-                  entry.progress >= 100 ? Colors.greenAccent : Colors.white,
-              shape: const CircleBorder(),
-              padding: EdgeInsets.zero,
-              fixedSize: const Size(40, 40),
-            ),
-            onPressed: () async {
-              await setRead();
-              setState(() {});
-            },
-            child: const Icon(
-              Icons.check_circle_outline,
+          Expanded(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey[800],
+                foregroundColor:
+                    entry.progress >= 100 ? Colors.greenAccent : Colors.white,
+                shape: const CircleBorder(),
+                padding: EdgeInsets.zero,
+                fixedSize: const Size(40, 40),
+              ),
+              onPressed: () async {
+                await setRead();
+                setState(() {});
+              },
+              child: const Icon(
+                Icons.check_circle_outline,
+              ),
             ),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey[800],
-              foregroundColor: Colors.white,
-              shape: const CircleBorder(),
-              padding: EdgeInsets.zero,
-              fixedSize: const Size(40, 40),
-            ),
-            onPressed: () async {
-              await updateLike(entry.id);
-              setState(() {
-                entry.isFavorited = !entry.isFavorited;
-              });
-            },
-            child: LikeButton(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              isLiked: entry.isFavorited,
-              likeCountPadding: EdgeInsets.zero,
-              padding: EdgeInsets.zero,
-              circleColor: const CircleColor(
-                start: Colors.red,
-                end: Colors.redAccent,
+          Expanded(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey[800],
+                foregroundColor: Colors.white,
+                shape: const CircleBorder(),
+                padding: EdgeInsets.zero,
+                fixedSize: const Size(40, 40),
               ),
-              bubblesColor: const BubblesColor(
-                dotPrimaryColor: Colors.green,
-                dotSecondaryColor: Colors.red,
-              ),
-              likeBuilder: (bool isLiked) {
-                return Icon(
-                  Icons.favorite,
-                  color: isLiked
-                      ? Colors.red
-                      : Theme.of(context).iconTheme.color ?? Colors.white,
-                );
-              },
-              onTap: (bool isLiked) async {
-                updateLike(entry.id);
-                return !isLiked;
-              },
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              backgroundColor: // grey
-                  Colors.grey[800],
-              padding: EdgeInsets.zero,
-              fixedSize: const Size(40, 40),
-            ),
-            child: !entry.downloaded
-                ? Icon(
-                    Icons.download_for_offline_outlined,
-                    color: !offline
-                        ? Theme.of(context).iconTheme.color
-                        : Colors.white,
-                  )
-                : const Icon(
-                    Icons.download_done,
-                    color: Colors.greenAccent,
-                  ),
-            onPressed: () {
-              if (!offline) {
-                // push to the downloader screen and on return check if it returns a value of true and assign that to isDownloaded
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DownloadScreen(
-                      entry: entry,
-                    ),
-                  ),
-                ).then((value) {
-                  if (value != null) {
-                    setState(() {
-                      entry = value;
-                    });
-                  }
+              onPressed: () async {
+                await updateLike(entry.id);
+                setState(() {
+                  entry.isFavorited = !entry.isFavorited;
                 });
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        AppLocalizations.of(context)?.downloadOffline ??
-                            "You are offline, please connect to the internet & reload this app to download this comic",
-                        style: TextStyle(
-                            color:
-                                Theme.of(context).textTheme.bodyLarge?.color ??
-                                    Colors.white)),
-                    backgroundColor: Theme.of(context).dialogBackgroundColor,
-                    duration: const Duration(seconds: 5),
-                  ),
-                );
-              }
-            },
+              },
+              child: LikeButton(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                isLiked: entry.isFavorited,
+                likeCountPadding: EdgeInsets.zero,
+                padding: EdgeInsets.zero,
+                circleColor: const CircleColor(
+                  start: Colors.red,
+                  end: Colors.redAccent,
+                ),
+                bubblesColor: const BubblesColor(
+                  dotPrimaryColor: Colors.green,
+                  dotSecondaryColor: Colors.red,
+                ),
+                likeBuilder: (bool isLiked) {
+                  return Icon(
+                    Icons.favorite,
+                    color: isLiked
+                        ? Colors.red
+                        : Theme.of(context).iconTheme.color ?? Colors.white,
+                  );
+                },
+                onTap: (bool isLiked) async {
+                  updateLike(entry.id);
+                  return !isLiked;
+                },
+              ),
+            ),
+          ),
+          Expanded(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                backgroundColor: // grey
+                    Colors.grey[800],
+                padding: EdgeInsets.zero,
+                fixedSize: const Size(40, 40),
+              ),
+              child: !entry.downloaded
+                  ? Icon(
+                      Icons.download_for_offline_outlined,
+                      color: !offline
+                          ? Theme.of(context).iconTheme.color
+                          : Colors.white,
+                    )
+                  : const Icon(
+                      Icons.download_done,
+                      color: Colors.greenAccent,
+                    ),
+              onPressed: () {
+                if (!offline) {
+                  // push to the downloader screen and on return check if it returns a value of true and assign that to isDownloaded
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DownloadScreen(
+                        entry: entry,
+                      ),
+                    ),
+                  ).then((value) {
+                    if (value != null) {
+                      setState(() {
+                        entry = value;
+                      });
+                    }
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          AppLocalizations.of(context)?.downloadOffline ??
+                              "You are offline, please connect to the internet & reload this app to download this comic",
+                          style: TextStyle(
+                              color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color ??
+                                  Colors.white)),
+                      backgroundColor: Theme.of(context).dialogBackgroundColor,
+                      duration: const Duration(seconds: 5),
+                    ),
+                  );
+                }
+              },
+            ),
           ),
           Expanded(
             child: ElevatedButton(
