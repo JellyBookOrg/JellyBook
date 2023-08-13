@@ -288,6 +288,12 @@ class _InfoScreenState extends State<InfoScreen> {
     checkLiked(entry.id).then((value) {
       entry.isFavorited = value;
     });
+    logger.i("isarId: ${entry.isarId}");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void handleImageSize(Size imageSize) {
@@ -524,7 +530,7 @@ class _InfoScreenState extends State<InfoScreen> {
           onPressed: () async {
             // update the page so that the liked comics are at the top
             bool isLiked = await checkLiked(entry.id);
-            Navigator.pop(context, Pair(isLiked, entry.downloaded));
+            Navigator.pop(context, (isLiked, entry.downloaded));
           },
         ),
       ),

@@ -19,7 +19,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 // have optional perameter to have the function return the list of folders
-Future<Pair> getServerCategories(context, {force = false}) async {
+Future<(List<Entry>, List<Folder>)> getServerCategories(context,
+    {force = false}) async {
   logger.d("getting server categories");
   final p_info.PackageInfo packageInfo =
       await p_info.PackageInfo.fromPlatform();
@@ -34,51 +35,25 @@ Future<Pair> getServerCategories(context, {force = false}) async {
 
   // check if already has books and folders
   final isar = Isar.getInstance();
-  final foldersTemp = await isar!.folders.where().findAll();
-  final booksTemp = await isar.entrys.where().findAll();
+  final List<Folder> foldersTemp = await isar!.folders.where().findAll();
+  List<Entry> booksTemp = await isar.entrys
+      .filter()
+      .not()
+      .typeEqualTo(EntryType.folder)
+      .and()
+      .isFavoritedEqualTo(true)
+      .sortByTitle()
+      .findAll();
+  booksTemp.addAll(await isar.entrys
+      .filter()
+      .not()
+      .typeEqualTo(EntryType.folder)
+      .and()
+      .isFavoritedEqualTo(false)
+      .sortByTitle()
+      .findAll());
   if (foldersTemp.length > 0 && booksTemp.length > 0 && !force) {
-    List<Map<String, dynamic>> folderMap = [];
-    for (int i = 0; i < foldersTemp.length; i++) {
-      folderMap.add({
-        'name': foldersTemp[i].name,
-        'id': foldersTemp[i].id,
-        'entries': foldersTemp[i].bookIds,
-        'image': foldersTemp[i].image,
-      });
-    }
-
-    logger.d("folderMap: " + folderMap.toString());
-    var folderMap2 = await compareFolders(folderMap);
-
-    List<Map<String, dynamic>> bookMap = [];
-    for (Entry book in booksTemp) {
-      if (book.type != EntryType.folder) {
-        // check if name matches any of the folder names
-        bool isFolder = false;
-        for (int i = 0; i < folderMap2.length; i++) {
-          if (folderMap2[i]['name'] == book.title) {
-            isFolder = true;
-            break;
-          }
-        }
-        if (!isFolder) {
-          bookMap.add({
-            'name': book.title,
-            'id': book.id,
-            'description': book.description,
-            'imagePath': book.imagePath,
-            'tags': book.tags,
-            'url': book.url,
-            'releaseDate': book.releaseDate,
-            'rating': book.rating,
-            'path': book.path,
-            'isFavorite': book.isFavorited,
-            'downloaded': book.downloaded,
-          });
-        }
-      }
-    }
-    return Pair(bookMap, folderMap2);
+    return (booksTemp, foldersTemp);
   }
 
   // turn all the previous logger.d's into a single logger.d with multiple lines
@@ -114,41 +89,48 @@ Future<Pair> getServerCategories(context, {force = false}) async {
       categories.add(element.name);
     });
 
-    List<Future<List<Map<String, dynamic>>>> comicsArray = [];
+    List<Entry> comics = [];
     List<String> comicsIds = [];
     logger.d("selected: " + categories.toString());
     data.forEach((element) {
       comicsId = element.id;
       comicsIds.add(comicsId);
       etag = element.etag;
-      comicsArray.add(getComics(comicsId, etag));
+      // comicsArray.add(getComics(comicsId, etag));
     });
-
-    List<Map<String, dynamic>> comics = [];
-    Stream<Map<String, dynamic>> comicsStream = Stream.fromFutures(comicsArray)
-        .asyncMap((comicsList) => comicsList)
-        .expand((comicsList) => comicsList);
-
-    await for (Map<String, dynamic> comic in comicsStream) {
-      // logger.i("adding comic '${comic['name']}' to comics list");
-      comics.add(comic);
+    for (int i = 0; i < comicsIds.length; i++) {
+      // turn List<Entry> into Iterable<Entry>
+      Iterable<Entry> comicsTemp = await getComics(comicsIds[i], etag);
+      // comics.addAll(comicsTemp);
     }
+    comics = await isar.entrys
+        .filter()
+        .not()
+        .typeEqualTo(EntryType.folder)
+        .sortByTitle()
+        .findAll();
+    comics.sort((a, b) => a.title.compareTo(b.title));
 
     prefs.setStringList('comicsIds', comicsIds);
 
-    List<Map<String, dynamic>> likedComics = [];
-    List<Map<String, dynamic>> unlikedComics = [];
+    List<Entry> likedComics = [];
+    List<Entry> unlikedComics = [];
     logger.d(comics.length.toString());
     for (int i = 0; i < comics.length; i++) {
-      if (comics[i]['isFavorite'].toString() == 'true') {
+      if (comics[i].isFavorited) {
         likedComics.add(comics[i]);
-        logger.d("added comic '${comics[i]['name']}' to likedComics");
       } else {
         unlikedComics.add(comics[i]);
       }
     }
 
+    likedComics.sort((a, b) => a.title.compareTo(b.title));
+    unlikedComics.sort((a, b) => a.title.compareTo(b.title));
+
+    logger.d("likedComics: " + likedComics.length.toString());
+    logger.d("unlikedComics: " + unlikedComics.length.toString());
     comics = likedComics + unlikedComics;
+    logger.d("comics: " + comics.length.toString());
 
     // final isar = Isar.getInstance();
     List<String> categoriesList = [];
@@ -162,22 +144,11 @@ Future<Pair> getServerCategories(context, {force = false}) async {
     await CreateFolders.getFolders(categoriesList);
     List<Folder> folders = await isar.folders.where().findAll();
 
-    // turn into a map
-    List<Map<String, dynamic>> folderMap = [];
-    for (int i = 0; i < folders.length; i++) {
-      folderMap.add({
-        'name': folders[i].name,
-        'id': folders[i].id,
-        'entries': folders[i].bookIds,
-        'image': folders[i].image,
-      });
-    }
+    // for (int i = 0; i < comics.length; i++) {
+    //   logger.d("${comics[i].title} : ${comics[i].isarId}");
+    // }
 
-    logger.d("folderMap: " + folderMap.toString());
-    var folderMap2 = await compareFolders(folderMap);
-    logger.d("folderMap2: " + folderMap2.toString());
-
-    return Pair(comics, folderMap2);
+    return (comics, folders);
   }
 }
 
@@ -333,7 +304,9 @@ Future<Pair> getServerCategoriesOffline(context) async {
           return q
               .typeEqualTo(EntryType.book)
               .or()
-              .typeEqualTo(EntryType.comic);
+              .typeEqualTo(EntryType.comic)
+              .or()
+              .typeEqualTo(EntryType.audiobook);
         })
         .and()
         .downloadedEqualTo(true)

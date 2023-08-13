@@ -440,7 +440,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
         entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
         logger.d('PDF file moved');
         entry.downloaded = true;
-        entry.folderPath = dirLocation + '/' + fileName2;
       } catch (e) {
         logger.d(e.toString());
       }
@@ -461,7 +460,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
         entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
         logger.d('EPUB file moved');
         entry.downloaded = true;
-        entry.folderPath = dirLocation + '/' + fileName2;
       } catch (e) {
         logger.e(e.toString());
       }
