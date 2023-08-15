@@ -511,6 +511,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     "so": {"name": "Somali", "nativeName": "Soomaaliga, af Soomaali"},
     "st": {"name": "Southern Sotho", "nativeName": "Sesotho"},
     "es": {"name": "Spanish; Castilian", "nativeName": "español, castellano"},
+    "es_US": {"name": "Spanish (US)", "nativeName": "español (Estados Unidos)"},
     "su": {"name": "Sundanese", "nativeName": "Basa Sunda"},
     "sw": {"name": "Swahili", "nativeName": "Kiswahili"},
     "ss": {"name": "Swati", "nativeName": "SiSwati"},
