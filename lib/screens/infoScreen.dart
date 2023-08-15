@@ -308,8 +308,13 @@ class _InfoScreenState extends State<InfoScreen> {
     }
   }
 
+  bool isTablet(BuildContext context) {
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    return shortestSide > 600;
+  }
+
   // actionRow
-  Widget actionRow() {
+  Widget actionRow({double size = -1}) {
     return ConstrainedBox(
       constraints:
           BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 40),
@@ -318,7 +323,7 @@ class _InfoScreenState extends State<InfoScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: imageWidth,
+            width: size == -1 ? imageWidth : size,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: entry.downloaded
@@ -631,13 +636,21 @@ class _InfoScreenState extends State<InfoScreen> {
                               ),
                           ],
                         ),
+                        if (isTablet(context)) ...[
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          actionRow(
+                              size: MediaQuery.of(context).size.width / 4),
+                        ],
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            actionRow(),
+            // put action row here if the screen isn't a tablet
+            if (!isTablet(context)) actionRow(),
             const SizedBox(
               height: 10,
             ),
