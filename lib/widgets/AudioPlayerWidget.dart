@@ -34,6 +34,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   String audioId = '';
   Timer? timer;
   Duration duration = const Duration();
+  double playbackSpeed = 1.0;
 
   @override
   void dispose() {
@@ -159,6 +160,42 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     }
   }
 
+  void showPlaybackSpeedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        double localPlaybackSpeed = playbackSpeed; // Local variable to hold state
+
+        return AlertDialog(
+          title: Text('Playback Speed'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Slider(
+                    value: localPlaybackSpeed,
+                    onChanged: (double value) {
+                      setState(() {
+                        localPlaybackSpeed = value; // Update the local state
+                        playbackSpeed = value; // Update the global state
+                      });
+                      audioPlayer.setPlaybackRate(localPlaybackSpeed);
+                    },
+                    min: 1.0,
+                    max: 3.0,
+                    divisions: 40,
+                  ),
+                  Text('Current Speed: ${localPlaybackSpeed.toStringAsFixed(2)}x'),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -196,6 +233,12 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
             padding: EdgeInsets.zero,
             icon: const Icon(Icons.audiotrack),
             onPressed: widget.onAudioPickerPressed,
+          ),
+          IconButton(
+            icon: Icon(Icons.speed),
+            onPressed: () {
+              showPlaybackSpeedDialog(context);
+            },
           ),
         ],
       ),

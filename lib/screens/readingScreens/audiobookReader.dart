@@ -37,6 +37,7 @@ class _AudioBookReaderState extends State<AudioBookReader> {
   bool isPlaying = false;
   double playbackProgress = 0.0;
   String imageUrl = '';
+  double playbackSpeed = 1.0;
 
   @override
   void initState() {
@@ -156,6 +157,42 @@ class _AudioBookReaderState extends State<AudioBookReader> {
     return formattedDuration;
   }
 
+  void showPlaybackSpeedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        double localPlaybackSpeed = playbackSpeed; // Local variable to hold state
+
+        return AlertDialog(
+          title: Text('Playback Speed'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Slider(
+                    value: localPlaybackSpeed,
+                    onChanged: (double value) {
+                      setState(() {
+                        localPlaybackSpeed = value; // Update the local state
+                        playbackSpeed = value; // Update the global state
+                      });
+                      audioPlayer.setPlaybackRate(localPlaybackSpeed);
+                    },
+                    min: 1.0,
+                    max: 3.0,
+                    divisions: 40,
+                  ),
+                  Text('Current Speed: ${localPlaybackSpeed.toStringAsFixed(2)}x'),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,6 +278,12 @@ class _AudioBookReaderState extends State<AudioBookReader> {
             IconButton(
               icon: const Icon(Icons.stop),
               onPressed: stopAudio,
+            ),
+            IconButton(
+              icon: Icon(Icons.speed),
+              onPressed: () {
+                showPlaybackSpeedDialog(context);
+              },
             ),
           ],
         ),
