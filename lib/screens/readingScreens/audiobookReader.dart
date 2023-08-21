@@ -170,7 +170,7 @@ class _AudioBookReaderState extends State<AudioBookReader> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(width: 48),
-                Text('Playback Speed', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context)?.playbackSpeed ?? 'Playback Speed', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () {
@@ -220,7 +220,9 @@ class _AudioBookReaderState extends State<AudioBookReader> {
                       ),
                     ],
                   ),
-                  Text('Current Speed: ${localPlaybackSpeed.toStringAsFixed(2)}x'),
+                  Text(
+                    '${AppLocalizations.of(context)?.currentSpeed ?? 'Current Speed:'} ${localPlaybackSpeed.toStringAsFixed(2)}x',
+                  ),
                 ],
               );
             },
