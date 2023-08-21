@@ -164,27 +164,64 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        double localPlaybackSpeed = playbackSpeed; // Local variable to hold state
+        double localPlaybackSpeed = playbackSpeed;
 
         return AlertDialog(
-          title: Text('Playback Speed'),
+          titlePadding: EdgeInsets.zero, // Remove default title padding
+          title: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 48),
+                Text('Playback Speed', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            ),
+          ),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Slider(
-                    value: localPlaybackSpeed,
-                    onChanged: (double value) {
-                      setState(() {
-                        localPlaybackSpeed = value; // Update the local state
-                        playbackSpeed = value; // Update the global state
-                      });
-                      audioPlayer.setPlaybackRate(localPlaybackSpeed);
-                    },
-                    min: 1.0,
-                    max: 3.0,
-                    divisions: 40,
+                  Stack(
+                    children: [
+                      Slider(
+                        value: localPlaybackSpeed,
+                        onChanged: (double value) {
+                          setState(() {
+                            localPlaybackSpeed = value;
+                            playbackSpeed = value;
+                          });
+                          audioPlayer.setPlaybackRate(localPlaybackSpeed);
+                        },
+                        min: 0.0,
+                        max: 4.0,
+                        divisions: 16,
+                      ),
+                      Positioned(
+                        top: -3, // Adjust the position of the labels
+                        left: 0,
+                        right: 0,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('0'),
+                              Text('1'),
+                              Text('2'),
+                              Text('3'),
+                              Text('4'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Text('Current Speed: ${localPlaybackSpeed.toStringAsFixed(2)}x'),
                 ],
