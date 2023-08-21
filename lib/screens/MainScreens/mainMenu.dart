@@ -39,7 +39,6 @@ class _MainMenuState extends State<MainMenu> {
                 - a search section
                 - a settings section
         */
-
   Future<void> logout() async {
     final isar = Isar.getInstance();
     var logins = await isar!.logins.where().findAll();
@@ -171,7 +170,7 @@ class _MainMenuState extends State<MainMenu> {
                       height: MediaQuery.of(context).size.height / 6 * 1.2,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: snapshot.data.right?.length,
+                        itemCount: snapshot.data.$2?.length,
                         itemExtent: MediaQuery.of(context).size.width / 3,
                         itemBuilder: (context, index) {
                           return SizedBox(
@@ -186,14 +185,18 @@ class _MainMenuState extends State<MainMenu> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => collectionScreen(
-                                        folderId: snapshot.data.right[index]
-                                            ['id'],
-                                        name: snapshot.data.right[index]
-                                            ['name'],
-                                        image: snapshot.data.right[index]
-                                            ['image'],
-                                        bookIds: snapshot.data.right[index]
-                                            ['entries'],
+                                        folderId: snapshot.data.$2
+                                            .elementAt(index)
+                                            .id,
+                                        name: snapshot.data.$2
+                                            .elementAt(index)
+                                            .name,
+                                        image: snapshot.data.$2
+                                            .elementAt(index)
+                                            .image,
+                                        bookIds: snapshot.data.$2
+                                            .elementAt(index)
+                                            .bookIds,
                                       ),
                                     ),
                                   );
@@ -218,7 +221,7 @@ class _MainMenuState extends State<MainMenu> {
                                                   .width /
                                               1000),
                                       child: AutoSizeText(
-                                        snapshot.data.right[index]['name'],
+                                        snapshot.data.$2.elementAt(index).name,
                                         textAlign: TextAlign.center,
                                         maxLines: 2,
                                         minFontSize: 5,
@@ -237,8 +240,9 @@ class _MainMenuState extends State<MainMenu> {
                                     Flexible(
                                       child: SizedBox(
                                         child: RoundedImageWithShadow(
-                                          imageUrl: snapshot.data.right[index]
-                                                  ['image'] ??
+                                          imageUrl: snapshot.data.$2
+                                                  .elementAt(index)
+                                                  .image ??
                                               'Asset',
                                         ),
                                       ),
@@ -296,7 +300,7 @@ class _MainMenuState extends State<MainMenu> {
                       addRepaintBoundaries: true,
                       // cacheExtent: 30,
                       children: List.generate(
-                        snapshot.data.left.length,
+                        snapshot.data.$1.length,
                         (index) {
                           return StatefulBuilder(
                             builder: (context, setState) {
@@ -308,27 +312,27 @@ class _MainMenuState extends State<MainMenu> {
                                 child: InkWell(
                                   onTap: () async {
                                     logger.i("tapped");
-                                    // logger.i(snapshot.data.left[index]);
+                                    // logger.i(snapshot.data.$1.elementAt(index));
                                     var result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => InfoScreen(
-                                            entry: Entry.fromJson(
-                                                snapshot.data.left[index])),
+                                            entry: snapshot.data.$1
+                                                .elementAt(index)),
                                       ),
                                     );
                                     // update state of the card
                                     logger.d(result);
                                     if (result != null &&
-                                        result.left != null &&
-                                        result.right != null) {
+                                        result.$1 != null &&
+                                        result.$2 != null) {
                                       setState(() {
-                                        snapshot.data.left![index]
-                                                ['isFavorite'] =
-                                            result.left as bool;
-                                        snapshot.data.left![index]
-                                                ['downloaded'] =
-                                            result.right as bool;
+                                        snapshot.data.$1
+                                            .elementAt(index)
+                                            .isFavorited = result.$1 as bool;
+                                        snapshot.data.$1
+                                            .elementAt(index)
+                                            .downloaded = result.$2 as bool;
                                       });
                                     }
                                   },
@@ -347,16 +351,17 @@ class _MainMenuState extends State<MainMenu> {
                                                 6 *
                                                 0.8,
                                             child: RoundedImageWithShadow(
-                                              imageUrl:
-                                                  snapshot.data.left[index]
-                                                          ['imagePath'] ??
-                                                      'Asset',
+                                              imageUrl: snapshot.data.$1
+                                                      .elementAt(index)
+                                                      .imagePath ??
+                                                  'Asset',
                                             ),
                                           ),
-                                          if (snapshot.data.left![index]
-                                                  ['isFavorite'] ==
+                                          if (snapshot.data.$1
+                                                  .elementAt(index)
+                                                  .isFavorited ==
                                               true)
-                                            // icon in circle in bottom right corner
+                                            // icon in circle in bottom $2 corner
                                             // allow it to be off the image without being cut off
                                             Positioned(
                                               bottom: 0,
@@ -393,8 +398,7 @@ class _MainMenuState extends State<MainMenu> {
                                           padding: const EdgeInsets.only(
                                               left: 5, right: 5),
                                           child: AutoSizeText(
-                                            snapshot.data.left?[index]
-                                                    ['name'] ??
+                                            snapshot.data.$1?[index].title ??
                                                 "null",
                                             maxLines: 3,
                                             minFontSize: 10,
@@ -410,8 +414,9 @@ class _MainMenuState extends State<MainMenu> {
                                         height: 5,
                                       ),
 
-                                      if (snapshot.data.left![index]
-                                              ['releaseDate'] !=
+                                      if (snapshot.data.$1
+                                              .elementAt(index)
+                                              .releaseDate !=
                                           "null")
                                         Flexible(
                                           // give some padding to the text
@@ -419,8 +424,9 @@ class _MainMenuState extends State<MainMenu> {
                                             padding: const EdgeInsets.only(
                                                 left: 5, right: 5),
                                             child: AutoSizeText(
-                                              snapshot.data.left![index]
-                                                  ['releaseDate'],
+                                              snapshot.data.$1
+                                                  .elementAt(index)
+                                                  .releaseDate,
                                               maxLines: 1,
                                               minFontSize: 10,
                                               textAlign: TextAlign.center,
@@ -439,16 +445,16 @@ class _MainMenuState extends State<MainMenu> {
                             },
                           );
                         },
-                        // itemCount: snapshot.data.left!.length,
+                        // itemCount: snapshot.data.$1!.length,
                       ),
                     ),
                   ];
                   return Column(
                     children: [
-                      if (snapshot.data.right.toString().isNotEmpty &&
-                          snapshot.data.right != null)
+                      if (snapshot.data.$2.toString().isNotEmpty &&
+                          snapshot.data.$2 != null)
                         ...collectionChildren,
-                      if (snapshot.data.left.toString().isNotEmpty)
+                      if (snapshot.data.$1.toString().isNotEmpty)
                         ...libraryChildren,
                       // const SizedBox(
                       //   height: 10,
