@@ -73,7 +73,12 @@ class SimpleUserCard extends StatelessWidget {
                       Expanded(
                         child: CircleAvatar(
                           radius: mediaQueryHeight / 15,
-                          backgroundImage: userProfilePic,
+                          child: ClipOval(
+                            child: Image(
+                              image: userProfilePic,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       ),
                       Expanded(
@@ -93,7 +98,6 @@ class SimpleUserCard extends StatelessWidget {
                               userMoreInfo!,
                             ],
                             if (subtitle != null) ...[
-                              // Display subtitle Text widget if provided
                               const SizedBox(height: 5),
                               subtitle!,
                             ],
