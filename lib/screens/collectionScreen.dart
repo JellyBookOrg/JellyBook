@@ -54,6 +54,12 @@ class _collectionScreenState extends State<collectionScreen> {
         .filter()
         .anyOf(bookIds, (q, String id) => q.idEqualTo(id))
         .findAll();
+    // print all the ones that have EntryType.folder
+    entryList.forEach((element) {
+      if (element.type == EntryType.folder) {
+        logger.f(element.title);
+      }
+    });
     return entryList;
     // checkeach field of the entry to make sure it is not null
   }
@@ -79,8 +85,8 @@ class _collectionScreenState extends State<collectionScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   onTap: () async {
-                    if (snapshot.data[index].type != "EntryType.folder") {
-                      Pair? result = await Navigator.push(
+                    if (snapshot.data[index].type != EntryType.folder) {
+                      var result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => InfoScreen(
@@ -89,15 +95,13 @@ class _collectionScreenState extends State<collectionScreen> {
                         ),
                       );
                       if (result != null) {
-                        snapshot.data[index].isFavorited = result.left;
-                        snapshot.data[index].downloaded = result.right;
+                        snapshot.data[index].isFavorited = result.$1;
+                        snapshot.data[index].downloaded = result.$2;
                         await isar?.writeTxn(() async {
                           await isar?.entrys.put(snapshot.data[index]);
                         });
                       }
-                    } else if (snapshot.data[index].type ==
-                        "EntryType.folder") {
-                      logger.d("Tapped: ${snapshot.data[index].toString()}");
+                    } else {
                       var folder = isar!.folders
                           .where()
                           .filter()

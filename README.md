@@ -43,8 +43,8 @@
 | <ul><li>`.mp3`</li><li>`.aax`</li><li>`.m4a`/`.m4b`</li><li>`.aac`</li><li>`.ogg`</li><li>`.flac`</li><li>`.wav`</li></ul>
 
 ## :construction: Todo:
- - [ ] Vertical scrolling
- - [ ] Audiobooks
+ - [X] Vertical scrolling
+ - [X] Audiobooks
  - [ ] A more consistent experience between the rest of the formats and PDFs (PDFs work a bit differently)
  - [X] Allow local caching of current files while viewing collection when offline (proper offline support)
  - [X] Remember user support

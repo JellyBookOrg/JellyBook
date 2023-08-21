@@ -13,8 +13,7 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/variables.dart';
 
 // get comics
-Future<List<Map<String, dynamic>>> getComics(
-    String comicsId, String etag) async {
+Future<List<Entry>> getComics(String comicsId, String etag) async {
   logger.d('getting comics');
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken');
@@ -75,6 +74,7 @@ Future<List<Map<String, dynamic>>> getComics(
   logger.d("Now saving comics to database");
 
   final isar = Isar.getInstance();
+  Entry entry;
   // get entries from the database
   try {
     final entries = await isar!.entrys.where().idEqualTo(comicsId).findAll();
@@ -116,7 +116,7 @@ Future<List<Map<String, dynamic>>> getComics(
         if (element.tags != null) 'tags': element.tags!.toList() ?? [],
         // 'tags': element.tags ?? [],
         'parentId': element.parentId ?? '',
-        'isFavorite': element.userData?.isFavorite ?? false,
+        'isFavorited': element.userData?.isFavorite ?? false,
         'downloaded': false,
       });
     }
@@ -185,6 +185,7 @@ Future<List<Map<String, dynamic>>> getComics(
       );
       if (entryExists1) {
         entry.isarId = entryExists.isarId;
+        logger.d("updating entry due to entryExists1");
         entry.downloaded = entryExists.downloaded;
         // change the downloaded value if it is already in the database (in comics List)
         comics.indexWhere((comic) {
@@ -211,7 +212,9 @@ Future<List<Map<String, dynamic>>> getComics(
     }
   });
 
-  return comics;
+  final List<Entry> entrys =
+      await isar.entrys.filter().not().typeEqualTo(EntryType.folder).findAll();
+  return entrys;
 }
 
 Map<String, String> getHeaders(String url, String client, String device,

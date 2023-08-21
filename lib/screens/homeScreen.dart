@@ -52,6 +52,9 @@ class _HomeScreenState extends State<HomeScreen> {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Get the network status
       var status = result;
+      if (prefs == null) {
+        setSharedPrefs();
+      }
       // if the user is offline
       if (status == ConnectivityResult.none) {
         // show the offline book reader
