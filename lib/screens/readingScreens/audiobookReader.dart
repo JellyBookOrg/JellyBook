@@ -9,7 +9,6 @@ import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
@@ -37,6 +36,7 @@ class _AudioBookReaderState extends State<AudioBookReader> {
   bool isPlaying = false;
   double playbackProgress = 0.0;
   String imageUrl = '';
+  double playbackSpeed = 1.0;
 
   @override
   void initState() {
@@ -156,6 +156,96 @@ class _AudioBookReaderState extends State<AudioBookReader> {
     return formattedDuration;
   }
 
+  void showPlaybackSpeedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        double localPlaybackSpeed = playbackSpeed;
+
+        return AlertDialog(
+          titlePadding: EdgeInsets.zero, // Remove default title padding
+          title: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 48),
+                Text(
+                    AppLocalizations.of(context)?.playbackSpeed ??
+                        'Playback Speed',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+                // reset the playback speed to 1.0
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    setState(() {
+                      localPlaybackSpeed = 1.0;
+                      playbackSpeed = 1.0;
+                    });
+                    audioPlayer.setPlaybackRate(localPlaybackSpeed);
+                  },
+                ),
+              ],
+            ),
+          ),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Stack(
+                    children: [
+                      Slider(
+                        value: localPlaybackSpeed,
+                        onChanged: (double value) {
+                          setState(() {
+                            localPlaybackSpeed = value;
+                            playbackSpeed = value;
+                          });
+                          audioPlayer.setPlaybackRate(localPlaybackSpeed);
+                        },
+                        min: 0.25,
+                        max: 4.0,
+                        divisions: 15,
+                      ),
+                      const Positioned(
+                        top: -3, // Adjust the position of the labels
+                        left: 0,
+                        right: 0,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('0.25'),
+                              Text('1'),
+                              Text('2'),
+                              Text('3'),
+                              Text('4'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '${AppLocalizations.of(context)?.currentSpeed ?? 'Current Speed'}: ${localPlaybackSpeed.toStringAsFixed(2)} ${AppLocalizations.of(context)?.speedMultiplier ?? 'x'}',
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,6 +331,12 @@ class _AudioBookReaderState extends State<AudioBookReader> {
             IconButton(
               icon: const Icon(Icons.stop),
               onPressed: stopAudio,
+            ),
+            IconButton(
+              icon: Icon(Icons.speed),
+              onPressed: () {
+                showPlaybackSpeedDialog(context);
+              },
             ),
           ],
         ),
