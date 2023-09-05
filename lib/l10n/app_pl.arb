@@ -1,3 +1,23 @@
 {
-        "@@locale": "pl"
+  "@@locale": "pl",
+  "appName": "JellyBook",
+  "@appName": {},
+  "pageLoginOfflineReader": "Czytnik Offline",
+  "@pageLoginOfflineReader": {},
+  "connect": "Połącz",
+  "@connect": {},
+  "permissionRequired": "Potrzebne uprawnienia",
+  "@permissionRequired": {},
+  "ok": "OK",
+  "@ok": {},
+  "unsupportedFileType": "Nieobsługiwany typ pliku",
+  "@unsupportedFileType": {},
+  "pageLoginAddress": "Adres strony",
+  "@pageLoginAddress": {},
+  "pageLoginPassword": "Hasło",
+  "@pageLoginPassword": {},
+  "unsupportedFileTypeExplanation": "JellyBook nie obsługuje plików tego typu. Pobierz inny format",
+  "@unsupportedFileTypeExplanation": {},
+  "pageLoginUsername": "Nazwa użytkownika",
+  "@pageLoginUsername": {}
 }
