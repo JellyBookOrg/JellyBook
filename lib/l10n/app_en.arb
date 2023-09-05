@@ -185,5 +185,7 @@
   "currentSpeed": "Current Speed:",
   "@currentSpeed": {},
   "speedMultiplier": "x",
-  "@speedMultiplier": {}
+  "@speedMultiplier": {},
+  "verticalSeamless": "Seamless Vertical Scrolling",
+  "@verticalSeamless": {}
 }
