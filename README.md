@@ -60,7 +60,7 @@
  - Due to the re-working of several components, you may need to reset the app's data after upgrading so that it still functions as intended
 
 ## :telephone_receiver: Contact Me
- - Discord: `kmp3e#9430`
+ - Discord: `kmp3e`
  - Matrix: `@kmp3e:matrix.org`
  - Feel free to submit an issue on GitHub
  
