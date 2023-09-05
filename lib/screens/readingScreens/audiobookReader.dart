@@ -9,7 +9,6 @@ import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
@@ -170,11 +169,26 @@ class _AudioBookReaderState extends State<AudioBookReader> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(width: 48),
-                Text(AppLocalizations.of(context)?.playbackSpeed ?? 'Playback Speed', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(
+                    AppLocalizations.of(context)?.playbackSpeed ??
+                        'Playback Speed',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+                // reset the playback speed to 1.0
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    setState(() {
+                      localPlaybackSpeed = 1.0;
+                      playbackSpeed = 1.0;
+                    });
+                    audioPlayer.setPlaybackRate(localPlaybackSpeed);
                   },
                 ),
               ],
@@ -196,11 +210,11 @@ class _AudioBookReaderState extends State<AudioBookReader> {
                           });
                           audioPlayer.setPlaybackRate(localPlaybackSpeed);
                         },
-                        min: 0.0,
+                        min: 0.25,
                         max: 4.0,
-                        divisions: 16,
+                        divisions: 15,
                       ),
-                      Positioned(
+                      const Positioned(
                         top: -3, // Adjust the position of the labels
                         left: 0,
                         right: 0,
@@ -209,7 +223,7 @@ class _AudioBookReaderState extends State<AudioBookReader> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('0'),
+                              Text('0.25'),
                               Text('1'),
                               Text('2'),
                               Text('3'),
@@ -221,7 +235,7 @@ class _AudioBookReaderState extends State<AudioBookReader> {
                     ],
                   ),
                   Text(
-                    '${AppLocalizations.of(context)?.currentSpeed ?? 'Current Speed:'} ${localPlaybackSpeed.toStringAsFixed(2)}x',
+                    '${AppLocalizations.of(context)?.currentSpeed ?? 'Current Speed'}: ${localPlaybackSpeed.toStringAsFixed(2)} ${AppLocalizations.of(context)?.speedMultiplier ?? 'x'}',
                   ),
                 ],
               );

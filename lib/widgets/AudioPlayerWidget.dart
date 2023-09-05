@@ -109,7 +109,6 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     });
   }
 
-
   Future<void> pauseAudio() async {
     await savePosition();
     await audioPlayer.pause();
@@ -173,11 +172,26 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(width: 48),
-                Text(AppLocalizations.of(context)?.playbackSpeed ?? 'Playback Speed', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(
+                    AppLocalizations.of(context)?.playbackSpeed ??
+                        'Playback Speed',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+                // reset playback speed to 1.0
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    setState(() {
+                      localPlaybackSpeed = 1.0;
+                      playbackSpeed = 1.0;
+                    });
+                    audioPlayer.setPlaybackRate(localPlaybackSpeed);
                   },
                 ),
               ],
@@ -199,11 +213,11 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                           });
                           audioPlayer.setPlaybackRate(localPlaybackSpeed);
                         },
-                        min: 0.0,
+                        min: 0.25,
                         max: 4.0,
-                        divisions: 16,
+                        divisions: 15,
                       ),
-                      Positioned(
+                      const Positioned(
                         top: -3, // Adjust the position of the labels
                         left: 0,
                         right: 0,
@@ -212,7 +226,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('0'),
+                              Text('0.25'),
                               Text('1'),
                               Text('2'),
                               Text('3'),
@@ -224,7 +238,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                     ],
                   ),
                   Text(
-                    '${AppLocalizations.of(context)?.currentSpeed ?? 'Current Speed'}: ${localPlaybackSpeed.toStringAsFixed(2)}x',
+                    '${AppLocalizations.of(context)?.currentSpeed ?? 'Current Speed'}: ${localPlaybackSpeed.toStringAsFixed(2)} ${AppLocalizations.of(context)?.speedMultiplier ?? 'x'}',
                   ),
                 ],
               );
