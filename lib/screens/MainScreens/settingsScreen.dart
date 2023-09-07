@@ -629,6 +629,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'LTR': AppLocalizations.of(context)?.ltr ?? 'Left to Right',
           'RTL': AppLocalizations.of(context)?.rtl ?? 'Right to Left',
           'Vertical': AppLocalizations.of(context)?.vertical ?? "Vertical",
+          'Seamless Vertical': AppLocalizations.of(context)?.verticalSeamless ??
+              "Seamless Vertical Scrolling",
         },
         onChange: (value) async {
           debugPrint(value);

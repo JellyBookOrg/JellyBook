@@ -50,11 +50,11 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   bool isPlaying = false;
   Duration audioPosition = Duration();
   String audioId = '';
+  ScrollController controller = ScrollController();
 
   void setDirection() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     direction = prefs.getString('readingDirection') ?? 'ltr';
-    logger.wtf("direction: $direction");
   }
 
   Future<void> createPageList() async {
@@ -337,32 +337,57 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
                       if (snapshot.connectionState == ConnectionState.done) {
                         return Column(
                           children: [
-                            Expanded(
-                              child: PageView.builder(
-                                scrollDirection:
-                                    direction.toLowerCase() == 'vertical'
-                                        ? Axis.vertical
-                                        : Axis.horizontal,
-                                reverse: direction == 'rtl',
-                                // scrollDirection: Axis.vertical,
-                                itemCount: pages.length,
-                                controller: PageController(
-                                  initialPage: pageNum,
-                                ),
-                                itemBuilder: (context, index) {
-                                  return InteractiveViewer(
-                                    child: Image.file(
-                                      File(pages[index]),
-                                      fit: BoxFit.contain,
-                                    ),
-                                  );
-                                },
-                                onPageChanged: (index) {
-                                  saveProgress(index);
-                                  progress = index / pageNums;
-                                },
+                            if (direction.toLowerCase() == "seamless vertical")
+                              Expanded(
+                                child: InteractiveViewer(
+                                    onInteractionUpdate: (_) {
+                                      // save the progress
+                                      logger.d(
+                                          // get the controller offset and divide it by the length of the pages that are loaded
+                                          controller.offset /
+                                              (pages.length * 100));
+                                      saveProgress((controller.offset /
+                                              (pages.length * 100))
+                                          .round());
+                                    },
+                                    child: ListView.builder(
+                                      itemBuilder: (context, index) {
+                                        return Image.file(
+                                          File(pages[index]),
+                                          fit: BoxFit.contain,
+                                        );
+                                      },
+                                      itemCount: pages.length,
+                                      controller: controller,
+                                    )),
                               ),
-                            ),
+                            if (direction.toLowerCase() != "seamless vertical")
+                              Expanded(
+                                child: PageView.builder(
+                                  scrollDirection:
+                                      direction.toLowerCase() == 'vertical'
+                                          ? Axis.vertical
+                                          : Axis.horizontal,
+                                  reverse: direction == 'rtl',
+                                  // scrollDirection: Axis.vertical,
+                                  itemCount: pages.length,
+                                  controller: PageController(
+                                    initialPage: pageNum,
+                                  ),
+                                  itemBuilder: (context, index) {
+                                    return InteractiveViewer(
+                                      child: Image.file(
+                                        File(pages[index]),
+                                        fit: BoxFit.contain,
+                                      ),
+                                    );
+                                  },
+                                  onPageChanged: (index) {
+                                    saveProgress(index);
+                                    progress = index / pageNums;
+                                  },
+                                ),
+                              ),
                           ],
                         );
                       } else {

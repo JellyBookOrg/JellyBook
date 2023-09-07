@@ -17,6 +17,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:jellybook/screens/AudioPicker.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:jellybook/widgets/AudioPlayerWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PdfReader extends StatefulWidget {
   final String comicId;
@@ -56,6 +57,7 @@ class _PdfReaderState extends State<PdfReader> {
   // pages
   int _totalPages = 0;
   late PdfController pdfController;
+  late String direction;
 
   _PdfReaderState({
     required this.comicId,
@@ -69,6 +71,7 @@ class _PdfReaderState extends State<PdfReader> {
   @override
   void initState() {
     super.initState();
+    setDirection();
   }
 
   @override
@@ -95,6 +98,11 @@ class _PdfReaderState extends State<PdfReader> {
       document: PdfDocument.openFile(path),
       initialPage: page,
     );
+  }
+
+  void setDirection() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    direction = prefs.getString('readingDirection') ?? 'ltr';
   }
 
   @override
@@ -139,6 +147,9 @@ class _PdfReaderState extends State<PdfReader> {
                     onPageChanged: (page) {
                       saveProgress(page: page, comicId: comicId);
                     },
+                    scrollDirection: direction == 'rtl' || direction == 'ltr'
+                        ? Axis.horizontal
+                        : Axis.vertical,
                     onDocumentError: (error) {
                       logger.e('error: $error');
                     },
