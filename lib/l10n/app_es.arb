@@ -185,5 +185,7 @@
   "currentSpeed": "Velocidad actual:",
   "@currentSpeed": {},
   "speedMultiplier": "x",
-  "@speedMultiplier": {}
+  "@speedMultiplier": {},
+  "verticalSeamless": "Desplazamiento vertical fluido",
+  "@verticalSeamless": {}
 }
