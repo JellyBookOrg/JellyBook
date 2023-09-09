@@ -179,5 +179,9 @@
   "imprint": "标记",
   "@imprint": {},
   "coverArtist": "封面艺术家",
-  "@coverArtist": {}
+  "@coverArtist": {},
+  "currentSpeed": "当前速度：",
+  "@currentSpeed": {},
+  "verticalSeamless": "无缝垂直滚动",
+  "@verticalSeamless": {}
 }
