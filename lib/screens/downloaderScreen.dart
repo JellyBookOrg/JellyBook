@@ -195,7 +195,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
     setState(() {
       entry.downloaded = true;
       entry.progress = 0.0;
-      entry.filePath = dirLocation + '/' + fileName;
+      // entry.filePath = dirLocation + '/' + fileName;
       // pop the navigator but pass in the value of true
       Navigator.pop(context, entry);
     });
@@ -435,12 +435,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
         } catch (e) {
           logger.d(e.toString());
         }
-        file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
-        entry.folderPath = dirLocation + '/' + fileName2;
-        entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
+        file.renameSync(comicFolder + '/' + fileName);
+        entry.folderPath = comicFolder;
+        entry.filePath = comicFolder + '/' + fileName;
         logger.d('PDF file moved');
         entry.downloaded = true;
-        entry.folderPath = dirLocation + '/' + fileName2;
       } catch (e) {
         logger.d(e.toString());
       }
@@ -461,7 +460,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
         entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
         logger.d('EPUB file moved');
         entry.downloaded = true;
-        entry.folderPath = dirLocation + '/' + fileName2;
       } catch (e) {
         logger.e(e.toString());
       }
@@ -500,6 +498,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       await isar?.entrys.put(entry).then((value) {
         logger.d('Entry updated');
         logger.d('isarId: ${entry.isarId}');
+        logger.d('entry.filePath: ${entry.filePath}');
       });
     });
   }

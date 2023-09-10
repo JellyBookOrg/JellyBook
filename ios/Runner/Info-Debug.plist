@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_dartobservatory._tcp</string>
-	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -20,43 +14,33 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>jellybook</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
-		<string>afh</string>
+                <string>ar</string>
 		<string>ca</string>
-		<string>ar</string>
-		<string>cs</string>
+                <string>cs</string>
 		<string>da</string>
-		<string>en_pirate</string>
-		<string>es</string>
-		<string>eu</string>
-		<string>fr</string>
-		<string>fr</string>
-		<string>hr</string>
-		<string>hu</string>
-		<string>id</string>
-		<string>it</string>
-		<string>ja</string>
-		<string>kk</string>
-		<string>ko</string>
+                <string>de</string>
+                <string>en_pirate</string>
+                <string>es</string>
+                <string>es_US</string>
+                <string>eu</string>
+                <string>fr</string>
+                <string>he</string>
+                <string>hr</string>
+                <string>hu</string>
+                <string>id</string>
+                <string>it</string>
+                <string>ja</string>
+                <string>kk</string>
+                <string>ko</string>
+                <string>lb</string>
+                <string>nb</string>
 		<string>nl</string>
 		<string>nn</string>
 		<string>nl</string>
 		<string>pl</string>
-		<string>lb</string>
 		<string>pt</string>
 		<string>ro</string>
 		<string>ru</string>
@@ -71,9 +55,27 @@
 		<string>zh</string>
 		<string>zh_CHT</string>
 	</array>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<key>CFBundleName</key>
+	<string>jellybook</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIFileSharingEnabled</key>
 	<true/>

@@ -78,10 +78,12 @@ class Entry {
     this.translator,
     this.publisher,
     this.imprint,
+    this.isarId = Isar.autoIncrement,
   });
 
   static Entry fromJson(Map<String, dynamic> json) {
     return Entry(
+      isarId: json['isarId'] ?? Isar.autoIncrement,
       id: json['id'] ?? '',
       title: json['name'] ?? json['title'] ?? '',
       description: json['description'] ?? '',

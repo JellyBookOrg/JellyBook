@@ -179,5 +179,13 @@
   "imprint": "Impresión",
   "@imprint": {},
   "inker": "Tinta",
-  "@inker": {}
+  "@inker": {},
+  "playbackSpeed": "Velocidad de la reproducción",
+  "@playbackSpeed": {},
+  "currentSpeed": "Velocidad actual:",
+  "@currentSpeed": {},
+  "speedMultiplier": "x",
+  "@speedMultiplier": {},
+  "verticalSeamless": "Desplazamiento vertical fluido",
+  "@verticalSeamless": {}
 }

@@ -175,5 +175,13 @@
   "inker": "上墨师",
   "@inker": {},
   "downloadFailed": "下载无法完成。请稍后再试。",
-  "@downloadFailed": {}
+  "@downloadFailed": {},
+  "imprint": "标记",
+  "@imprint": {},
+  "coverArtist": "封面艺术家",
+  "@coverArtist": {},
+  "currentSpeed": "当前速度：",
+  "@currentSpeed": {},
+  "verticalSeamless": "无缝垂直滚动",
+  "@verticalSeamless": {}
 }

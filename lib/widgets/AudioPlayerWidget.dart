@@ -34,6 +34,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   String audioId = '';
   Timer? timer;
   Duration duration = const Duration();
+  double playbackSpeed = 1.0;
 
   @override
   void dispose() {
@@ -108,7 +109,6 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     });
   }
 
-
   Future<void> pauseAudio() async {
     await savePosition();
     await audioPlayer.pause();
@@ -159,6 +159,96 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     }
   }
 
+  void showPlaybackSpeedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        double localPlaybackSpeed = playbackSpeed;
+
+        return AlertDialog(
+          titlePadding: EdgeInsets.zero, // Remove default title padding
+          title: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 48),
+                Text(
+                    AppLocalizations.of(context)?.playbackSpeed ??
+                        'Playback Speed',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+                // reset playback speed to 1.0
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    setState(() {
+                      localPlaybackSpeed = 1.0;
+                      playbackSpeed = 1.0;
+                    });
+                    audioPlayer.setPlaybackRate(localPlaybackSpeed);
+                  },
+                ),
+              ],
+            ),
+          ),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Stack(
+                    children: [
+                      Slider(
+                        value: localPlaybackSpeed,
+                        onChanged: (double value) {
+                          setState(() {
+                            localPlaybackSpeed = value;
+                            playbackSpeed = value;
+                          });
+                          audioPlayer.setPlaybackRate(localPlaybackSpeed);
+                        },
+                        min: 0.25,
+                        max: 4.0,
+                        divisions: 15,
+                      ),
+                      const Positioned(
+                        top: -3, // Adjust the position of the labels
+                        left: 0,
+                        right: 0,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('0.25'),
+                              Text('1'),
+                              Text('2'),
+                              Text('3'),
+                              Text('4'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '${AppLocalizations.of(context)?.currentSpeed ?? 'Current Speed'}: ${localPlaybackSpeed.toStringAsFixed(2)} ${AppLocalizations.of(context)?.speedMultiplier ?? 'x'}',
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -196,6 +286,12 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
             padding: EdgeInsets.zero,
             icon: const Icon(Icons.audiotrack),
             onPressed: widget.onAudioPickerPressed,
+          ),
+          IconButton(
+            icon: Icon(Icons.speed),
+            onPressed: () {
+              showPlaybackSpeedDialog(context);
+            },
           ),
         ],
       ),

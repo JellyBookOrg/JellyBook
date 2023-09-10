@@ -33,6 +33,37 @@ Future<String> get _localPath async {
   return directory.path;
 }
 
+Future<void> migrateToNewVersion() async {
+  // check if a file exists for com.example.jellybook
+  // if it does, move it to the new location
+  // if it doesn't, do nothing
+
+  // get the old path
+  Directory oldPath = await _localPath.then((value) {
+    return Directory(value.replaceFirst(
+        "com.KaraWilson.JellyBook", "com.example.jellybook"));
+  });
+  // if the old path exists, move everything to the new path
+  if (await oldPath.exists()) {
+    moveFilesRecursive(oldPath);
+    // delete the old path
+    oldPath.deleteSync(recursive: true);
+  }
+}
+
+void moveFilesRecursive(Directory dir) {
+  dir.listSync().forEach((element) {
+    if (element is File) {
+      // move the file
+      element.copySync(element.path
+          .replaceFirst("com.example.jellybook", "com.KaraWilson.JellyBook"));
+      element.deleteSync();
+    } else if (element is Directory) {
+      moveFilesRecursive(element);
+    }
+  });
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -52,6 +83,11 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  // migrate to new app id
+  if (Platform.isAndroid) {
+    await migrateToNewVersion();
+  }
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   // dio allow self signed certificates
@@ -65,6 +101,11 @@ Future<void> main() async {
 
   // set the localPath variable
   localPath = await _localPath;
+  // check if localPath file exists
+  if (!await File(localPath + "/jellybook.log").exists()) {
+    // create the file
+    await File(localPath + "/jellybook.log").create();
+  }
   debugPrint("localPath: $localPath");
 
   // set the logStoragePath variable

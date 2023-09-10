@@ -124,7 +124,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {
                   logger.i("Snapshot Data");
-                  // logger.i("Collections: ${snapshot.data.left}");
+                  // logger.i("Collections: ${snapshot.data.$1}");
                   List<Widget> collectionChildren = [
                     Align(
                       alignment: Alignment.centerLeft,
@@ -150,7 +150,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                       height: MediaQuery.of(context).size.height / 6 * 1.2,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: snapshot.data.right?.length,
+                        itemCount: snapshot.data.$2?.length,
                         itemBuilder: (context, index) {
                           return SizedBox(
                             width: MediaQuery.of(context).size.width / 3,
@@ -165,14 +165,11 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => collectionScreen(
-                                        folderId: snapshot.data.right[index]
-                                            ['id'],
-                                        name: snapshot.data.right[index]
-                                            ['name'],
-                                        image: snapshot.data.right[index]
-                                            ['image'],
-                                        bookIds: snapshot.data.right[index]
-                                            ['entries'],
+                                        folderId: snapshot.data.$2[index].id,
+                                        name: snapshot.data.$2[index].name,
+                                        image: snapshot.data.$2[index].image,
+                                        bookIds:
+                                            snapshot.data.$2[index].bookIds,
                                       ),
                                     ),
                                   );
@@ -197,7 +194,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                                   .width /
                                               1000),
                                       child: AutoSizeText(
-                                        snapshot.data.right[index]['name'],
+                                        snapshot.data.$2[index].name,
                                         textAlign: TextAlign.center,
                                         maxLines: 2,
                                         minFontSize: 5,
@@ -230,8 +227,8 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                             ],
                                           ),
                                           child: RoundedImageWithShadow(
-                                            imageUrl: snapshot.data.right[index]
-                                                ['image'],
+                                            imageUrl:
+                                                snapshot.data.$2[index].image,
                                           ),
                                         ),
                                       ),
@@ -289,7 +286,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                       addRepaintBoundaries: true,
                       cacheExtent: 1000,
                       children: List.generate(
-                        snapshot.data.left.length,
+                        snapshot.data.$1.length,
                         (index) {
                           return StatefulBuilder(
                             builder: (context, setState) {
@@ -304,8 +301,8 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => InfoScreen(
-                                          entry: Entry.fromJson(
-                                              snapshot.data.left![index]),
+                                          entry: snapshot.data.$1!
+                                              .elementAt(index),
                                           offline: true,
                                         ),
                                       ),
@@ -314,8 +311,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                     logger.d(result);
                                     if (result != null) {
                                       setState(() {
-                                        snapshot.data.left![index]
-                                            ['isFavorite'] = result.left;
+                                        snapshot.data.$1!
+                                            .elementAt(index)
+                                            .isFavorited = result.$1;
                                       });
                                     }
                                   },
@@ -352,13 +350,15 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                                 ],
                                               ),
                                               child: RoundedImageWithShadow(
-                                                imageUrl: snapshot.data.left![
-                                                    index]['imagePath'],
+                                                imageUrl: snapshot.data.$1!
+                                                    .elementAt(index)
+                                                    .imagePath,
                                               ),
                                             ),
                                           ),
-                                          if (snapshot.data.left![index]
-                                                  ['isFavorite'] ==
+                                          if (snapshot.data.$1!
+                                                  .elementAt(index)
+                                                  .isFavorited ==
                                               true)
                                             // icon in circle in bottom right corner
                                             // allow it to be off the image without being cut off
@@ -397,8 +397,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                           padding: const EdgeInsets.only(
                                               left: 5, right: 5),
                                           child: AutoSizeText(
-                                            snapshot.data.left?[index]
-                                                    ['name'] ??
+                                            snapshot.data.$1
+                                                    ?.elementAt(index)
+                                                    .title ??
                                                 "null",
                                             maxLines: 3,
                                             minFontSize: 10,
@@ -414,8 +415,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                         height: 5,
                                       ),
 
-                                      if (snapshot.data.left![index]
-                                              ['releaseDate'] !=
+                                      if (snapshot.data.$1!
+                                              .elementAt(index)
+                                              .releaseDate !=
                                           "null")
                                         Flexible(
                                           // give some padding to the text
@@ -423,8 +425,9 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                                             padding: const EdgeInsets.only(
                                                 left: 5, right: 5),
                                             child: AutoSizeText(
-                                              snapshot.data.left![index]
-                                                  ['releaseDate'],
+                                              snapshot.data.$1!
+                                                  .elementAt(index)
+                                                  .releaseDate,
                                               maxLines: 1,
                                               minFontSize: 10,
                                               textAlign: TextAlign.center,
@@ -443,27 +446,27 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
                             },
                           );
                         },
-                        // itemCount: snapshot.data.left!.length,
+                        // itemCount: snapshot.data.$1!.length,
                       ),
                     ),
                   ];
                   return Column(
                     children: [
-                      if (snapshot.data.right.toString().isNotEmpty &&
-                          snapshot.data.right != null &&
-                          snapshot.data.right.toString() != "[]")
+                      if (snapshot.data.$2.toString().isNotEmpty &&
+                          snapshot.data.$2 != null &&
+                          snapshot.data.$2.toString() != "[]")
                         ...collectionChildren,
-                      if (snapshot.data.left.toString().isNotEmpty &&
-                          snapshot.data.left != null &&
-                          snapshot.data.left.toString() != "[]")
+                      if (snapshot.data.$1.toString().isNotEmpty &&
+                          snapshot.data.$1 != null &&
+                          snapshot.data.$1.toString() != "[]")
                         ...libraryChildren,
                       // check if there is no data to display
-                      if (snapshot.data.left.toString().isEmpty ||
-                          snapshot.data.right == null ||
-                          snapshot.data.right.toString() == "[]" &&
-                              snapshot.data.left.toString().isEmpty ||
-                          snapshot.data.left == null ||
-                          snapshot.data.left.toString() == "[]")
+                      if (snapshot.data.$1.toString().isEmpty ||
+                          snapshot.data.$2 == null ||
+                          snapshot.data.$2.toString() == "[]" &&
+                              snapshot.data.$1.toString().isEmpty ||
+                          snapshot.data.$1 == null ||
+                          snapshot.data.$1.toString() == "[]")
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
