@@ -179,5 +179,13 @@
   "read": "Read",
   "@read": {},
   "inker": "Inker",
-  "@inker": {}
+  "@inker": {},
+  "playbackSpeed": "Playback Speed",
+  "@playbackSpeed": {},
+  "currentSpeed": "Current Speed:",
+  "@currentSpeed": {},
+  "speedMultiplier": "x",
+  "@speedMultiplier": {},
+  "verticalSeamless": "Seamless Vertical Scrolling",
+  "@verticalSeamless": {}
 }
