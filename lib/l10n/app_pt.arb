@@ -185,5 +185,7 @@
   "editor": "Editor",
   "@editor": {},
   "letterer": "Cartaz",
-  "@letterer": {}
+  "@letterer": {},
+  "verticalSeamless": "Rolagem vertical contínua",
+  "@verticalSeamless": {}
 }
