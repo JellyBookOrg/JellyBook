@@ -1,9 +1,9 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 # Function to display a green checkmark
 print_checkmark() {
-	tput setaf 2        # Set text color to green
-	echo "\xE2\x9C\x94" # Green checkmark Unicode character
-	tput sgr0           # Reset text color
+	tput setaf 2           # Set text color to green
+	echo -e "\xE2\x9C\x94" # Green checkmark Unicode character
+	tput sgr0              # Reset text color
 }
 
 # Function to display a progress bar
@@ -58,9 +58,9 @@ echo "Complete release APK"
 # Split apk by abi
 echo "Building Android release APK (split by ABI)..."
 flutter build apk --split-per-abi --release
-cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk $version/JellyBook-Release-arm32.app
-cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk $version/JellyBook-Release-arm64.app
-cp build/app/outputs/flutter-apk/app-x86_64-release.apk $version/JellyBook-Release-x86_64.app
+cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk $version/JellyBook-Release-arm32.apk
+cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk $version/JellyBook-Release-arm64.apk
+cp build/app/outputs/flutter-apk/app-x86_64-release.apk $version/JellyBook-Release-x86_64.apk
 print_checkmark
 echo "Complete release APK (split by ABI)"
 
@@ -75,9 +75,9 @@ echo "Complete debug APK"
 echo "Building Android debug APK (split by ABI)..."
 flutter build apk --split-per-abi --debug
 print_checkmark
-cp build/app/outputs/flutter-apk/app-armeabi-v7a-debug.apk $version/JellyBook-Debug-arm32.app
-cp build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk $version/JellyBook-Debug-arm64.app
-cp build/app/outputs/flutter-apk/app-x86_64-debug.apk $version/JellyBook-Debug-x86_64.app
+cp build/app/outputs/flutter-apk/app-armeabi-v7a-debug.apk $version/JellyBook-Debug-arm32.apk
+cp build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk $version/JellyBook-Debug-arm64.apk
+cp build/app/outputs/flutter-apk/app-x86_64-debug.apk $version/JellyBook-Debug-x86_64.apk
 echo "Complete debug APK (split by ABI)"
 
 # Build appbundle
