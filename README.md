@@ -24,8 +24,8 @@
 | Platform | Link |
 | :------: | :--: |
 | **iOS** | <a href="https://testflight.apple.com/join/lEXKY4Dl"><img width='180' alt='Download on TestFlight' src='assets/githubImages/testflight-badge.png'/></a> |
-| **Android** | Download the latest release for your current platform from the releases. It will at some point be added to the Google Play store and may be added to the Galaxy Store |
-| F-Droid | <a href="https://apt.izzysoft.de/fdroid/index/apk/com.KaraWilson.JellyBook/"><img width='180' alt='Get it on IzzyOnDroid' src='assets/githubImages/IzzyOnDroid.png'/></a><p>Soon to be submitted to the F-Droid store</p> |
+| **Google Play and Galaxy Store** | Download the latest release for your current platform from the releases. It will at some point be added to the Google Play store and may be added to the Galaxy Store |
+| **F-Droid** | <a href="https://apt.izzysoft.de/fdroid/index/apk/com.KaraWilson.JellyBook/"><img width='180' alt='Get it on IzzyOnDroid' src='assets/githubImages/IzzyOnDroid.png'/></a><p>Soon to be submitted to the F-Droid store</p> |
 
 </br>
 
