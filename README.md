@@ -6,9 +6,9 @@
   </a>
   <img alt="GitHub" src="https://img.shields.io/github/license/Kara-Zor-El/JellyBook">
   <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/Kara-Zor-El/JellyBook?include_prereleases">
-  <a href="https://apt.izzysoft.de/fdroid/index/apk/com.KaraWilson.JellyBook/">
+<!--   <a href="https://apt.izzysoft.de/fdroid/index/apk/com.KaraWilson.JellyBook/">
     <img alt="IzzyOnDroid" src="https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/JellyBook" />
-  </a>
+  </a> -->
 </div>
 <p align="center">
   <img src='./assets/images/Logo.png' width='30%' height='30%' />
