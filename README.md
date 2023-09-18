@@ -6,6 +6,9 @@
   </a>
   <img alt="GitHub" src="https://img.shields.io/github/license/Kara-Zor-El/JellyBook">
   <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/Kara-Zor-El/JellyBook?include_prereleases">
+<a href="https://apt.izzysoft.de/fdroid/index/apk/com.KaraWilson.JellyBook/">
+    <img alt="IzzyOnDroid" src="https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.KaraWilson.JellyBook" />
+  </a>
 </div>
 <p align="center">
   <img src='./assets/images/Logo.png' width='30%' height='30%' />
@@ -14,14 +17,15 @@
 <p align="center">
   Hi, this is a passion project I am working on.
   Its an app that's meant to allow you to read your files from Jellyfin on mobile.
-  It is in a state where I do beleive it's usable for most comic reading and some books, but it still has a long way to go.
+  It is in a state where I do believe it's usable for most comic reading and some books, but it still has a long way to go.
 </p>
 
 ## :zap: Installation:
 | Platform | Link |
 | :------: | :--: |
 | **iOS** | <a href="https://testflight.apple.com/join/lEXKY4Dl"><img width='180' alt='Download on TestFlight' src='assets/githubImages/testflight-badge.png'/></a> |
-| **Android** | Download the latest release for your current platform from the releases. It will at some point be added to the Google Play store and the F-Droid store. |
+| **Google Play and Galaxy Store** | Download the latest release for your current platform from the releases. It will at some point be added to the Google Play store and may be added to the Galaxy Store |
+| **F-Droid** | <a href="https://apt.izzysoft.de/fdroid/index/apk/com.KaraWilson.JellyBook/"><img width='180' alt='Get it on IzzyOnDroid' src='assets/githubImages/IzzyOnDroid.png'/></a><p>Soon to be submitted to the F-Droid store</p> |
 
 </br>
 
@@ -78,3 +82,5 @@
 ## 🎉 Special Thanks:
  - Thank you to [u/anekdotos](https://reddit.com/u/anekdotos) on Reddit for donating to the project so it could be published on iOS
  - Thank you to Weblate for hosting translation
+ - Thank you to IzzyOnDroid for packaging and hosting the app on their repo
+ - Shout outs to my girlfriend https://github.com/tarbaII for always supporting me and helping me manage issues
