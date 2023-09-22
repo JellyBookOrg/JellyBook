@@ -71,6 +71,7 @@
 ## ⚙️ Contributing:
  - [Check out our wiki here](https://github.com/Kara-Zor-El/JellyBook/wiki)
  - [Check out our Weblate instance to help translate](https://hosted.weblate.org/projects/JellyBook/jellybook-app/)
+ - Take a look at the sponsors sections and help sponsor this project :)
 
 ## 📚 Translating:
 
