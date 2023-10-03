@@ -40,12 +40,12 @@ dependencies:
   archive: ^3.3.8
   provider: ^6.0.4
   dio: ^5.0.2
-  flutter_secure_storage: ^8.0.0
+  flutter_secure_storage: ^9.0.0
   drop_cap_text: ^1.1.3
   flutter_star: ^1.2.0
   like_button: ^2.0.5
   path_provider: ^2.0.11
-  permission_handler: ^10.2.0
+  permission_handler: ^11.0.0
   turn_page_transition: ^0.3.0
   unrar_file: ^1.1.0
   flutter_settings_screens: ^0.3.3-null-safety+2
@@ -80,7 +80,7 @@ dependencies:
   audioplayers: ^5.1.0
   flutter_background_service: ^5.0.0
   palette_generator: ^0.3.3+2
-  xml: ^6.1.0
+  xml: ^6.3.0
   flutter_html: ^3.0.0-beta.2
   flutter_markdown: ^0.6.15
 
