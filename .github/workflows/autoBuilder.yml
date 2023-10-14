@@ -27,8 +27,6 @@ jobs:
         uses: subosito/flutter-action@v2.10.0
         with:
           channel: 'stable'
-      - name: Disable Telemetry
-        run: flutter --disable-analytics 
       - name: Get dependencies
         run: flutter pub get
       - name: Build debug APK
