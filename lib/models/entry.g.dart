@@ -330,6 +330,7 @@ Entry _entryDeserialize(
     imprint: reader.readStringOrNull(offsets[10]),
     inker: reader.readStringOrNull(offsets[11]),
     isFavorited: reader.readBoolOrNull(offsets[12]) ?? false,
+    isarId: id,
     letterer: reader.readStringOrNull(offsets[13]),
     pageNum: reader.readLongOrNull(offsets[14]) ?? 0,
     parentId: reader.readStringOrNull(offsets[15]) ?? '',
@@ -347,7 +348,6 @@ Entry _entryDeserialize(
     url: reader.readString(offsets[26]),
     writer: reader.readStringOrNull(offsets[27]),
   );
-  object.isarId = id;
   return object;
 }
 
