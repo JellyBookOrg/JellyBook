@@ -8,9 +8,9 @@ OUTPUT_DIR := $(VERSION)
 
 .PHONY: all
 ifeq ($(OS),Darwin)
-all: ios_release ios_debug android_release android_debug app_bundle_release app_bundle_debug sha1_hashes
+all: build_runner generate_icons ios_release ios_debug android_release android_debug app_bundle_release app_bundle_debug sha1_hashes
 else
-all: android_release android_debug app_bundle_release app_bundle_debug sha1_hashes
+all: build_runner generate_icons android_release android_debug app_bundle_release app_bundle_debug sha1_hashes
 endif
 
 .PHONY: ios
@@ -126,6 +126,14 @@ clean-all: clean
 	@rm -rf "$(OUTPUT_DIR)"
 	@echo "Cleaned up."
 
+# Usage: flutter pub run build_runner build --delete-conflicting-outputs
+.PHONY: build_runner
+build_runner:
+	@flutter pub run build_runner build --delete-conflicting-outputs
+
+# Usage: generate the icon files
+.PHONY: generate_icons
+	@dart run icons_launcher:create
 
 # Help target to display available targets and their descriptions
 .PHONY: help
@@ -139,4 +147,6 @@ help:
 	@echo "  debug      : Build debug versions (iOS, Android, and App Bundles)"
 	@echo "  clean      : Clean up the output directory"
 	@echo "  clean-all  : Clean up build artifacts and the output directory"
+	@echo "  build_runner : Run the build runner to generate Isar models"
+	@echo "  generate_icons : Generate the icon files"
 	@echo "  help       : Display this help message"
