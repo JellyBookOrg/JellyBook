@@ -45,7 +45,7 @@ android {
     }
 
     android {
-        compileSdkVersion 33
+        compileSdkVersion 34
     }
 
     sourceSets {
