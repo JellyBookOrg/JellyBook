@@ -52,3 +52,7 @@ android/app/src/main/AndroidManifest.xml
 sha1sums.txt
 crash.dump
 flutter_jank_metrics_01.json
+
+# Docker related
+Jellyfin/cache/
+Jellyfin/config/
