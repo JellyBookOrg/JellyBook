@@ -69,7 +69,7 @@ dependencies:
   openapi:
     git: https://github.com/Kara-Zor-El/jellyfin_api.git
   string_similarity: ^2.0.0
-  connectivity_plus: ^4.0.2
+  connectivity_plus: ^5.0.1
 
   # Translations
   flutter_localizations:
@@ -93,7 +93,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.0
   # flutter_launcher_icons: ^0.13.1
   icons_launcher: any
   # hive_generator: ^2.0.0
