@@ -8,7 +8,6 @@ import 'package:jellybook/screens/loginScreen.dart';
 import 'package:jellybook/screens/MainScreens/searchScreen.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
@@ -61,7 +60,6 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
-  var connectivityResult = ConnectivityResult.none;
   bool force = false;
 
   int _selectedIndex = 0;

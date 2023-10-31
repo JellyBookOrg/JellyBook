@@ -45,7 +45,8 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
       var status = result;
       // if the user is online
       if (status == ConnectivityResult.wifi ||
-          status == ConnectivityResult.mobile) {
+          status == ConnectivityResult.mobile ||
+          status == ConnectivityResult.ethernet) {
         final isar = Isar.getInstance();
         final login = isar!.logins.where().findFirstSync();
         if (login!.serverUrl.isNotEmpty && login.username.isNotEmpty) {
