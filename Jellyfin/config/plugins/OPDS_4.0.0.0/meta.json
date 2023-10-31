@@ -1,0 +1,15 @@
+{
+  "category": "General",
+  "changelog": "### New features and improvements ###\n- Add WWW-Authenticate header to unauthorized response (#14) @crobibero\n- Add Favorites, RecentlyAdded (#12) @crobibero\n\n### CI \u0026 build changes ###\n- ci: migrate to centralized Plugin CI workflows (#15) @crobibero",
+  "description": "Provides an OPDS feed for book browsing.\n",
+  "guid": "f30880ae-3365-449e-b9e6-bf133c8401b0",
+  "name": "OPDS",
+  "overview": "Provides an OPDS book feed",
+  "owner": "jellyfin",
+  "targetAbi": "10.8.0.0",
+  "timestamp": "2022-02-27T22:02:50.0000000Z",
+  "version": "4.0.0.0",
+  "status": "Active",
+  "autoUpdate": true,
+  "imagePath": "/config/plugins/OPDS_4.0.0.0/jellyfin-plugin-opds.png"
+}

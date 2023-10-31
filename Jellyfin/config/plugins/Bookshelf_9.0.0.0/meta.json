@@ -1,0 +1,15 @@
+{
+  "category": "Metadata",
+  "changelog": "### Code or Repo Maintenance ###\n- Add development setup for Visual Studio Code (#64) @MinecraftPlaye\n- Use JsonSerializer.Deserialize overload that accepts a string (#65) @Bond-009\n\n### Dependency updates ###\n- chore(deps): update dependency sharpcompress to v0.32.2 (#62) @renovate\n- chore(deps): update dependency sharpcompress to v0.32.0 (#61) @renovate\n\n### CI \u0026 build changes ###\n- fix: meta ci workflows (#58) @h1dden-da3m0n",
+  "description": "Supports several different metadata providers and options for organizing your collection.\n",
+  "guid": "9c4e63f1-031b-4f25-988b-4f7d78a8b53e",
+  "name": "Bookshelf",
+  "overview": "Manage your books",
+  "owner": "jellyfin",
+  "targetAbi": "10.8.3.0",
+  "timestamp": "2022-08-07T12:43:43.0000000Z",
+  "version": "9.0.0.0",
+  "status": "Active",
+  "autoUpdate": true,
+  "imagePath": ""
+}

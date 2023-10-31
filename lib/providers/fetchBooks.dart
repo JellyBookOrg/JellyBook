@@ -129,7 +129,16 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
     try {
       List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
       List<String> comicFileTypes = ['cbz', 'cbr', 'zip', 'rar'];
-      List<String> audioFileTypes = ['mp3', 'm4a', 'm4b', 'flac'];
+      List<String> audioFileTypes = [
+        'flac',
+        'mpga',
+        'mp3',
+        'm3u',
+        'm3u8',
+        'm4a',
+        'm4b',
+        'wav',
+      ];
       String id = element.id ?? '0';
       String title = element.name ?? '';
       // String imagePath =
