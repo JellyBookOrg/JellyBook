@@ -227,10 +227,14 @@ class _ReadingScreenState extends State<ReadingScreen> {
           ),
         );
       // audiobook
+      case 'flac':
+      case 'mpga':
       case 'mp3':
+      case 'm3u':
+      case 'm3u8':
       case 'm4a':
       case 'm4b':
-      case 'flac':
+      case 'wav':
         Navigator.pushReplacement(
           context,
           // for the route, have no transition

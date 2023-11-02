@@ -381,6 +381,16 @@ class _DownloadScreenState extends State<DownloadScreen> {
     } catch (e) {
       logger.d(e.toString());
     }
+    List<String> audioFileTypes = [
+      'flac',
+      'mpga',
+      'mp3',
+      'm3u',
+      'm3u8',
+      'm4a',
+      'm4b',
+      'wav',
+    ];
     comicFolder = dirLocation + '/' + fileName2;
     if (dir.contains('.zip') || dir.contains('.cbz')) {
       var bytes = File(dirLocation + '/' + fileName).readAsBytesSync();
@@ -468,10 +478,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
       // get the OEBPS/content.opf file and parse it
       logger.d('Now parsing the content.opf file');
       parseEpub(entry);
-    } else if (dir.contains('.mp3') ||
-        dir.contains('.m4a') ||
-        dir.contains('.m4b') ||
-        dir.contains('.flac')) {
+      // check if director contains audio file
+    } else if (audioFileTypes.any(dir.contains)) {
       logger.d('Audio file');
       try {
         var file = File(dirLocation + '/' + await fileNameFromTitle(fileName));
