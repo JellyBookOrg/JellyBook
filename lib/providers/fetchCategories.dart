@@ -100,7 +100,7 @@ Future<(List<Entry>, List<Folder>)> getServerCategories(context,
     });
     for (int i = 0; i < comicsIds.length; i++) {
       // turn List<Entry> into Iterable<Entry>
-      Iterable<Entry> comicsTemp = await getComics(comicsIds[i], etag);
+      await getComics(comicsIds[i], etag);
       // comics.addAll(comicsTemp);
     }
     comics = await isar.entrys
@@ -312,9 +312,10 @@ Future<(List<Entry>, List<Folder>)> getServerCategoriesOffline(context) async {
         .downloadedEqualTo(true)
         .and()
         .isFavoritedEqualTo(false)
+        .sortByTitle()
         .findAll();
 
-    List<Entry> likedEntries = await isar!.entrys
+    List<Entry> likedEntries = await isar.entrys
         .where()
         .filter()
         .group((q) {
@@ -329,10 +330,8 @@ Future<(List<Entry>, List<Folder>)> getServerCategoriesOffline(context) async {
         .downloadedEqualTo(true)
         .and()
         .isFavoritedEqualTo(true)
+        .sortByTitle()
         .findAll();
-    // sort by title
-    likedEntries.sort((a, b) => a.title.compareTo(b.title));
-    unlikedEntries.sort((a, b) => a.title.compareTo(b.title));
 
     List<Entry> entries = likedEntries + unlikedEntries;
 
