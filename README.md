@@ -122,6 +122,7 @@
  - [Check out our wiki here](https://github.com/Kara-Zor-El/JellyBook/wiki)
  - [Check out our Weblate instance to help translate](https://hosted.weblate.org/projects/JellyBook/jellybook-app/)
  - Add features mentioned in [Todo](JellyBook#construction-todo)
+ - Take a look at the project page to see planned features
  - Take a look at the sponsors sections and help sponsor this project :)
 
 ## 📚 Translating:
