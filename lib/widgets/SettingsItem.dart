@@ -107,7 +107,6 @@ class _SettingsItemState extends State<SettingsItem> {
                 widget.onChange!(newValue);
               });
             },
-            // },
           ),
         ),
       ),

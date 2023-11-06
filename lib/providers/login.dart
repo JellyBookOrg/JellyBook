@@ -8,7 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart' as package_info;
 import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:openapi/openapi.dart';
@@ -51,13 +50,11 @@ class LoginProvider {
     _deviceId = "Unknown Device id";
     if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      _device = androidInfo.model ?? "Unknown Device";
-      _deviceId = androidInfo.version.release != null
-          ? "Android ${androidInfo.version.release}"
-          : "Unknown Device id";
+      _device = androidInfo.model;
+      _deviceId = "Android ${androidInfo.version.release}";
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      _device = iosInfo.name ?? "Unknown Device";
+      _device = iosInfo.name;
       _device = iosInfo.identifierForVendor ?? "Unknown Device id";
     }
 

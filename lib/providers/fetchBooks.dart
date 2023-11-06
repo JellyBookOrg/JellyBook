@@ -1,17 +1,13 @@
 // the purpose of this file is to fetch books from the database to be displayed in the app
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:logger/logger.dart';
 import 'package:openapi/openapi.dart';
-import 'dart:convert';
 import 'package:built_collection/built_collection.dart';
 
 // database imports
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:isar/isar.dart';
-
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/variables.dart';
 
 // get comics
@@ -70,7 +66,6 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
   logger.d("Now saving comics to database");
 
   final isar = Isar.getInstance();
-  Entry entry;
   // get entries from the database
   try {
     final entries = await isar!.entrys.where().idEqualTo(comicsId).findAll();
@@ -85,7 +80,6 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
   logger.d("got entries");
 
   // List<Map<String, dynamic>> comics = [];
-  List<Entry> comics = [];
   responseData.forEach((element) {
     Entry entry = Entry(
       id: element.id ?? '',
@@ -205,13 +199,6 @@ Future<void> updateFolders() async {
 
 Map<String, String> getHeaders(String url, String client, String device,
     String deviceId, String version, String token) {
-  logger.d("getting headers");
-  logger.d(url);
-  logger.d(client);
-  logger.d(device);
-  logger.d(deviceId);
-  logger.d(version);
-  logger.d(token);
   var uri = Uri.parse(url);
   var headers = {
     'Accept': 'application/json',

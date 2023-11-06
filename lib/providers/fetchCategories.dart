@@ -1,21 +1,13 @@
 // The purpose of this file is to fetch the categories from the database
 
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:openapi/openapi.dart';
-import 'dart:convert';
 import 'package:jellybook/providers/fetchBooks.dart';
-import 'package:flutter/material.dart';
 import 'package:jellybook/providers/folderProvider.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/models/folder.dart';
 import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
-import 'package:jellybook/providers/pair.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 // have optional perameter to have the function return the list of folders
@@ -222,82 +214,14 @@ Future<void> removeEntriesFromDatabase(
   });
 }
 
-Future<List<String>> chooseCategories(List<String> categories, context) async {
-  List<String> selected = [];
-  List<String> wantedCategories = [];
-
-  // pop up a dialog to choose categories
-  // use stateful builder to rebuild the dialog when the list changes
-
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            title: Text("Choose Categories"),
-            content: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.8,
-              child: ListView.builder(
-                itemCount: categories.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return CheckboxListTile(
-                    title: Text(categories[index]),
-                    value: selected.contains(categories[index]),
-                    onChanged: (bool? value) {
-                      if (value == true) {
-                        wantedCategories.add(categories[index]);
-                      } else {
-                        wantedCategories.remove(categories[index]);
-                      }
-                      setState(() {});
-                    },
-                  );
-                },
-              ),
-            ),
-            actions: [
-              TextButton(
-                child: Text("Cancel"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: Text("Ok"),
-                onPressed: () {
-                  Navigator.of(context).pop(wantedCategories);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-  return wantedCategories;
-}
-
 Future<(List<Entry>, List<Folder>)> getServerCategoriesOffline(context) async {
   logger.d("getting server categories");
-  // final p_info.PackageInfo packageInfo =
-  //     await p_info.PackageInfo.fromPlatform();
-  // final prefs = await SharedPreferences.getInstance();
-  // final token = prefs.getString('accessToken') ?? "";
-  // final url = prefs.getString('server') ?? "";
-  // final userId = prefs.getString('UserId') ?? "";
-  // final client = prefs.getString('client') ?? "JellyBook";
-  // final device = prefs.getString('device') ?? "";
-  // final deviceId = prefs.getString('deviceId') ?? "";
-  // final version = prefs.getString('version') ?? packageInfo.version;
-  logger.d("got prefs");
 
   bool hasComics = true;
   if (hasComics) {
     // get the comics and folders from the database
     final isar = Isar.getInstance();
-    List<Entry> unlikedEntries = await isar!.entrys
+    List<Entry> entries = await isar!.entrys
         .where()
         .filter()
         .group((q) {
@@ -314,8 +238,7 @@ Future<(List<Entry>, List<Folder>)> getServerCategoriesOffline(context) async {
         .isFavoritedEqualTo(false)
         .sortByTitle()
         .findAll();
-
-    List<Entry> likedEntries = await isar.entrys
+    entries.addAll(await isar.entrys
         .where()
         .filter()
         .group((q) {
@@ -331,9 +254,7 @@ Future<(List<Entry>, List<Folder>)> getServerCategoriesOffline(context) async {
         .and()
         .isFavoritedEqualTo(true)
         .sortByTitle()
-        .findAll();
-
-    List<Entry> entries = likedEntries + unlikedEntries;
+        .findAll());
 
     List<Folder> folders = await isar.folders.where().findAll();
     logger.d("got entries and folders");

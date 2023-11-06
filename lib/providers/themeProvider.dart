@@ -9,11 +9,6 @@ class ThemeChangeNotifier extends ChangeNotifier {
   }
 
   late ThemeData _theme;
-  // ThemeData _theme = ThemeData(
-  //   primarySwatch: Colors.blue,
-  //   visualDensity: VisualDensity.adaptivePlatformDensity,
-  //   // useMaterial3: true,
-  // );
 
   // late BuildContext _context;
   late BuildContext _context;
@@ -48,7 +43,7 @@ class ThemeChangeNotifier extends ChangeNotifier {
     return _theme;
   }
 
-  Future<String> get getThemeName async{
+  Future<String> get getThemeName async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String theme = prefs.getString("theme") ?? "dark";
     switch (theme.toLowerCase()) {
