@@ -105,14 +105,18 @@ class _MainMenuState extends State<MainMenu> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SearchScreen()),
+                MaterialPageRoute(
+                  builder: (context) => SearchScreen(),
+                ),
               );
             },
             child: Row(
               children: [
-                Icon(Icons.search,
-                    color: Theme.of(context).secondaryHeaderColor),
-                SizedBox(width: 10),
+                Icon(
+                  Icons.search,
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+                const SizedBox(width: 10),
                 Text(
                   (AppLocalizations.of(context)?.search ?? 'Search') + '…',
                   style: TextStyle(
@@ -139,7 +143,7 @@ class _MainMenuState extends State<MainMenu> {
         children: <Widget>[
           const SizedBox(height: 10),
           FutureBuilder(
-            future: getServerCategories(context, force: force),
+            future: getServerCategories(force: force),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {

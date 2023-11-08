@@ -40,9 +40,9 @@ Future<void> parseEpub(Entry entry) async {
 
   await isar!.writeTxn(() async {
     await isar.entrys.put(entry2);
-  }).catchError((dynamic error) {
+  }).catchError((error) {
     logger.e(error);
-  }).onError((dynamic error, dynamic stackTrace) {
+  }).onError((error, stackTrace) {
     logger.e(error);
   });
 }

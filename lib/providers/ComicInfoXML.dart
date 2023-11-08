@@ -18,12 +18,14 @@ Future<void> parseXML(Entry entry) async {
   }
   if (xmlFile == null) {
     logger.e('ComicInfo.xml file not found');
+
     return;
   }
   // confirm that its xs:complexType is ComicInfo
   final xmlFileContent = xml.XmlDocument.parse(xmlFile.readAsStringSync());
   if (xmlFileContent.rootElement.name.toString() != 'ComicInfo') {
     logger.e('ComicInfo.xml file is not of xs:complexType ComicInfo');
+
     return;
   }
 
@@ -87,9 +89,9 @@ Future<void> parseXML(Entry entry) async {
   final isar = Isar.getInstance();
   await isar!.writeTxn(() async {
     await isar.entrys.put(entry);
-  }).catchError((dynamic error) {
+  }).catchError((error) {
     logger.e(error);
-  }).onError((dynamic error, dynamic stackTrace) {
+  }).onError((error, stackTrace) {
     logger.e(error);
   });
 }

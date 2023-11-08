@@ -30,8 +30,8 @@ Future<String> fileNameFromTitle(String title) async {
   // replace all periods minus the last one
   fileName = fileName.replaceAll('…', '');
   fileName = fileName.replaceAll('·', '');
-  fileName = fileName.replaceAll('·', '');
 
   fileName = fileName.replaceAll(RegExp(r'[^\x00-\x7F]+'), '');
+
   return fileName;
 }
