@@ -1,10 +1,9 @@
 // The purpose of this file is to allow the user to listen to the audiobook they have downloaded
 
-import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
+import 'package:intl/intl.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
@@ -44,15 +43,14 @@ class _AudioBookReaderState extends State<AudioBookReader> {
     audioPlayer = AudioPlayer();
     // timer every 10 seconds to update the progress
     timer = Timer.periodic(
-        const Duration(seconds: 10), (Timer t) => savePosition());
+      const Duration(seconds: 10),
+      (Timer t) => savePosition(),
+    );
 
-    audioPlayer.onPlayerStateChanged.listen((playerState) {
-      if (playerState == PlayerState.playing) {
-        isPlaying = true;
-      } else {
-        isPlaying = false;
-      }
-    });
+    audioPlayer.onPlayerStateChanged.listen(
+      (playerState) => isPlaying = playerState == PlayerState.playing,
+    );
+
     audioPlayer.onDurationChanged.listen((duration) {
       setState(() {
         playbackProgress = 0.0;
@@ -135,9 +133,11 @@ class _AudioBookReaderState extends State<AudioBookReader> {
         audioPath = entry.filePath;
         position = Duration(milliseconds: entry.pageNum);
         imageUrl = entry.imagePath;
+
         return entry.filePath;
       }
     }
+
     return '';
   }
 
@@ -157,6 +157,7 @@ class _AudioBookReaderState extends State<AudioBookReader> {
   }
 
   void showPlaybackSpeedDialog(BuildContext context) {
+    var locale = AppLocalizations.of(context)?.localeName;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -168,21 +169,24 @@ class _AudioBookReaderState extends State<AudioBookReader> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 48),
+                const SizedBox(width: 48),
                 Text(
-                    AppLocalizations.of(context)?.playbackSpeed ??
-                        'Playback Speed',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  AppLocalizations.of(context)?.playbackSpeed ??
+                      'Playback Speed',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
                   },
                 ),
                 // reset the playback speed to 1.0
                 IconButton(
-                  icon: Icon(Icons.refresh),
+                  icon: const Icon(Icons.refresh),
                   onPressed: () {
                     setState(() {
                       localPlaybackSpeed = 1.0;
@@ -214,20 +218,31 @@ class _AudioBookReaderState extends State<AudioBookReader> {
                         max: 4.0,
                         divisions: 15,
                       ),
-                      const Positioned(
+                      Positioned(
                         top: -3, // Adjust the position of the labels
                         left: 0,
                         right: 0,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('0.25'),
-                              Text('1'),
-                              Text('2'),
-                              Text('3'),
-                              Text('4'),
+                              Text(
+                                NumberFormat.decimalPattern(locale)
+                                    .format(0.25),
+                              ),
+                              Text(
+                                NumberFormat.decimalPattern(locale).format(1),
+                              ),
+                              Text(
+                                NumberFormat.decimalPattern(locale).format(2),
+                              ),
+                              Text(
+                                NumberFormat.decimalPattern(locale).format(3),
+                              ),
+                              Text(
+                                NumberFormat.decimalPattern(locale).format(4),
+                              ),
                             ],
                           ),
                         ),
@@ -264,11 +279,9 @@ class _AudioBookReaderState extends State<AudioBookReader> {
         child: FutureBuilder(
           future: getAudioPath(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return audioPlayerWidget(snapshot.data.toString());
-            } else {
-              return const CircularProgressIndicator();
-            }
+            return snapshot.hasData
+                ? audioPlayerWidget(snapshot.data.toString())
+                : const CircularProgressIndicator();
           },
         ),
       ),
@@ -276,12 +289,14 @@ class _AudioBookReaderState extends State<AudioBookReader> {
   }
 
   Widget audioPlayerWidget(String audioPath) {
+    Size mediaQuery = MediaQuery.of(context).size;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.4,
-          width: MediaQuery.of(context).size.width * 0.8,
+          height: mediaQuery.height * 0.4,
+          width: mediaQuery.width * 0.8,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
             child: Container(
@@ -333,14 +348,14 @@ class _AudioBookReaderState extends State<AudioBookReader> {
               onPressed: stopAudio,
             ),
             IconButton(
-              icon: Icon(Icons.speed),
+              icon: const Icon(Icons.speed),
               onPressed: () {
                 showPlaybackSpeedDialog(context);
               },
             ),
           ],
         ),
-        SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+        SizedBox(height: mediaQuery.height * 0.2),
       ],
     );
   }
