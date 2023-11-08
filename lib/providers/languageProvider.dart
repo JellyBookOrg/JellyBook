@@ -7,7 +7,7 @@ class LocaleChangeNotifier extends ChangeNotifier {
   LocaleChangeNotifier(BuildContext context, SharedPreferences prefs) {
     _locale = Locale(prefs.getString("localeString") ?? "en");
   }
-  Locale _locale = Locale("en");
+  Locale _locale = const Locale("en");
 
   // async function to get the locale from shared preferences
   Locale get locale {

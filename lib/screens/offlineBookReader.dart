@@ -120,7 +120,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
         children: <Widget>[
           const SizedBox(height: 10),
           FutureBuilder(
-            future: getServerCategoriesOffline(context),
+            future: getServerCategoriesOffline(),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {

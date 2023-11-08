@@ -3,6 +3,7 @@
 String fixRichText(String text) {
 // add <p> to the beginning of the text and </p> to the end of the text if they don't exist
   text = '<pre>' + text + '</pre>';
+
   return text
       .replaceAll("<br>", "\n")
       .replaceAll("<i>", "*")

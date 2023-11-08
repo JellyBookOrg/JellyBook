@@ -37,14 +37,14 @@ Future<void> deleteComic(String id, context) async {
 Future<void> confirmedDelete(String id, context) async {
   final isar = Isar.getInstance();
   final entry = await isar!.entrys.where().idEqualTo(id).findFirst();
-  if (entry!.downloaded == true) {
+  if (entry!.downloaded) {
     try {
       await File(entry.folderPath).delete(recursive: true);
     } catch (e) {
       logger.e(e.toString());
     }
   }
-  if (entry.downloaded == true) {
+  if (entry.downloaded) {
     logger.d("Deleting file");
     logger.d(entry.folderPath);
     final String path = entry.folderPath;
@@ -69,7 +69,8 @@ Future<void> confirmedDelete(String id, context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-            AppLocalizations.of(context)?.noContent ?? "Comic not downloaded"),
+          AppLocalizations.of(context)?.noContent ?? "Comic not downloaded",
+        ),
       ),
     );
   }

@@ -11,8 +11,9 @@ import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:jellybook/variables.dart';
 
 // have optional perameter to have the function return the list of folders
-Future<(List<Entry>, List<Folder>)> getServerCategories(context,
-    {force = false}) async {
+Future<(List<Entry>, List<Folder>)> getServerCategories({
+  force = false,
+}) async {
   logger.d("getting server categories");
   final p_info.PackageInfo packageInfo =
       await p_info.PackageInfo.fromPlatform();
@@ -28,18 +29,11 @@ Future<(List<Entry>, List<Folder>)> getServerCategories(context,
   // check if already has books and folders
   final isar = Isar.getInstance();
   final List<Folder> foldersTemp = await isar!.folders.where().findAll();
-  List<Entry> booksTemp = await isar.entrys
-      .filter()
-      .not()
-      .typeEqualTo(EntryType.folder)
-      .and()
-      .isFavoritedEqualTo(true)
-      .sortByTitle()
-      .findAll();
-  booksTemp.addAll(await isar.entrys
-      .filter()
-      .not()
-      .typeEqualTo(EntryType.folder)
+  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeNotBook =
+      await isar.entrys.filter().not().typeEqualTo(EntryType.folder);
+  List<Entry> booksTemp =
+      await typeNotBook.and().isFavoritedEqualTo(true).sortByTitle().findAll();
+  booksTemp.addAll(await typeNotBook
       .and()
       .isFavoritedEqualTo(false)
       .sortByTitle()
@@ -59,7 +53,10 @@ Future<(List<Entry>, List<Folder>)> getServerCategories(context,
   var response;
   try {
     response = await api.getUserViews(
-        userId: userId, headers: headers, includeHidden: true);
+      userId: userId,
+      headers: headers,
+      includeHidden: true,
+    );
     // logger.d(response);
   } catch (e) {
     logger.e(e);
@@ -92,15 +89,10 @@ Future<(List<Entry>, List<Folder>)> getServerCategories(context,
     });
     for (int i = 0; i < comicsIds.length; i++) {
       // turn List<Entry> into Iterable<Entry>
-      await getComics(comicsIds[i], etag);
+      await getComics(comicsIds[i]);
       // comics.addAll(comicsTemp);
     }
-    comics = await isar.entrys
-        .filter()
-        .not()
-        .typeEqualTo(EntryType.folder)
-        .sortByTitle()
-        .findAll();
+    comics = await typeNotBook.sortByTitle().findAll();
     comics.sort((a, b) => a.title.compareTo(b.title));
 
     prefs.setStringList('comicsIds', comicsIds);
@@ -146,7 +138,8 @@ Future<(List<Entry>, List<Folder>)> getServerCategories(context,
 
 // check to see if a folder isn't a subfolder of another folder
 Future<List<Map<String, dynamic>>> compareFolders(
-    List<Map<String, dynamic>> folders) async {
+  List<Map<String, dynamic>> folders,
+) async {
   logger.d("comparing folders");
   List<Map<String, dynamic>> newFolders = [];
   logger.d("folders: " + folders.length.toString());
@@ -214,7 +207,7 @@ Future<void> removeEntriesFromDatabase(
   });
 }
 
-Future<(List<Entry>, List<Folder>)> getServerCategoriesOffline(context) async {
+Future<(List<Entry>, List<Folder>)> getServerCategoriesOffline() async {
   logger.d("getting server categories");
 
   bool hasComics = true;

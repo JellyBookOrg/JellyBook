@@ -3,6 +3,7 @@
 
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,10 +33,13 @@ class LoginProvider {
 
   // make a static version of the above class
   static Future<String> loginStatic(
-      String url, String username, BuildContext context,
-      [String password = ""]) async {
+    String url,
+    String username,
+    BuildContext context, [
+    String password = "",
+  ]) async {
     logger.d("LoginStatic called");
-    final storage = FlutterSecureStorage();
+    const storage = FlutterSecureStorage();
     // String _url = "$url/Users/authenticatebyname";
     String _url = url;
     final BuildContext _context = context;
@@ -92,7 +96,7 @@ class LoginProvider {
 
     final api = Openapi(basePathOverride: _url);
     final apiInstance = api.getUserApi();
-    var response;
+    Response<AuthenticationResult> response;
 
     try {
       // use the authenticateUserByNameRequest from openapi/lib/src/model/authenticate_user_by_name_request.g.dart
@@ -102,8 +106,9 @@ class LoginProvider {
       // set the headers
       final headers = getHeaders(url, _client, _device, _deviceId, _version);
       response = await apiInstance.authenticateUserByName(
-          authenticateUserByNameRequest: authenticateUserByNameRequest,
-          headers: headers);
+        authenticateUserByNameRequest: authenticateUserByNameRequest,
+        headers: headers,
+      );
       logger.d("Status Code: ${response.statusCode}");
     } catch (e) {
       logger.e("Error:\n$e");
@@ -118,9 +123,9 @@ class LoginProvider {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       logger.d("saving data to cache");
       prefs.setString("server", url);
-      prefs.setString("accessToken", response.data.accessToken);
-      prefs.setString("UserId", response.data.user.id);
-      prefs.setString("ServerId", response.data.serverId);
+      prefs.setString("accessToken", response.data?.accessToken ?? "");
+      prefs.setString("UserId", response.data?.user?.id ?? "");
+      prefs.setString("ServerId", response.data?.serverId ?? "");
 
       // now for the stuff that is not needed for all sessions
       logger.d("saving data part 2");
@@ -134,10 +139,14 @@ class LoginProvider {
       await storage.write(key: "server", value: url);
       await storage.write(key: "username", value: username);
       await storage.write(key: "password", value: password);
-      await storage.write(key: "accessToken", value: response.data.accessToken);
-      await storage.write(key: "ServerId", value: response.data.serverId);
       await storage.write(
-          key: "UserId", value: response.data.sessionInfo.userId);
+          key: "accessToken", value: response.data?.accessToken ?? "");
+      await storage.write(
+          key: "ServerId", value: response.data?.serverId ?? "");
+      await storage.write(
+        key: "UserId",
+        value: response.data?.sessionInfo?.userId ?? "",
+      );
       await storage.write(key: "client", value: _client);
       await storage.write(key: "device", value: _device);
       await storage.write(key: "deviceId", value: _deviceId);
@@ -217,7 +226,12 @@ class LoginProvider {
 // getHeaders returns the headers depending on if the url is http or https
 
 Map<String, String> getHeaders(
-    String url, String client, String device, String deviceId, String version) {
+  String url,
+  String client,
+  String device,
+  String deviceId,
+  String version,
+) {
   if (url.contains("https://")) {
     return {
       "Accept": "application/json",
@@ -234,6 +248,7 @@ Map<String, String> getHeaders(
           "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
     };
   }
+
   return {
     "Accept": "application/json",
     "Accept-Language": "en-US,en;q=0.5",

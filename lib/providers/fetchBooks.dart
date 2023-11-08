@@ -1,5 +1,6 @@
 // the purpose of this file is to fetch books from the database to be displayed in the app
 
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:openapi/openapi.dart';
 import 'package:built_collection/built_collection.dart';
@@ -11,7 +12,7 @@ import 'package:isar/isar.dart';
 import 'package:jellybook/variables.dart';
 
 // get comics
-Future<List<Entry>> getComics(String comicsId, String etag) async {
+Future<List<Entry>> getComics(String comicsId) async {
   logger.d('getting comics');
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken');
@@ -45,7 +46,7 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
 
   // turn into built list
   final api = Openapi(basePathOverride: url).getItemsApi();
-  var response;
+  Response<BaseItemDtoQueryResult>? response;
   try {
     response = await api.getItemsByUserId(
       userId: userId!,
@@ -61,7 +62,7 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
   } catch (e) {
     logger.e(e);
   }
-  var responseData = response.data.items;
+  BuiltList<BaseItemDto> responseData = response?.data?.items ?? BuiltList();
 
   logger.d("Now saving comics to database");
 
@@ -91,9 +92,7 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
       path: element.path ?? '',
       description: element.overview ?? '',
       url: url ?? '',
-      rating: element.communityRating != null
-          ? element.communityRating.toDouble()
-          : -1,
+      rating: element.communityRating ?? -1,
       type: element.isFolder != null && element.isFolder != false
           ? EntryType.folder
           : EntryType.book,
@@ -114,17 +113,16 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
       'm4b',
       'wav',
     ];
+
+    String entryPath = element.path.toString().toLowerCase();
     // check if its a book, comic, or audiobook
     if (element.type.toString().toLowerCase() == 'folder') {
       entry.type = EntryType.folder;
-    } else if (bookFileTypes
-        .contains(element.path.toString().split('.').last.toLowerCase())) {
+    } else if (bookFileTypes.contains(entryPath)) {
       entry.type = EntryType.book;
-    } else if (comicFileTypes
-        .contains(element.path.toString().split('.').last.toLowerCase())) {
+    } else if (comicFileTypes.contains(entryPath)) {
       entry.type = EntryType.comic;
-    } else if (audioFileTypes
-        .contains(element.path.toString().split('.').last.toLowerCase())) {
+    } else if (audioFileTypes.contains(entryPath)) {
       entry.type = EntryType.audiobook;
     }
 
@@ -137,6 +135,7 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
         entry.filePath = element1.filePath;
         entry.epubCfi = element1.epubCfi;
         entry.pageNum = element1.pageNum;
+
         return true;
       } else {
         return false;
@@ -153,6 +152,7 @@ Future<List<Entry>> getComics(String comicsId, String etag) async {
 
   final List<Entry> entrys =
       await isar.entrys.filter().not().typeEqualTo(EntryType.folder).findAll();
+
   return entrys;
 }
 
@@ -185,6 +185,7 @@ Future<void> updateFolders() async {
           updatedBookIds.add(e.id);
         }
         element.bookIds = updatedBookIds;
+
         return true;
       } else {
         return false;
@@ -197,8 +198,14 @@ Future<void> updateFolders() async {
   });
 }
 
-Map<String, String> getHeaders(String url, String client, String device,
-    String deviceId, String version, String token) {
+Map<String, String> getHeaders(
+  String url,
+  String client,
+  String device,
+  String deviceId,
+  String version,
+  String token,
+) {
   var uri = Uri.parse(url);
   var headers = {
     'Accept': 'application/json',
