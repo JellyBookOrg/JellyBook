@@ -183,5 +183,9 @@
   "currentSpeed": "当前速度：",
   "@currentSpeed": {},
   "verticalSeamless": "无缝垂直滚动",
-  "@verticalSeamless": {}
+  "@verticalSeamless": {},
+  "speedMultiplier": "x",
+  "@speedMultiplier": {},
+  "playbackSpeed": "播放速度",
+  "@playbackSpeed": {}
 }
