@@ -2,11 +2,8 @@
 
 import 'dart:io';
 import 'package:xml/xml.dart' as xml;
-import 'dart:convert';
-import 'package:archive/archive.dart';
 import 'package:jellybook/variables.dart';
 import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 
 Future<void> parseXML(Entry entry) async {
@@ -21,12 +18,14 @@ Future<void> parseXML(Entry entry) async {
   }
   if (xmlFile == null) {
     logger.e('ComicInfo.xml file not found');
+
     return;
   }
   // confirm that its xs:complexType is ComicInfo
   final xmlFileContent = xml.XmlDocument.parse(xmlFile.readAsStringSync());
   if (xmlFileContent.rootElement.name.toString() != 'ComicInfo') {
     logger.e('ComicInfo.xml file is not of xs:complexType ComicInfo');
+
     return;
   }
 
@@ -34,55 +33,55 @@ Future<void> parseXML(Entry entry) async {
   if (xmlFileContent.findAllElements('Writer').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Writer');
     // add the author
-    entry.writer = author.first.text;
+    entry.writer = author.first.innerText;
     logger.d('writer: ${entry.writer}');
   }
   if (xmlFileContent.findAllElements('Penciller').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Penciller');
     // add the author
-    entry.penciller = author.first.text;
+    entry.penciller = author.first.innerText;
     logger.d('penciller: ${entry.penciller}');
   }
   if (xmlFileContent.findAllElements('Inker').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Inker');
     // add the author
-    entry.inker = author.first.text;
+    entry.inker = author.first.innerText;
     logger.d('inker: ${entry.inker}');
   }
   if (xmlFileContent.findAllElements('Colorist').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Colorist');
     // add the author
-    entry.colorist = author.first.text;
+    entry.colorist = author.first.innerText;
     logger.d('colorist: ${entry.colorist}');
   }
   if (xmlFileContent.findAllElements('Letterer').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Letterer');
     // add the author
-    entry.letterer = author.first.text;
+    entry.letterer = author.first.innerText;
     logger.d('letterer: ${entry.letterer}');
   }
   if (xmlFileContent.findAllElements('CoverArtist').isNotEmpty) {
     final author = xmlFileContent.findAllElements('CoverArtist');
     // add the author
-    entry.coverArtist = author.first.text;
+    entry.coverArtist = author.first.innerText;
     logger.d('coverArtist: ${entry.coverArtist}');
   }
   if (xmlFileContent.findAllElements('Editor').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Editor');
     // add the author
-    entry.editor = author.first.text;
+    entry.editor = author.first.innerText;
     logger.d('editor: ${entry.editor}');
   }
   if (xmlFileContent.findAllElements('Publisher').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Publisher');
     // add the author
-    entry.publisher = author.first.text;
+    entry.publisher = author.first.innerText;
     logger.d('publisher: ${entry.publisher}');
   }
   if (xmlFileContent.findAllElements('Imprint').isNotEmpty) {
     final author = xmlFileContent.findAllElements('Imprint');
     // add the author
-    entry.imprint = author.first.text;
+    entry.imprint = author.first.innerText;
     logger.d('imprint: ${entry.imprint}');
   }
 
@@ -90,9 +89,9 @@ Future<void> parseXML(Entry entry) async {
   final isar = Isar.getInstance();
   await isar!.writeTxn(() async {
     await isar.entrys.put(entry);
-  }).catchError((dynamic error) {
+  }).catchError((error) {
     logger.e(error);
-  }).onError((dynamic error, dynamic stackTrace) {
+  }).onError((error, stackTrace) {
     logger.e(error);
   });
 }

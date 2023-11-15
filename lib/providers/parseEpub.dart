@@ -1,15 +1,11 @@
 // the purpose of this file is to parse information from an epub file
 
 import 'dart:io';
-// import 'dart:math';
 import 'dart:convert';
 import 'package:archive/archive.dart';
-// import 'package:flutter/material.dart';
-// import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:jellybook/variables.dart';
 import 'package:xml/xml.dart' as xml;
 import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 
 Future<void> parseEpub(Entry entry) async {
@@ -29,7 +25,7 @@ Future<void> parseEpub(Entry entry) async {
   // get the tags <dc:subject> from the opf file
   final subjects = opfFileContent.findAllElements('dc:subject');
   for (var subject in subjects) {
-    tags.add(subject.text);
+    tags.add(subject.innerText);
   }
 
   logger.d("tags: $tags");
@@ -44,9 +40,9 @@ Future<void> parseEpub(Entry entry) async {
 
   await isar!.writeTxn(() async {
     await isar.entrys.put(entry2);
-  }).catchError((dynamic error) {
+  }).catchError((error) {
     logger.e(error);
-  }).onError((dynamic error, dynamic stackTrace) {
+  }).onError((error, stackTrace) {
     logger.e(error);
   });
 }

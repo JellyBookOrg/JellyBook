@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:intl/intl.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -52,14 +53,12 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     audioPlayer = AudioPlayer();
     // timer every 10 seconds to update the progress
     timer = Timer.periodic(
-        const Duration(seconds: 10), (Timer t) => savePosition());
+      const Duration(seconds: 10),
+      (Timer t) => savePosition(),
+    );
 
     audioPlayer.onPlayerStateChanged.listen((playerState) {
-      if (playerState == PlayerState.playing) {
-        widget.isPlaying = true;
-      } else {
-        widget.isPlaying = false;
-      }
+      widget.isPlaying = playerState == PlayerState.playing;
     });
     audioPlayer.onDurationChanged.listen((duration) {
       setState(() {
@@ -171,21 +170,24 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 48),
+                const SizedBox(width: 48),
                 Text(
-                    AppLocalizations.of(context)?.playbackSpeed ??
-                        'Playback Speed',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  AppLocalizations.of(context)?.playbackSpeed ??
+                      'Playback Speed',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
                   },
                 ),
                 // reset playback speed to 1.0
                 IconButton(
-                  icon: Icon(Icons.refresh),
+                  icon: const Icon(Icons.refresh),
                   onPressed: () {
                     setState(() {
                       localPlaybackSpeed = 1.0;
@@ -217,20 +219,50 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                         max: 4.0,
                         divisions: 15,
                       ),
-                      const Positioned(
+                      Positioned(
                         top: -3, // Adjust the position of the labels
                         left: 0,
                         right: 0,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('0.25'),
-                              Text('1'),
-                              Text('2'),
-                              Text('3'),
-                              Text('4'),
+                              Text(
+                                NumberFormat.decimalPattern(
+                                        AppLocalizations.of(context)
+                                                ?.localeName ??
+                                            'en')
+                                    .format(0.25),
+                              ),
+                              Text(
+                                NumberFormat.decimalPattern(
+                                        AppLocalizations.of(context)
+                                                ?.localeName ??
+                                            'en')
+                                    .format(1),
+                              ),
+                              Text(
+                                NumberFormat.decimalPattern(
+                                        AppLocalizations.of(context)
+                                                ?.localeName ??
+                                            'en')
+                                    .format(2),
+                              ),
+                              Text(
+                                NumberFormat.decimalPattern(
+                                        AppLocalizations.of(context)
+                                                ?.localeName ??
+                                            'en')
+                                    .format(3),
+                              ),
+                              Text(
+                                NumberFormat.decimalPattern(
+                                        AppLocalizations.of(context)
+                                                ?.localeName ??
+                                            'en')
+                                    .format(4),
+                              ),
                             ],
                           ),
                         ),
@@ -288,7 +320,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
             onPressed: widget.onAudioPickerPressed,
           ),
           IconButton(
-            icon: Icon(Icons.speed),
+            icon: const Icon(Icons.speed),
             onPressed: () {
               showPlaybackSpeedDialog(context);
             },

@@ -10,15 +10,12 @@ import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/screens/readingScreen.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 import 'package:like_button/like_button.dart';
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:jellybook/providers/updateLike.dart';
 import 'package:isar/isar.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
-import 'package:jellybook/providers/pair.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:openapi/openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -298,7 +295,7 @@ class _InfoScreenState extends State<InfoScreen> {
 
   void handleImageSize(Size imageSize) {
     // Do something with the image size obtained from the callback
-    logger.wtf('Image size: ${imageSize.width} x ${imageSize.height}');
+    logger.f('Image size: ${imageSize.width} x ${imageSize.height}');
     // wait until build is done then set state but do it only once
     if (!updatedImageWidth) {
       setState(() {
@@ -310,6 +307,7 @@ class _InfoScreenState extends State<InfoScreen> {
 
   bool isTablet(BuildContext context) {
     final shortestSide = MediaQuery.of(context).size.shortestSide;
+
     return shortestSide > 600;
   }
 
@@ -346,8 +344,9 @@ class _InfoScreenState extends State<InfoScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                          AppLocalizations.of(context)?.downloadFirst ??
-                              "You need to download the comic first"),
+                        AppLocalizations.of(context)?.downloadFirst ??
+                            "You need to download the comic first",
+                      ),
                     ),
                   );
                 }
@@ -469,14 +468,13 @@ class _InfoScreenState extends State<InfoScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                          AppLocalizations.of(context)?.downloadOffline ??
-                              "You are offline, please connect to the internet & reload this app to download this comic",
-                          style: TextStyle(
-                              color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.color ??
-                                  Colors.white)),
+                        AppLocalizations.of(context)?.downloadOffline ??
+                            "You are offline, please connect to the internet & reload this app to download this comic",
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color ??
+                              Colors.white,
+                        ),
+                      ),
                       backgroundColor: Theme.of(context).dialogBackgroundColor,
                       duration: const Duration(seconds: 5),
                     ),
@@ -512,7 +510,8 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(Icons.delete_rounded),
                           const SizedBox(width: 10),
                           Text(
-                              AppLocalizations.of(context)?.delete ?? "Delete"),
+                            AppLocalizations.of(context)?.delete ?? "Delete",
+                          ),
                         ],
                       ),
                     ),
@@ -535,7 +534,10 @@ class _InfoScreenState extends State<InfoScreen> {
           onPressed: () async {
             // update the page so that the liked comics are at the top
             bool isLiked = await checkLiked(entry.id);
-            Navigator.pop(context, (isLiked, entry.downloaded));
+            Navigator.pop(
+              context,
+              (isLiked, entry.downloaded),
+            );
           },
         ),
       ),
@@ -782,7 +784,7 @@ class _InfoScreenState extends State<InfoScreen> {
                               );
                             },
                           ),
-                        )
+                        ),
                       ],
                     ),
                   );

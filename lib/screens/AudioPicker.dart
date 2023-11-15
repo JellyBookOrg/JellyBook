@@ -1,12 +1,8 @@
 // The purpose of this file is to provide a audio picker for the user to select an audio file to play along side the book they are reading
 
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:jellybook/screens/downloaderScreen.dart';
-import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 
@@ -28,6 +24,7 @@ class _AudioPickerState extends State<AudioPicker> {
         .and()
         .downloadedEqualTo(true)
         .findAll();
+
     return entries;
   }
 

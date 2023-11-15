@@ -9,11 +9,6 @@ class ThemeChangeNotifier extends ChangeNotifier {
   }
 
   late ThemeData _theme;
-  // ThemeData _theme = ThemeData(
-  //   primarySwatch: Colors.blue,
-  //   visualDensity: VisualDensity.adaptivePlatformDensity,
-  //   // useMaterial3: true,
-  // );
 
   // late BuildContext _context;
   late BuildContext _context;
@@ -25,30 +20,23 @@ class ThemeChangeNotifier extends ChangeNotifier {
       switch (theme) {
         case "dark":
           _theme = ThemeData.dark(useMaterial3: true);
-          return ThemeData.dark(useMaterial3: true);
         case "light":
           _theme = ThemeData.light(useMaterial3: true);
-          return ThemeData.light(useMaterial3: true);
         case "amoled":
           _theme = oledTheme;
-          return oledTheme;
         case "system":
-          if (Theme.of(_context).brightness == Brightness.light) {
-            _theme = ThemeData.light(useMaterial3: true);
-            return ThemeData.light(useMaterial3: true);
-          } else {
-            _theme = ThemeData.dark(useMaterial3: true);
-            return ThemeData.dark(useMaterial3: true);
-          }
+          _theme = Theme.of(_context).brightness == Brightness.light
+              ? ThemeData.light(useMaterial3: true)
+              : ThemeData.dark(useMaterial3: true);
         default:
           _theme = ThemeData.dark(useMaterial3: true);
-          return ThemeData.dark(useMaterial3: true);
       }
     });
+
     return _theme;
   }
 
-  Future<String> get getThemeName async{
+  Future<String> get getThemeName async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String theme = prefs.getString("theme") ?? "dark";
     switch (theme.toLowerCase()) {
@@ -82,11 +70,9 @@ class ThemeChangeNotifier extends ChangeNotifier {
         _theme = oledTheme;
         break;
       case "system":
-        if (Theme.of(_context).brightness == Brightness.light) {
-          _theme = ThemeData.light(useMaterial3: true);
-        } else {
-          _theme = ThemeData.dark(useMaterial3: true);
-        }
+        _theme = Theme.of(_context).brightness == Brightness.light
+            ? ThemeData.light(useMaterial3: true)
+            : ThemeData.dark(useMaterial3: true);
         // _theme = ThemeData(
         //   primarySwatch: Colors.blue,
         //   visualDensity: VisualDensity.adaptivePlatformDensity,

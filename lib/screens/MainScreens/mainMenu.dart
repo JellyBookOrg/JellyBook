@@ -8,7 +8,6 @@ import 'package:jellybook/screens/loginScreen.dart';
 import 'package:jellybook/screens/MainScreens/searchScreen.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
@@ -61,7 +60,6 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
-  var connectivityResult = ConnectivityResult.none;
   bool force = false;
 
   int _selectedIndex = 0;
@@ -107,14 +105,18 @@ class _MainMenuState extends State<MainMenu> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SearchScreen()),
+                MaterialPageRoute(
+                  builder: (context) => SearchScreen(),
+                ),
               );
             },
             child: Row(
               children: [
-                Icon(Icons.search,
-                    color: Theme.of(context).secondaryHeaderColor),
-                SizedBox(width: 10),
+                Icon(
+                  Icons.search,
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+                const SizedBox(width: 10),
                 Text(
                   (AppLocalizations.of(context)?.search ?? 'Search') + '…',
                   style: TextStyle(
@@ -141,7 +143,7 @@ class _MainMenuState extends State<MainMenu> {
         children: <Widget>[
           const SizedBox(height: 10),
           FutureBuilder(
-            future: getServerCategories(context, force: force),
+            future: getServerCategories(force: force),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {

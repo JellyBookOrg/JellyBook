@@ -83,6 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Color complementaryColor = colorSnapshot.data ??
                             Colors
                                 .black; // if the color is null, set it to black
+
                         return SimpleUserCard(
                           cardColor: complementaryColor,
                           userProfilePic: snapshot.data,
@@ -129,7 +130,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(
               height: 10,
             ),
-            languageSettings(context),
+            FutureBuilder(
+              future: languageSettings(context),
+              builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                if (snapshot.hasData) {
+                  return snapshot.data!;
+                } else {
+                  return Container();
+                }
+              },
+            ),
             const SizedBox(
               height: 20,
             ),
@@ -197,7 +207,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(
               height: 20,
             ),
-            aboutSettings(),
+            FutureBuilder(
+              future: aboutSettings(),
+              builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                return snapshot.data ?? Container();
+              },
+            ),
           ],
         ),
       ),
@@ -287,7 +302,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ImageProvider imageProvider = Image.asset('assets/images/Logo.png').image;
     try {
       var response = await api.getUserImage(
-          userId: userId, imageType: ImageType.primary, headers: headers);
+        userId: userId,
+        imageType: ImageType.primary,
+        headers: headers,
+      );
       logger.i(response.statusCode);
       if (response != null && response.statusCode == 200) {
         image = response.data!;
@@ -577,7 +595,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // language settings Widget
-  Widget languageSettings(BuildContext context) => SettingsItem(
+  Future<Widget> languageSettings(BuildContext context) async => SettingsItem(
         // settingKey: 'language',
         title: AppLocalizations.of(context)?.language ?? 'Language',
         selected:
@@ -599,7 +617,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
 
   // page transition settings
-  Widget pageTransitionSettings() => SettingsItem(
+  Future<Widget> pageTransitionSettings() async => SettingsItem(
         // settingKey: 'pageTransition',
         title:
             AppLocalizations.of(context)?.pageTransition ?? 'Page Transition',
@@ -638,7 +656,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
 
   // about settings (should contain the version number and the link to the github repo, and author)
-  Widget aboutSettings() => FutureBuilder(
+  Future<Widget> aboutSettings() async => FutureBuilder(
         future: getPackageInfo(),
         builder: (context, snapshot) {
           return Column(

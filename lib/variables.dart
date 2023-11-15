@@ -14,7 +14,7 @@ late String localPath;
 String logStoragePath = "/storage/emulated/0/Documents/";
 
 Logger logger = Logger(
-  output: kDebugMode == true
+  output: kDebugMode
       ? ConsoleOutput()
       : FileOutput(
           file: File(logStoragePath + "jellybook.log"),
@@ -24,7 +24,7 @@ Logger logger = Logger(
               .openWrite(mode: FileMode.writeOnlyAppend, encoding: utf8)),
         ),
   level: Level.debug,
-  printer: kDebugMode == true
+  printer: kDebugMode
       ? PrettyPrinter()
       : PrettyPrinter(
           methodCount: 5,
@@ -35,31 +35,6 @@ Logger logger = Logger(
           printTime: true,
         ),
 );
-
-// class FileOutput extends LogOutput {
-//   FileOutput({
-//     required this.file,
-//   });
-//
-//   File file;
-//
-//   @override
-//   void init() {
-//     super.init();
-//     if (!file.existsSync()) {
-//       file.createSync();
-//     }
-//   }
-//
-//   @override
-//   void output(OutputEvent event) async {
-//     print(event.lines);
-//     for (var line in event.lines) {
-//       await file.writeAsString("${line.toString()}\n",
-//           mode: FileMode.writeOnlyAppend);
-//     }
-//   }
-// }
 
 class FileOutput extends LogOutput {
   final File file;
@@ -80,14 +55,6 @@ class FileOutput extends LogOutput {
           encoding: encoding,
         );
   }
-
-  // @override
-  // void init() {
-  //   sink = file.openWrite(
-  //     mode: overrideExisting ? FileMode.writeOnly : FileMode.writeOnlyAppend,
-  //     encoding: encoding,
-  //   );
-  // }
 
   @override
   void output(OutputEvent event) {

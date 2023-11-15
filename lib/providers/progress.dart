@@ -2,7 +2,6 @@
 
 // import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isar/isar.dart';
-import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/providers/updatePagenum.dart';
@@ -45,6 +44,7 @@ Future<void> getProgress(String comicId) async {
   final entry = await isar?.entrys.where().idEqualTo(comicId).findFirst();
   if (entry == null) {
     logger.d("entry is null");
+
     return;
   }
 

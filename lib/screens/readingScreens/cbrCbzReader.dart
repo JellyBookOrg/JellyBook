@@ -54,7 +54,7 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
   void setDirection() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     direction = prefs.getString('readingDirection') ?? 'ltr';
-    logger.wtf("direction: $direction");
+    logger.f("direction: $direction");
   }
 
   Future<void> createPageList() async {
