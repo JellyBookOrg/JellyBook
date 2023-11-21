@@ -187,5 +187,15 @@
   "speedMultiplier": "x",
   "@speedMultiplier": {},
   "verticalSeamless": "Seamless Vertical Scrolling",
-  "@verticalSeamless": {}
+  "@verticalSeamless": {},
+  "saveToServer": "Save to server",
+  "@saveToServer": {},
+  "description": "Description: ",
+  "@description": {},
+  "releaseDate": "Release Date: ",
+  "@releaseDate": {},
+  "rating": "Rating: ",
+  "@rating": {},
+  "saveToDevice": "Save to device",
+  "@saveToDevice": {}
 }
