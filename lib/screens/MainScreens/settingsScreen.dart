@@ -33,7 +33,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     getPackageInfo();
     super.initState();
     // Settings.init();
-    setSharedPrefs();
+    setSharedPrefs().then((value) {
+      setState(() {});
+    });
   }
 
   themeListener() {
@@ -223,7 +225,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<Widget> themeSettings(BuildContext context) async {
     return SettingsItem(
       title: AppLocalizations.of(context)?.theme ?? 'theme',
-      selected: prefs?.getString('theme') ?? 'system',
+      selected: await prefs!.getString('theme') ?? 'system',
       backgroundColor: Theme.of(context).splashColor,
       icon: Icons.color_lens,
       values: <String, String>{
