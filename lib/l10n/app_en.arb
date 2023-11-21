@@ -197,5 +197,7 @@
   "rating": "Rating: ",
   "@rating": {},
   "saveToDevice": "Save to device",
-  "@saveToDevice": {}
+  "@saveToDevice": {},
+  "edit": "Edit",
+  "@edit": {}
 }
