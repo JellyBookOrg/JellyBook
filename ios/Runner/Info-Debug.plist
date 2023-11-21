@@ -17,26 +17,26 @@
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
-                <string>ar</string>
+		<string>ar</string>
 		<string>ca</string>
-                <string>cs</string>
+		<string>cs</string>
 		<string>da</string>
-                <string>de</string>
-                <string>en_pirate</string>
-                <string>es</string>
-                <string>es_US</string>
-                <string>eu</string>
-                <string>fr</string>
-                <string>he</string>
-                <string>hr</string>
-                <string>hu</string>
-                <string>id</string>
-                <string>it</string>
-                <string>ja</string>
-                <string>kk</string>
-                <string>ko</string>
-                <string>lb</string>
-                <string>nb</string>
+		<string>de</string>
+		<string>en_pirate</string>
+		<string>es</string>
+		<string>es_US</string>
+		<string>eu</string>
+		<string>fr</string>
+		<string>he</string>
+		<string>hr</string>
+		<string>hu</string>
+		<string>id</string>
+		<string>it</string>
+		<string>ja</string>
+		<string>kk</string>
+		<string>ko</string>
+		<string>lb</string>
+		<string>nb</string>
 		<string>nl</string>
 		<string>nn</string>
 		<string>nl</string>
@@ -96,6 +96,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow user to upload images to their server or local device to change ebook covers</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
