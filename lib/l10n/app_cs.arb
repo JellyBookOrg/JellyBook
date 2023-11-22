@@ -187,5 +187,17 @@
   "credits": "Poděkování",
   "@credits": {},
   "noSlash": "Adresa URL neobsahuje lomítko",
-  "@noSlash": {}
+  "@noSlash": {},
+  "saveToServer": "Uložit na server",
+  "@saveToServer": {},
+  "edit": "Upravit",
+  "@edit": {},
+  "description": "Popis: ",
+  "@description": {},
+  "releaseDate": "Datum vydání: ",
+  "@releaseDate": {},
+  "rating": "Hodnocení: ",
+  "@rating": {},
+  "saveToDevice": "Uložit na zařízení",
+  "@saveToDevice": {}
 }
