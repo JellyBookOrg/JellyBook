@@ -1,5 +1,7 @@
 // the purpose of this file is to allow you to edit a entry in your library
 
+import 'dart:convert';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 class EditScreen extends StatefulWidget {
   bool offline;
@@ -106,9 +110,19 @@ class _EditScreenState extends State<EditScreen> {
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      entry.imagePath = pickedFile.path;
-      setState(() {});
+      File image = File(pickedFile.path);
+      saveImageToDocumentsDirectory(image);
     }
+  }
+
+  Future saveImageToDocumentsDirectory(File image) async {
+    final documentsDir = await getApplicationDocumentsDirectory();
+    final fileName =
+        p.basename(image.path); // Use path package to get the file name
+    final savedImage = await image.copy('${documentsDir.path}/$fileName');
+    setState(() {
+      widget.entry.imagePath = savedImage.path;
+    });
   }
 
   bool isTablet(BuildContext context) {
