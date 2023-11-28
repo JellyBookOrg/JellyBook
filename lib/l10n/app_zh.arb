@@ -187,5 +187,17 @@
   "speedMultiplier": "x",
   "@speedMultiplier": {},
   "playbackSpeed": "播放速度",
-  "@playbackSpeed": {}
+  "@playbackSpeed": {},
+  "saveToServer": "保存到服务器",
+  "@saveToServer": {},
+  "edit": "编辑",
+  "@edit": {},
+  "description": "描述： ",
+  "@description": {},
+  "releaseDate": "发布日期： ",
+  "@releaseDate": {},
+  "rating": "评分： ",
+  "@rating": {},
+  "saveToDevice": "保存到设备",
+  "@saveToDevice": {}
 }

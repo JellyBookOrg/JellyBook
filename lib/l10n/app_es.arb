@@ -187,5 +187,17 @@
   "speedMultiplier": "x",
   "@speedMultiplier": {},
   "verticalSeamless": "Desplazamiento vertical fluido",
-  "@verticalSeamless": {}
+  "@verticalSeamless": {},
+  "saveToServer": "Guardar en el servidor",
+  "@saveToServer": {},
+  "edit": "Editar",
+  "@edit": {},
+  "description": "Descripción: ",
+  "@description": {},
+  "releaseDate": "Fecha de publicación: ",
+  "@releaseDate": {},
+  "rating": "Valoración: ",
+  "@rating": {},
+  "saveToDevice": "Guardar en el dispositivo",
+  "@saveToDevice": {}
 }
