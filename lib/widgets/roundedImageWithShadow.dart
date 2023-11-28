@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 
@@ -8,6 +13,7 @@ class RoundedImageWithShadow extends StatefulWidget {
   final Color shadowColor;
   final Function(Size)? onImageSizeAvailable;
   final String errorWidgetAsset;
+  final Size? size; // Optional size parameter
 
   const RoundedImageWithShadow({
     super.key,
@@ -17,6 +23,7 @@ class RoundedImageWithShadow extends StatefulWidget {
     this.shadowColor = Colors.black,
     this.onImageSizeAvailable,
     this.errorWidgetAsset = 'assets/images/NoCoverArt.png',
+    this.size, // Add size to the constructor
   });
 
   @override
@@ -37,13 +44,12 @@ class _RoundedImageWithShadowState extends State<RoundedImageWithShadow> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
+      width: widget
+          .size?.width, // Use the width from the size parameter if provided
+      height: widget
+          .size?.height, // Use the height from the size parameter if provided
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(widget.radius),
         boxShadow: [
@@ -59,32 +65,41 @@ class _RoundedImageWithShadowState extends State<RoundedImageWithShadow> {
         borderRadius: BorderRadius.circular(widget.radius),
         child: AspectRatio(
           aspectRatio: widget.ratio,
-          child:
-              widget.imageUrl == '' || widget.imageUrl.toLowerCase() == 'asset'
+          child: widget.imageUrl == '' ||
+                  widget.imageUrl.toLowerCase() == 'asset'
+              ? LayoutBuilder(
+                  builder: (context, constraints) {
+                    imageSize = widget.size ?? constraints.biggest;
+
+                    return Image.asset(
+                      widget.errorWidgetAsset,
+                      fit: BoxFit.cover,
+                      width:
+                          imageSize?.width, // Use the width from the imageSize
+                      height: imageSize
+                          ?.height, // Use the height from the imageSize
+                    );
+                  },
+                )
+              : widget.imageUrl.contains('http')
                   ? LayoutBuilder(
                       builder: (context, constraints) {
-                        imageSize = constraints.biggest;
-
-                        return Image.asset(
-                          widget.errorWidgetAsset,
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    )
-                  : LayoutBuilder(
-                      builder: (context, constraints) {
-                        imageSize = constraints.biggest;
+                        imageSize = widget.size ?? constraints.biggest;
 
                         return FancyShimmerImage(
-                          width: constraints.biggest.width,
                           imageUrl: widget.imageUrl,
                           boxFit: BoxFit.cover,
                           errorWidget: Image.asset(
                             widget.errorWidgetAsset,
+                            width: imageSize
+                                ?.width, // Use the width from the imageSize
+                            height: imageSize
+                                ?.height, // Use the height from the imageSize
                           ),
                         );
                       },
-                    ),
+                    )
+                  : Image.file(File(widget.imageUrl), fit: BoxFit.cover),
         ),
       ),
     );
