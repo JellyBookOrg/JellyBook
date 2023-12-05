@@ -63,6 +63,7 @@ class _EditScreenState extends State<EditScreen> {
   TextEditingController _titleController = TextEditingController();
   final FocusNode _titleFocusNode = FocusNode();
   TextEditingController _releaseDateController = TextEditingController();
+  late String _tempImagePath;
 
 // check if it is liked or not by checking the database
   Future<bool> checkLiked(String id) async {
@@ -78,6 +79,7 @@ class _EditScreenState extends State<EditScreen> {
     checkLiked(entry.id).then((value) {
       entry.isFavorited = value;
     });
+    _tempImagePath = entry.imagePath;
     tags = List<String>.from(entry.tags);
     _titleController = TextEditingController(text: entry.title);
     _releaseDateController = TextEditingController(text: entry.releaseDate);
@@ -115,13 +117,14 @@ class _EditScreenState extends State<EditScreen> {
     }
   }
 
-  Future saveImageToDocumentsDirectory(File image) async {
+  Future<void> saveImageToDocumentsDirectory(File image) async {
     final documentsDir = await getApplicationDocumentsDirectory();
-    final fileName =
-        p.basename(image.path); // Use path package to get the file name
+    final fileName = p.basename(image.path);
     final savedImage = await image.copy('${documentsDir.path}/$fileName');
+
+    // Store the image path temporarily instead of directly assigning it to entry
     setState(() {
-      widget.entry.imagePath = savedImage.path;
+      _tempImagePath = savedImage.path;
     });
   }
 
@@ -135,6 +138,9 @@ class _EditScreenState extends State<EditScreen> {
     final isar = Isar.getInstance();
     entry.tags = tags;
     entry.description = _descriptionController.text;
+    if (_tempImagePath != null) {
+      entry.imagePath = _tempImagePath!;
+    }
 
     await isar?.writeTxn(() async {
       await isar.entrys.put(entry);
@@ -146,6 +152,9 @@ class _EditScreenState extends State<EditScreen> {
     bool imageChanged = false;
     final entry2 =
         await isar!.entrys.where().idEqualTo(this.entry.id).findFirst();
+    if (_tempImagePath != null) {
+      entry.imagePath = _tempImagePath!;
+    }
     if (entry2!.imagePath != entry.imagePath) {
       imageChanged = true;
     }
@@ -176,6 +185,18 @@ class _EditScreenState extends State<EditScreen> {
       'Host': server.substring(server.indexOf("//") + 2, server.length),
     };
     final api = Openapi(basePathOverride: server).getItemUpdateApi();
+    DateTime? dateTime;
+    try {
+      dateTime = DateTime.parse(entry.releaseDate);
+    } catch (e) {
+      try {
+        dateTime = DateTime.parse(
+          entry.releaseDate.replaceAll(' ', '-'),
+        );
+      } catch (e) {
+        logger.e(e.toString());
+      }
+    }
     // body of the request
     try {
       final response = await api.updateItem(
@@ -184,13 +205,13 @@ class _EditScreenState extends State<EditScreen> {
           (b) => {
             b.name = entry.title,
             b.overview = entry.description,
-            b.premiereDate = DateTime.parse(entry.releaseDate),
+            if (dateTime != null) b.premiereDate = dateTime,
             b.tags = ListBuilder<String>(tags),
           },
         ),
         headers: headers,
       );
-      // logger.d(response.data.toString());
+      logger.d(response.toString());
     } catch (e) {
       logger.e(e.toString());
       // display error message
@@ -444,7 +465,7 @@ class _EditScreenState extends State<EditScreen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
                           child: RoundedImageWithShadow(
-                            imageUrl: entry.imagePath,
+                            imageUrl: _tempImagePath,
                             radius: 15,
                             ratio: 0.75,
                             size: Size(MediaQuery.of(context).size.width * 0.3,
@@ -620,7 +641,7 @@ class _EditScreenState extends State<EditScreen> {
                           child: Stack(
                             children: [
                               RoundedImageWithShadow(
-                                imageUrl: entry.imagePath,
+                                imageUrl: _tempImagePath,
                                 radius: 15,
                                 ratio: 0.75,
                                 size: Size(

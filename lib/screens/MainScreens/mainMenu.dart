@@ -40,12 +40,12 @@ class _MainMenuState extends State<MainMenu> {
         */
   Future<void> logout() async {
     final isar = Isar.getInstance();
-    var logins = await isar!.logins.where().findAll();
-    var loginIds = logins.map((e) => e.isarId).toList();
-    var entries = await isar.entrys.where().findAll();
-    var entryIds = entries.map((e) => e.isarId).toList();
-    var folders = await isar.folders.where().findAll();
-    var folderIds = folders.map((e) => e.isarId).toList();
+    List<Login> logins = await isar!.logins.where().findAll();
+    List<int> loginIds = logins.map((e) => e.isarId).toList();
+    List<Entry> entries = await isar.entrys.where().findAll();
+    List<int> entryIds = entries.map((e) => e.isarId).toList();
+    List<Folder> folders = await isar.folders.where().findAll();
+    List<int> folderIds = folders.map((e) => e.isarId).toList();
     await isar.writeTxn(() async {
       logger.i('deleted ${loginIds.length} logins');
       isar.logins.deleteAll(loginIds);
@@ -315,26 +315,34 @@ class _MainMenuState extends State<MainMenu> {
                                   onTap: () async {
                                     logger.i("tapped");
                                     // logger.i(snapshot.data.$1.elementAt(index));
-                                    var result = await Navigator.push(
+                                    int selectedIndex =
+                                        index; // Store the index of the selected entry
+                                    Entry selectedEntry = snapshot.data.$1
+                                        .elementAt(selectedIndex);
+
+                                    Entry? updatedEntry = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => InfoScreen(
-                                            entry: snapshot.data.$1
-                                                .elementAt(index)),
+                                        builder: (context) =>
+                                            InfoScreen(entry: selectedEntry),
                                       ),
                                     );
                                     // update state of the card
-                                    logger.d(result);
-                                    if (result != null &&
-                                        result.$1 != null &&
-                                        result.$2 != null) {
+                                    if (updatedEntry != null) {
+                                      // Update the state of the card
                                       setState(() {
-                                        snapshot.data.$1
-                                            .elementAt(index)
-                                            .isFavorited = result.$1 as bool;
-                                        snapshot.data.$1
-                                            .elementAt(index)
-                                            .downloaded = result.$2 as bool;
+                                        // Check if snapshot.data.$1 is a list that can be modified
+                                        if (snapshot.data.$1 is List<Entry>) {
+                                          snapshot.data.$1[selectedIndex] =
+                                              updatedEntry;
+                                        } else {
+                                          // If the list is immutable, create a new list with the updated entry
+                                          var newList = List<Entry>.from(
+                                              snapshot.data.$1);
+                                          newList[selectedIndex] = updatedEntry;
+                                          // Update the data source
+                                          snapshot.data.$1 = newList;
+                                        }
                                       });
                                     }
                                   },

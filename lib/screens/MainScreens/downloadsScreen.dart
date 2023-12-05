@@ -1,7 +1,6 @@
 // The purpose of this file is to have a screen with all the downloaded books with easy access to delete them
 
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:jellybook/screens/collectionScreen.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:isar/isar.dart';
@@ -202,20 +201,19 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                               if (snapshot.data[index].rating < 0 &&
                                   snapshot.data[index].description != '')
                                 Flexible(
-                                  child: MarkdownBody(
-                                    // text: TextSpan(
-                                    data: fixRichText(
-                                        snapshot.data[index].description),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: fixRichText(
+                                          snapshot.data[index].description),
+                                      style: const TextStyle(
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 15,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
-                                  //       style: const TextStyle(
-                                  //         fontStyle: FontStyle.italic,
-                                  //         fontSize: 15,
-                                  //         color: Colors.grey,
-                                  //       ),
-                                  //     ),
-                                  //     overflow: TextOverflow.ellipsis,
-                                  //     maxLines: 1,
-                                  //   ),
                                 ),
                             ],
                           ),
