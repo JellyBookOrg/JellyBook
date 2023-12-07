@@ -99,7 +99,19 @@ class _RoundedImageWithShadowState extends State<RoundedImageWithShadow> {
                         );
                       },
                     )
-                  : Image.file(File(widget.imageUrl), fit: BoxFit.cover),
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        imageSize = constraints.biggest;
+                        return Image.file(
+                          File(widget.imageUrl),
+                          fit: BoxFit.cover,
+                          width: imageSize
+                              ?.width, // Use the width from the imageSize
+                          height: imageSize
+                              ?.height, // Use the height from the imageSize
+                        );
+                      },
+                    ),
         ),
       ),
     );

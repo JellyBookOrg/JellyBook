@@ -501,6 +501,10 @@ class _InfoScreenState extends State<InfoScreen> {
                   if (value == "delete") {
                     logger.d("deleting comic");
                     await deleteComic(entry.id, context);
+                    setState(() {
+                      entry.downloaded = false;
+                    });
+                    Navigator.pop(context, (entry));
                   }
                   if (value == "edit") {
                     logger.d("editing comic");
@@ -561,10 +565,7 @@ class _InfoScreenState extends State<InfoScreen> {
           onPressed: () async {
             // update the page so that the liked comics are at the top
             bool isLiked = await checkLiked(entry.id);
-            Navigator.pop(
-              context,
-              (isLiked, entry.downloaded),
-            );
+            Navigator.pop(context, (entry));
           },
         ),
       ),

@@ -59,7 +59,12 @@ dependencies:
   flutter_html_to_pdf: ^0.7.0
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
-  pdfx: ^2.3.0
+  pdfx: ^2.5.0
+    # git:
+    #   url: 'https://github.com/ScerIO/packages.flutter'
+    #   ref: '4be9de9ffed5398fd7d5f44bbb07dcd3d3f1711b'
+    #   path: packages/pdfx
+
   package_info_plus: ^4.1.0
   auto_size_text: ^3.0.0
   google_nav_bar: ^5.0.6
@@ -83,6 +88,7 @@ dependencies:
   xml: ^6.3.0
   flutter_html: ^3.0.0-beta.2
   flutter_markdown: ^0.6.15
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -99,8 +105,8 @@ dev_dependencies:
   # hive_generator: ^2.0.0
   build_runner: ^2.3.2
   isar_generator: ^3.0.5
-  test: ^1.24.3
-  dart_code_linter: ^1.1.1
+  # test: ^1.24.3
+  # dart_code_linter: ^1.1.1
   # objectbox_generator: ^1.6.2
 
 # For information on the generic Dart part of this file, see the
