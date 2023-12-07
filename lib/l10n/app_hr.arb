@@ -187,5 +187,17 @@
   "credits": "Zahvale",
   "@credits": {},
   "noSlash": "URL ne sadrži kosu crtu (/)",
-  "@noSlash": {}
+  "@noSlash": {},
+  "saveToServer": "Spremi na server",
+  "@saveToServer": {},
+  "edit": "Uredi",
+  "@edit": {},
+  "description": "Opis: ",
+  "@description": {},
+  "releaseDate": "Datum izdanja: ",
+  "@releaseDate": {},
+  "rating": "Ocjena: ",
+  "@rating": {},
+  "saveToDevice": "Spremi na uređaj",
+  "@saveToDevice": {}
 }
