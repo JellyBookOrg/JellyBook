@@ -187,5 +187,17 @@
   "letterer": "Cartaz",
   "@letterer": {},
   "verticalSeamless": "Rolagem vertical contínua",
-  "@verticalSeamless": {}
+  "@verticalSeamless": {},
+  "saveToServer": "Gravar no servidor",
+  "@saveToServer": {},
+  "edit": "Editar",
+  "@edit": {},
+  "description": "Descrição: ",
+  "@description": {},
+  "releaseDate": "Data de lançamento: ",
+  "@releaseDate": {},
+  "rating": "Avaliação: ",
+  "@rating": {},
+  "saveToDevice": "Gravar no dispositivo",
+  "@saveToDevice": {}
 }
