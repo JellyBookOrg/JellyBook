@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:jellybook/widgets/WaveProgressBar.dart';
 import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -227,7 +228,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)?.downloading ?? 'Downloading'),
         automaticallyImplyLeading: !downloading,
-        // if the file is downloaded, have a button to force download
         actions: [
           if (!downloading)
             IconButton(
@@ -266,99 +266,75 @@ class _DownloadScreenState extends State<DownloadScreen> {
             )
         ],
       ),
-      body: Center(
-        child: downloading
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: MediaQuery.of(context).size.width * 0.7,
-                    child: CircularProgressIndicator(
-                      value: progress / 100,
-                      backgroundColor: Colors.grey,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  if (progress < 100 &&
-                      downloadStatus == DownloadStatus.Downloading)
-                    Text(
-                      (AppLocalizations.of(context)?.downloadingFile ??
-                              'Downloading File:') +
-                          ' ' +
-                          progress.toStringAsFixed(2) +
-                          '%',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  if (progress == 100)
-                    Text(
-                      AppLocalizations.of(context)?.extractingContent ??
-                          'Extracting Content',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                  ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: WaveProgressBar(
+              progress: progress / 100,
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue,
+                  Colors.blueAccent,
+                  Colors.teal,
                 ],
-              )
-            : downloadStatus != DownloadStatus.DownloadFailed &&
-                    downloadStatus != DownloadStatus.DecompressingFailed &&
-                    !downloaded
+              ),
+            ),
+          ),
+          Center(
+            child: downloading
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        AppLocalizations.of(context)?.fileDownloaded ??
-                            'File Downloaded',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 20,
-                        ),
+                        (AppLocalizations.of(context)?.downloadingFile ??
+                                'Downloading File:') +
+                            ' ' +
+                            progress.toStringAsFixed(2) +
+                            '%',
+                        style: TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      // Giant icon with check mark
-                      const Icon(
-                        Icons.check_circle,
-                        size: 100,
-                        color: Colors.green,
-                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.4),
                     ],
                   )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)?.downloadFailed ??
-                            "The download was unable to complete. Please try again later.",
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
+                : (downloadStatus != DownloadStatus.DownloadFailed &&
+                        downloadStatus != DownloadStatus.DecompressingFailed &&
+                        !downloaded)
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)?.fileDownloaded ??
+                                'File Downloaded',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          SizedBox(height: 20),
+                          Icon(Icons.check_circle,
+                              size: 100, color: Colors.green),
+                        ],
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)?.downloadFailed ??
+                                "The download was unable to complete. Please try again later.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red),
+                          ),
+                          SizedBox(height: 20),
+                          Icon(Icons.error, size: 100, color: Colors.red),
+                        ],
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      // Giant icon with check mark
-                      const Icon(
-                        Icons.error,
-                        size: 100,
-                        color: Colors.red,
-                      ),
-                    ],
-                  ),
+          ),
+        ],
       ),
     );
   }
