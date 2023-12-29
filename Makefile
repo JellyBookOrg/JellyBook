@@ -6,6 +6,8 @@ OUTPUT_DIR := $(VERSION)
 
 .DEFAULT_GOAL := all
 
+OS := $(shell uname)
+
 .PHONY: all
 ifeq ($(OS),Darwin)
 all: build_runner generate_icons ios_release ios_debug android_release android_debug app_bundle_release app_bundle_debug sha1_hashes
