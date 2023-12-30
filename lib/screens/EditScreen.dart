@@ -419,6 +419,7 @@ class _EditScreenState extends State<EditScreen> {
                 // entry.releaseDate = newDate.toString();
                 // only the month, day, and year
                 entry.releaseDate = DateFormat('dd MM yyyy').format(newDate);
+                changed = true;
               });
             },
           ),

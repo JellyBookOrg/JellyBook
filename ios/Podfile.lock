@@ -132,8 +132,8 @@ SPEC CHECKSUMS:
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   unrar_file: ead248ffb2e777cb67f083bc1bb1fb45d4157dbd
   UnrarKit: 99e3f0222a98a212188e1a6975dcf5aa798d26dd
-  url_launcher_ios: 68d46cc9766d0c41dbdc884310529557e3cd7a86
+  url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
 
 PODFILE CHECKSUM: 4523b5d271d7828b6cdc73fe8b32bf7b646e71e2
 
-COCOAPODS: 1.14.2
+COCOAPODS: 1.14.3
