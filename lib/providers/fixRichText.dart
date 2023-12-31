@@ -10,7 +10,7 @@ String fixRichText(String text) {
       .replaceAll("</i>", "*")
       .replaceAll("<b>", "**")
       .replaceAll("</b>", "**")
-      .replaceAll("<p>", "\t")
+      .replaceAll("<p>", "\n\n")
       .replaceAll("</p>", "")
       .replaceAll("<u>", "__")
       .replaceAll("</u>", "__")

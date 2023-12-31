@@ -58,6 +58,7 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        manifestPlaceholders['foregroundServiceType'] = 'mediaPlayback';
     }
     signingConfigs {
          release {

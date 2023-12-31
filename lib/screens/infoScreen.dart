@@ -7,18 +7,21 @@ import 'package:jellybook/models/login.dart';
 import 'package:jellybook/providers/deleteComic.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
+import 'package:jellybook/screens/EditScreen.dart';
 import 'package:jellybook/screens/readingScreen.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 import 'package:like_button/like_button.dart';
 import 'package:jellybook/providers/updateLike.dart';
 import 'package:isar/isar.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown/markdown.dart' as md;
 import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:openapi/openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jellybook/providers/Author.dart';
 
 class InfoScreen extends StatefulWidget {
   bool offline;
@@ -498,6 +501,24 @@ class _InfoScreenState extends State<InfoScreen> {
                   if (value == "delete") {
                     logger.d("deleting comic");
                     await deleteComic(entry.id, context);
+                    setState(() {
+                      entry.downloaded = false;
+                    });
+                    Navigator.pop(context, (entry));
+                  }
+                  if (value == "edit") {
+                    logger.d("editing comic");
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EditScreen(entry: entry, offline: offline),
+                      ),
+                    );
+                    setState(() {
+                      if (result != null) entry = result;
+                    });
+                    // }
                   }
                 },
                 child: const Icon(Icons.more_vert, color: Colors.white),
@@ -512,6 +533,16 @@ class _InfoScreenState extends State<InfoScreen> {
                           Text(
                             AppLocalizations.of(context)?.delete ?? "Delete",
                           ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: "edit",
+                      child: Row(
+                        children: [
+                          const Icon(Icons.edit),
+                          const SizedBox(width: 10),
+                          Text(AppLocalizations.of(context)?.edit ?? "Edit"),
                         ],
                       ),
                     ),
@@ -534,10 +565,7 @@ class _InfoScreenState extends State<InfoScreen> {
           onPressed: () async {
             // update the page so that the liked comics are at the top
             bool isLiked = await checkLiked(entry.id);
-            Navigator.pop(
-              context,
-              (isLiked, entry.downloaded),
-            );
+            Navigator.pop(context, (entry));
           },
         ),
       ),
@@ -660,6 +688,13 @@ class _InfoScreenState extends State<InfoScreen> {
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: MarkdownBody(
                 data: fixRichText(entry.description),
+                extensionSet: md.ExtensionSet(
+                  md.ExtensionSet.gitHubFlavored.blockSyntaxes,
+                  <md.InlineSyntax>[
+                    md.EmojiSyntax(),
+                    ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes
+                  ],
+                ),
                 selectable: false,
                 shrinkWrap: true,
                 styleSheet:
@@ -797,20 +832,5 @@ class _InfoScreenState extends State<InfoScreen> {
         ),
       ),
     );
-  }
-}
-
-class Author {
-  final String name;
-  String? link;
-  List<String> roles = [];
-
-  Author({
-    required this.name,
-    this.link,
-  });
-
-  void addRole(String role) {
-    roles.add(role);
   }
 }

@@ -16,6 +16,8 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - image_picker_ios (0.0.1):
+    - Flutter
   - isar_flutter_libs (1.0.0):
     - Flutter
   - open_filex (0.0.2):
@@ -53,6 +55,7 @@ DEPENDENCIES:
   - flutter_background_service_ios (from `.symlinks/plugins/flutter_background_service_ios/ios`)
   - flutter_html_to_pdf (from `.symlinks/plugins/flutter_html_to_pdf/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
   - open_filex (from `.symlinks/plugins/open_filex/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
@@ -85,6 +88,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_html_to_pdf/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
   isar_flutter_libs:
     :path: ".symlinks/plugins/isar_flutter_libs/ios"
   open_filex:
@@ -108,16 +113,17 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
-  connectivity_plus: 07c49e96d7fc92bc9920617b83238c4d178b446a
-  device_info_plus: 7545d84d8d1b896cb16a4ff98c19f07ec4b298ea
+  connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
+  device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_background_service_ios: e30e0d3ee69e4cee66272d0c78eacd48c2e94aac
   flutter_html_to_pdf: 0fd9f8d04f335d68b06a7c4ab5fc85d22e1ef91b
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
   isar_flutter_libs: b69f437aeab9c521821c3f376198c4371fa21073
   open_filex: 6e26e659846ec990262224a12ef1c528bb4edbe4
-  package_info_plus: fd030dabf36271f146f1f3beacd48f564b0f17f7
+  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   pdfx: 7b876b09de8b7a0bf444a4f82b439ffcff4ee1ec
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
@@ -126,8 +132,8 @@ SPEC CHECKSUMS:
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   unrar_file: ead248ffb2e777cb67f083bc1bb1fb45d4157dbd
   UnrarKit: 99e3f0222a98a212188e1a6975dcf5aa798d26dd
-  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
+  url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
 
 PODFILE CHECKSUM: 4523b5d271d7828b6cdc73fe8b32bf7b646e71e2
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.14.3
