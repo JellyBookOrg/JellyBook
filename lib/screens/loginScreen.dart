@@ -119,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   key: const Key('urlField'),
                   controller: _url,
                   focusNode: _focusNode1,
+                  keyboardType: TextInputType.url,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)?.pageLoginAddress ??
                         "Your Address",
