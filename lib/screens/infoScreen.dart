@@ -442,9 +442,7 @@ class _InfoScreenState extends State<InfoScreen> {
               child: !entry.downloaded
                   ? Icon(
                       Icons.download_for_offline_outlined,
-                      color: !offline
-                          ? Theme.of(context).iconTheme.color
-                          : Colors.white,
+                      color: !offline ? Colors.grey[200] : Colors.white,
                     )
                   : const Icon(
                       Icons.download_done,
