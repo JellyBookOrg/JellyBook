@@ -63,7 +63,7 @@ Future<(List<Entry>, List<Folder>)> getServerCategories({
   }
 
   logger.d("got response");
-  logger.d(response.statusCode.toString());
+  logger.d(response?.statusCode.toString());
   final data = response.data.items
       .where((element) => element.collectionType == 'books')
       .toList();

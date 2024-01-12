@@ -12,7 +12,7 @@ import 'package:isar/isar.dart';
 import 'package:jellybook/variables.dart';
 
 // get comics
-Future<List<Entry>> getComics(String comicsId) async {
+Future<void> getComics(String comicsId) async {
   logger.d('getting comics');
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('accessToken');
@@ -149,11 +149,6 @@ Future<List<Entry>> getComics(String comicsId) async {
 
   // update folders
   await updateFolders();
-
-  final List<Entry> entrys =
-      await isar.entrys.filter().not().typeEqualTo(EntryType.folder).findAll();
-
-  return entrys;
 }
 
 Future<void> updateFolders() async {
