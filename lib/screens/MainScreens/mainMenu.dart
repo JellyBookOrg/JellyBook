@@ -16,6 +16,7 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -38,6 +39,9 @@ class _MainMenuState extends State<MainMenu> {
                 - a search section
                 - a settings section
         */
+  static const _pageSize = 20;
+  final PagingController<int, Entry> _pagingController =
+      PagingController(firstPageKey: 0);
   Future<void> logout() async {
     final isar = Isar.getInstance();
     List<Login> logins = await isar!.logins.where().findAll();
@@ -66,6 +70,10 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   void initState() {
+    _pagingController.addPageRequestListener((pageKey) {
+      logger.i('pageKey: $pageKey');
+      // fetchEntries(pageKey);
+    });
     super.initState();
     // fetchCategories();
   }
