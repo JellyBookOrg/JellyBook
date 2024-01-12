@@ -338,30 +338,41 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
                         return Column(
                           children: [
                             Expanded(
-                              child: PageView.builder(
-                                scrollDirection:
-                                    direction.toLowerCase() == 'vertical'
-                                        ? Axis.vertical
-                                        : Axis.horizontal,
-                                reverse: direction == 'rtl',
-                                // scrollDirection: Axis.vertical,
-                                itemCount: pages.length,
-                                controller: PageController(
-                                  initialPage: pageNum,
-                                ),
-                                itemBuilder: (context, index) {
-                                  return InteractiveViewer(
-                                    child: Image.file(
-                                      File(pages[index]),
-                                      fit: BoxFit.contain,
+                              child: direction.toLowerCase() == 'vertical'
+                                  ? InteractiveViewer(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            for (var page in pages)
+                                              Image.file(
+                                                File(page),
+                                                fit: BoxFit.fitHeight,
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : PageView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      reverse: direction == 'rtl',
+                                      // scrollDirection: Axis.vertical,
+                                      itemCount: pages.length,
+                                      controller: PageController(
+                                        initialPage: pageNum,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        return InteractiveViewer(
+                                          child: Image.file(
+                                            File(pages[index]),
+                                            fit: BoxFit.contain,
+                                          ),
+                                        );
+                                      },
+                                      onPageChanged: (index) {
+                                        saveProgress(index);
+                                        progress = index / pageNums;
+                                      },
                                     ),
-                                  );
-                                },
-                                onPageChanged: (index) {
-                                  saveProgress(index);
-                                  progress = index / pageNums;
-                                },
-                              ),
                             ),
                           ],
                         );
