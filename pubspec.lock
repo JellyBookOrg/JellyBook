@@ -1058,15 +1058,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
-  pdfx:
+  pdfx_plugin:
     dependency: "direct main"
     description:
-      path: "packages/pdfx"
-      ref: "4be9de9ffed5398fd7d5f44bbb07dcd3d3f1711b"
-      resolved-ref: "4be9de9ffed5398fd7d5f44bbb07dcd3d3f1711b"
-      url: "https://github.com/ScerIO/packages.flutter"
-    source: git
-    version: "2.5.0"
+      name: pdfx_plugin
+      sha256: "174ff8f2d0208c6a7efd6bbca0f8ceefbc3c8af47c64c3e6aad71da16ad3deff"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   pedantic:
     dependency: transitive
     description:
