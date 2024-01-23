@@ -103,7 +103,7 @@
  - [ ] Proper testing (unit, integration, and widget... I have very little experience with this)
  - [ ] Full code restructuring and refactoring
  - [ ] Use [Tentacle](https://github.com/jmshrv/finamp/discussions/480) as new API client (must work on this first)
- - [ ] Add a proper page on IzzyOnDroid using fastlane (see [here](https://github.com/JellyBookOrg/JellyBook/issues/107#issuecomment-1714632725))
+ - [X] Add a proper page on IzzyOnDroid using fastlane (see [here](https://github.com/JellyBookOrg/JellyBook/issues/107#issuecomment-1714632725))
  - [ ] Add dynamic loading of books on library view to prevent slowdowns
  - [X] Allow user to edit metadata of books (both locally and on the server)
  - [X] Vertical scrolling
