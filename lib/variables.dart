@@ -25,7 +25,7 @@ Logger logger = Logger(
         ),
   level: Level.debug,
   printer: kDebugMode
-      ? PrettyPrinter()
+      ? PrettyPrinter(printTime: true, printEmojis: true, colors: true)
       : PrettyPrinter(
           methodCount: 5,
           errorMethodCount: 8,
