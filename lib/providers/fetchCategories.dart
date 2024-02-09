@@ -132,8 +132,29 @@ Future<(List<Entry>, List<Folder>)> getServerCategories({
     //   logger.d("${comics[i].title} : ${comics[i].isarId}");
     // }
 
+    // first 50 comics
+    comics = comics.take(50).toList();
+
     return (comics, folders);
   }
+}
+
+Future<(int, List<Entry>)> fetchEntries(int offset, int limit) async {
+  final isar = Isar.getInstance();
+  // group the favorites and list them first
+  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeNotBook =
+      isar!.entrys.filter().not().typeEqualTo(EntryType.folder);
+  List<Entry> entries =
+      await typeNotBook.and().isFavoritedEqualTo(true).sortByTitle().findAll();
+  entries.addAll(await typeNotBook
+      .and()
+      .isFavoritedEqualTo(false)
+      .sortByTitle()
+      .findAll());
+  entries = entries.skip(offset).take(limit).toList();
+  int length = entries.length;
+  logger.f("entries: " + entries.length.toString());
+  return (length, entries);
 }
 
 // check to see if a folder isn't a subfolder of another folder

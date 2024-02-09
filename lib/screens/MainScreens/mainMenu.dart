@@ -66,13 +66,23 @@ class _MainMenuState extends State<MainMenu> {
 
   bool force = false;
 
-  int _selectedIndex = 0;
-
   @override
   void initState() {
-    _pagingController.addPageRequestListener((pageKey) {
+    _pagingController.addPageRequestListener((pageKey) async {
       logger.i('pageKey: $pageKey');
-      // fetchEntries(pageKey);
+      try {
+        final pageSize = 20; // Define your page size
+        final result = await fetchEntries(pageKey, pageSize);
+        final isLastPage = result.$1 < pageSize;
+        if (isLastPage) {
+          _pagingController.appendLastPage(result.$2);
+        } else {
+          final nextPageKey = pageKey + result.$1;
+          _pagingController.appendPage(result.$2, nextPageKey);
+        }
+      } catch (error) {
+        _pagingController.error = error;
+      }
     });
     super.initState();
     // fetchCategories();
@@ -301,170 +311,23 @@ class _MainMenuState extends State<MainMenu> {
                     const SizedBox(
                       height: 10,
                     ),
-                    GridView.count(
-                      crossAxisCount: 2,
-                      physics: const NeverScrollableScrollPhysics(),
+                    PagedGridView<int, Entry>(
                       shrinkWrap: true,
-                      addAutomaticKeepAlives: true,
-                      addSemanticIndexes: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      pagingController: _pagingController,
                       addRepaintBoundaries: true,
-                      // cacheExtent: 30,
-                      children: List.generate(
-                        snapshot.data.$1.length,
-                        (index) {
-                          return StatefulBuilder(
-                            builder: (context, setState) {
-                              return Card(
-                                borderOnForeground: true,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: InkWell(
-                                  onTap: () async {
-                                    logger.i("tapped");
-                                    // logger.i(snapshot.data.$1.elementAt(index));
-                                    int selectedIndex =
-                                        index; // Store the index of the selected entry
-                                    Entry selectedEntry = snapshot.data.$1
-                                        .elementAt(selectedIndex);
-
-                                    Entry? updatedEntry = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            InfoScreen(entry: selectedEntry),
-                                      ),
-                                    );
-                                    // update state of the card
-                                    if (updatedEntry != null) {
-                                      // Update the state of the card
-                                      setState(() {
-                                        // Check if snapshot.data.$1 is a list that can be modified
-                                        if (snapshot.data.$1 is List<Entry>) {
-                                          snapshot.data.$1[selectedIndex] =
-                                              updatedEntry;
-                                        } else {
-                                          // If the list is immutable, create a new list with the updated entry
-                                          var newList = List<Entry>.from(
-                                              snapshot.data.$1);
-                                          newList[selectedIndex] = updatedEntry;
-                                          // Update the data source
-                                          snapshot.data.$1 = newList;
-                                        }
-                                      });
-                                    }
-                                  },
-                                  child: Column(
-                                    children: <Widget>[
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Stack(
-                                        children: <Widget>[
-                                          SizedBox(
-                                            // height should be 80% of the card
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height /
-                                                6 *
-                                                0.8,
-                                            child: RoundedImageWithShadow(
-                                              imageUrl: snapshot.data.$1
-                                                      .elementAt(index)
-                                                      .imagePath ??
-                                                  'Asset',
-                                            ),
-                                          ),
-                                          if (snapshot.data.$1
-                                                  .elementAt(index)
-                                                  .isFavorited ==
-                                              true)
-                                            // icon in circle in bottom $2 corner
-                                            // allow it to be off the image without being cut off
-                                            Positioned(
-                                              bottom: 0,
-                                              right: 0,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Theme.of(context)
-                                                      .primaryColor
-                                                      .withOpacity(0.8),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          100),
-                                                ),
-                                                child: const Padding(
-                                                  padding: EdgeInsets.all(5),
-                                                  child: Icon(
-                                                    Icons.favorite,
-                                                    color: Colors.red,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      // auto size text to fit the width of the card (max 2 lines)
-
-                                      Expanded(
-                                        flex: 3,
-                                        // give some padding to the text
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 5, right: 5),
-                                          child: AutoSizeText(
-                                            snapshot.data.$1?[index].title ??
-                                                "null",
-                                            maxLines: 3,
-                                            minFontSize: 10,
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-
-                                      if (snapshot.data.$1
-                                              .elementAt(index)
-                                              .releaseDate !=
-                                          "null")
-                                        Flexible(
-                                          // give some padding to the text
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 5, right: 5),
-                                            child: AutoSizeText(
-                                              snapshot.data.$1
-                                                  .elementAt(index)
-                                                  .releaseDate,
-                                              maxLines: 1,
-                                              minFontSize: 10,
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                fontSize: 13,
-                                                fontStyle: FontStyle.italic,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        // itemCount: snapshot.data.$1!.length,
+                      addSemanticIndexes: true,
+                      addAutomaticKeepAlives: true,
+                      // shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1,
                       ),
+                      builderDelegate: PagedChildBuilderDelegate<Entry>(
+                          itemBuilder: (context, entry, index) => SizedBox(
+                                child: GridEntryWidget(entry),
+                              )),
                     ),
                   ];
                   return Column(
@@ -538,6 +401,123 @@ class _MainMenuState extends State<MainMenu> {
             height: 10,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class GridEntryWidget extends StatefulWidget {
+  final Entry entry;
+
+  const GridEntryWidget(this.entry) : super(key: key);
+
+  // createState function
+  @override
+  GridEntryWidgetState createState() => GridEntryWidgetState();
+}
+
+class GridEntryWidgetState extends State<GridEntryWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: InkWell(
+        onTap: () async {
+          logger.i("tapped");
+          // logger.i(snapshot.data.$1.elementAt(index));
+          Entry? updatedEntry = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => InfoScreen(entry: widget.entry),
+            ),
+          );
+          setState(() {
+            widget.entry.isFavorited =
+                updatedEntry?.isFavorited ?? widget.entry.isFavorited;
+          });
+        },
+        child: Column(
+          children: <Widget>[
+            const SizedBox(
+              height: 10,
+            ),
+            Stack(
+              children: <Widget>[
+                SizedBox(
+                  // height should be 80% of the card
+                  height: MediaQuery.of(context).size.height / 6 * 0.8,
+                  child: RoundedImageWithShadow(
+                    imageUrl: widget.entry.imagePath ?? 'Asset',
+                  ),
+                ),
+                if (widget.entry.isFavorited == true)
+                  // icon in circle in bottom $2 corner
+                  // allow it to be off the image without being cut off
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            // auto size text to fit the width of the card (max 2 lines)
+
+            Expanded(
+              flex: 3,
+              // give some padding to the text
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                child: AutoSizeText(
+                  widget.entry.title,
+                  maxLines: 3,
+                  minFontSize: 10,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+
+            if (widget.entry.releaseDate != "null")
+              Flexible(
+                // give some padding to the text
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 5, right: 5),
+                  child: AutoSizeText(
+                    widget.entry.releaseDate,
+                    maxLines: 1,
+                    minFontSize: 10,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
