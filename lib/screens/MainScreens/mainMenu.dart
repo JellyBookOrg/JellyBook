@@ -157,249 +157,207 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          const SizedBox(height: 10),
-          FutureBuilder(
+      body: CustomScrollView(
+        slivers: <Widget>[
+          const SliverToBoxAdapter(child: SizedBox(height: 10)),
+          FutureBuilder<(List<Entry>, List<Folder>)>(
             future: getServerCategories(force: force),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  List<Widget> collectionChildren = [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Text(
-                          AppLocalizations.of(context)?.collections ??
-                              "Collections",
-                          style: const TextStyle(
-                            // size is the size of a title
-                            fontSize: 30,
-                            // decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.bold,
+                  // Wrap Column in SliverToBoxAdapter for compatibility
+                  return SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Text(
+                              AppLocalizations.of(context)?.collections ??
+                                  "Collections",
+                              style: const TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height / 6 * 1.2,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: snapshot.data.$2?.length,
-                        itemExtent: MediaQuery.of(context).size.width / 3,
-                        itemBuilder: (context, index) {
-                          return SizedBox(
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: InkWell(
-                                onTap: () async {
-                                  logger.i("tapped");
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => collectionScreen(
-                                        folderId: snapshot.data.$2
-                                            .elementAt(index)
-                                            .id,
-                                        name: snapshot.data.$2
-                                            .elementAt(index)
-                                            .name,
-                                        image: snapshot.data.$2
-                                            .elementAt(index)
-                                            .image,
-                                        bookIds: snapshot.data.$2
-                                            .elementAt(index)
-                                            .bookIds,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Column(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 10 *
-                                          MediaQuery.of(context).size.height /
-                                          1000,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 10 *
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          height: MediaQuery.of(context).size.height / 6 * 1.2,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: snapshot.data.$2?.length,
+                            itemExtent: MediaQuery.of(context).size.width / 3,
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      logger.i("tapped");
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              collectionScreen(
+                                            folderId: snapshot.data.$2
+                                                .elementAt(index)
+                                                .id,
+                                            name: snapshot.data.$2
+                                                .elementAt(index)
+                                                .name,
+                                            image: snapshot.data.$2
+                                                .elementAt(index)
+                                                .image,
+                                            bookIds: snapshot.data.$2
+                                                .elementAt(index)
+                                                .bookIds,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 10 *
                                               MediaQuery.of(context)
                                                   .size
-                                                  .width /
+                                                  .height /
                                               1000,
-                                          right: 10 *
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1000,
+                                              right: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  1000),
+                                          child: AutoSizeText(
+                                            snapshot.data.$2
+                                                .elementAt(index)
+                                                .name,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            minFontSize: 5,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        // start all images at the same height rather than same offset
+                                        SizedBox(
+                                          height: 5 *
                                               MediaQuery.of(context)
                                                   .size
-                                                  .width /
-                                              1000),
-                                      child: AutoSizeText(
-                                        snapshot.data.$2.elementAt(index).name,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        minFontSize: 5,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
+                                                  .height /
+                                              1000,
                                         ),
-                                      ),
-                                    ),
-                                    // start all images at the same height rather than same offset
-                                    SizedBox(
-                                      height: 5 *
-                                          MediaQuery.of(context).size.height /
-                                          1000,
-                                    ),
-                                    Flexible(
-                                      child: SizedBox(
-                                        child: RoundedImageWithShadow(
-                                          imageUrl: snapshot.data.$2
-                                                  .elementAt(index)
-                                                  .image ??
-                                              'Asset',
+                                        Flexible(
+                                          child: SizedBox(
+                                            child: RoundedImageWithShadow(
+                                              imageUrl: snapshot.data.$2
+                                                      .elementAt(index)
+                                                      .image ??
+                                                  'Asset',
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
+                                  ),
                                 ),
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          height: 5,
+                          thickness: 5,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text(
+                              AppLocalizations.of(context)?.library ??
+                                  "Library",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    // page break
-                    const Divider(
-                      height: 5,
-                      thickness: 5,
-                      indent: 0,
-                      endIndent: 0,
-                    ),
-                  ];
-                  List<Widget> libraryChildren = [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Text(
-                          AppLocalizations.of(context)?.library ?? "Library",
-                          style: TextStyle(
-                            // size is the size of a title
-                            fontSize: 30,
-                            // decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        PagedGridView<int, Entry>(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          pagingController: _pagingController,
+                          addRepaintBoundaries: true,
+                          addSemanticIndexes: true,
+                          addAutomaticKeepAlives: true,
+                          // shrinkWrap: true,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 1,
+                          ),
+                          builderDelegate: PagedChildBuilderDelegate<Entry>(
+                              itemBuilder: (context, entry, index) => SizedBox(
+                                    child: GridEntryWidget(entry),
+                                  )),
+                        ),
+                      ],
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    PagedGridView<int, Entry>(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      pagingController: _pagingController,
-                      addRepaintBoundaries: true,
-                      addSemanticIndexes: true,
-                      addAutomaticKeepAlives: true,
-                      // shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 1,
-                      ),
-                      builderDelegate: PagedChildBuilderDelegate<Entry>(
-                          itemBuilder: (context, entry, index) => SizedBox(
-                                child: GridEntryWidget(entry),
-                              )),
-                    ),
-                  ];
-                  return Column(
-                    children: [
-                      if (snapshot.data.$2.toString().isNotEmpty &&
-                          snapshot.data.$2 != null)
-                        ...collectionChildren,
-                      if (snapshot.data.$1.toString().isNotEmpty)
-                        ...libraryChildren,
-                      // const SizedBox(
-                      //   height: 10,
-                      // ),
-                    ],
                   );
                 } else if (snapshot.hasError) {
-                  logger.e("Error: ${snapshot.error!}");
-                  logger.e("Stack Trace: ${snapshot.stackTrace}");
-                  return Center(
-                    // return error message if there is an error
-                    child: Text(
-                      (AppLocalizations.of(context)?.error ?? "Error") +
-                          ": " +
-                          snapshot.error.toString(),
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 20,
+                  // Handle error state
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Text(
+                        "Error: ${snapshot.error}",
+                        style: TextStyle(color: Colors.red),
                       ),
-                    ),
-                  );
-                  // if theres no books in the database, show a message
-                } else if (snapshot.data == null) {
-                  return Center(
-                    child: Text(
-                      AppLocalizations.of(context)?.noBooks ?? "No books found",
-                      style: TextStyle(fontSize: 20),
                     ),
                   );
                 } else {
-                  return const SizedBox(
-                    height: 100,
+                  // Handle null data state
+                  return SliverToBoxAdapter(
                     child: Center(
-                      child: CircularProgressIndicator(),
+                      child: Text("No data found"),
                     ),
                   );
                 }
               } else {
-                // center both horizontally and vertically (the whole screen)
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 2 - 120,
-                    ),
-                    Text(
-                      AppLocalizations.of(context)?.waitToFetchDB ??
-                          "Please wait while we fetch content from the database",
-                      style: TextStyle(fontSize: 20),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const CircularProgressIndicator(),
-                  ],
+                // Handle loading state
+                return SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
                 );
               }
             },
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          SliverToBoxAdapter(
+              child: const SizedBox(height: 10)), // Replaces the last SizedBox
         ],
       ),
     );
@@ -409,7 +367,7 @@ class _MainMenuState extends State<MainMenu> {
 class GridEntryWidget extends StatefulWidget {
   final Entry entry;
 
-  const GridEntryWidget(this.entry) : super(key: key);
+  const GridEntryWidget(this.entry);
 
   // createState function
   @override
