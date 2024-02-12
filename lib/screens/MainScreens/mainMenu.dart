@@ -66,23 +66,28 @@ class _MainMenuState extends State<MainMenu> {
 
   bool force = false;
 
+  Future<void> _fetchPage(int pageKey) async {
+    logger.i('pageKey: $pageKey');
+    try {
+      final pageSize = 20; // Define your page size
+      final result = await fetchEntries(pageKey, pageSize);
+      logger.i("result.\$1: ${result.$1}");
+      final isLastPage = result.$1 < pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(result.$2);
+      } else {
+        final nextPageKey = pageKey + result.$1;
+        _pagingController.appendPage(result.$2, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
   @override
   void initState() {
-    _pagingController.addPageRequestListener((pageKey) async {
-      logger.i('pageKey: $pageKey');
-      try {
-        final pageSize = 20; // Define your page size
-        final result = await fetchEntries(pageKey, pageSize);
-        final isLastPage = result.$1 < pageSize;
-        if (isLastPage) {
-          _pagingController.appendLastPage(result.$2);
-        } else {
-          final nextPageKey = pageKey + result.$1;
-          _pagingController.appendPage(result.$2, nextPageKey);
-        }
-      } catch (error) {
-        _pagingController.error = error;
-      }
+    _pagingController.addPageRequestListener((pageKey)  {
+      _fetchPage(pageKey);
     });
     super.initState();
     // fetchCategories();
@@ -157,179 +162,182 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          const SliverToBoxAdapter(child: SizedBox(height: 10)),
-          FutureBuilder<(List<Entry>, List<Folder>)>(
+      body: FutureBuilder<(List<Entry>, List<Folder>)>(
             future: getServerCategories(force: force),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData && snapshot.data != null) {
                   // Wrap Column in SliverToBoxAdapter for compatibility
-                  return SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              AppLocalizations.of(context)?.collections ??
-                                  "Collections",
-                              style: const TextStyle(
-                                  fontSize: 30, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          height: MediaQuery.of(context).size.height / 6 * 1.2,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: snapshot.data.$2?.length,
-                            itemExtent: MediaQuery.of(context).size.width / 3,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: InkWell(
-                                    onTap: () async {
-                                      logger.i("tapped");
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              collectionScreen(
-                                            folderId: snapshot.data.$2
-                                                .elementAt(index)
-                                                .id,
-                                            name: snapshot.data.$2
-                                                .elementAt(index)
-                                                .name,
-                                            image: snapshot.data.$2
-                                                .elementAt(index)
-                                                .image,
-                                            bookIds: snapshot.data.$2
-                                                .elementAt(index)
-                                                .bookIds,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Column(
-                                      children: <Widget>[
-                                        SizedBox(
-                                          height: 10 *
-                                              MediaQuery.of(context)
-                                                  .size
-                                                  .height /
-                                              1000,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              left: 10 *
-                                                  MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1000,
-                                              right: 10 *
-                                                  MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  1000),
-                                          child: AutoSizeText(
-                                            snapshot.data.$2
-                                                .elementAt(index)
-                                                .name,
-                                            textAlign: TextAlign.center,
-                                            maxLines: 2,
-                                            minFontSize: 5,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        // start all images at the same height rather than same offset
-                                        SizedBox(
-                                          height: 5 *
-                                              MediaQuery.of(context)
-                                                  .size
-                                                  .height /
-                                              1000,
-                                        ),
-                                        Flexible(
-                                          child: SizedBox(
-                                            child: RoundedImageWithShadow(
-                                              imageUrl: snapshot.data.$2
-                                                      .elementAt(index)
-                                                      .image ??
-                                                  'Asset',
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                  return CustomScrollView(
+                    slivers: <Widget>[
+                      const SliverToBoxAdapter(child: SizedBox(height: 10)), 
+                      SliverToBoxAdapter(
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  AppLocalizations.of(context)?.collections ??
+                                      "Collections",
+                                  style: const TextStyle(
+                                      fontSize: 30, fontWeight: FontWeight.bold),
                                 ),
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Divider(
-                          height: 5,
-                          thickness: 5,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text(
-                              AppLocalizations.of(context)?.library ??
-                                  "Library",
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              width: double.infinity,
+                              height: MediaQuery.of(context).size.height / 6 * 1.2,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: snapshot.data.$2?.length,
+                                itemExtent: MediaQuery.of(context).size.width / 3,
+                                itemBuilder: (context, index) {
+                                  return SizedBox(
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: InkWell(
+                                        onTap: () async {
+                                          logger.i("tapped");
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  collectionScreen(
+                                                folderId: snapshot.data.$2
+                                                    .elementAt(index)
+                                                    .id,
+                                                name: snapshot.data.$2
+                                                    .elementAt(index)
+                                                    .name,
+                                                image: snapshot.data.$2
+                                                    .elementAt(index)
+                                                    .image,
+                                                bookIds: snapshot.data.$2
+                                                    .elementAt(index)
+                                                    .bookIds,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Column(
+                                          children: <Widget>[
+                                            SizedBox(
+                                              height: 10 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  1000,
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 10 *
+                                                      MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      1000,
+                                                  right: 10 *
+                                                      MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      1000),
+                                              child: AutoSizeText(
+                                                snapshot.data.$2
+                                                    .elementAt(index)
+                                                    .name,
+                                                textAlign: TextAlign.center,
+                                                maxLines: 2,
+                                                minFontSize: 5,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            // start all images at the same height rather than same offset
+                                            SizedBox(
+                                              height: 5 *
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  1000,
+                                            ),
+                                            Flexible(
+                                              child: SizedBox(
+                                                child: RoundedImageWithShadow(
+                                                  imageUrl: snapshot.data.$2
+                                                          .elementAt(index)
+                                                          .image ??
+                                                      'Asset',
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Divider(
+                              height: 5,
+                              thickness: 5,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 10),
+                                child: Text(
+                                  AppLocalizations.of(context)?.library ??
+                                      "Library",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          height: 10,
+                      ),
+                      PagedSliverGrid<int, Entry>(
+                        pagingController: _pagingController,
+                        addRepaintBoundaries: true,
+                        addSemanticIndexes: true,
+                        addAutomaticKeepAlives: true,
+                        // shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1,
                         ),
-                        PagedGridView<int, Entry>(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          pagingController: _pagingController,
-                          addRepaintBoundaries: true,
-                          addSemanticIndexes: true,
-                          addAutomaticKeepAlives: true,
-                          // shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 1,
-                          ),
-                          builderDelegate: PagedChildBuilderDelegate<Entry>(
-                              itemBuilder: (context, entry, index) => SizedBox(
-                                    child: GridEntryWidget(entry),
-                                  )),
-                        ),
-                      ],
-                    ),
+                        builderDelegate: PagedChildBuilderDelegate<Entry>(
+                            itemBuilder: (context, entry, index) => SizedBox(
+                                  child: GridEntryWidget(entry),
+                                )),
+                      ),
+                      SliverToBoxAdapter(
+                        child: const SizedBox(height: 10)),
+                    ],
                   );
+                  
                 } else if (snapshot.hasError) {
                   // Handle error state
                   return SliverToBoxAdapter(
@@ -350,17 +358,11 @@ class _MainMenuState extends State<MainMenu> {
                 }
               } else {
                 // Handle loading state
-                return SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
-                );
+                return Center(child: CircularProgressIndicator());
               }
             },
           ),
-          SliverToBoxAdapter(
-              child: const SizedBox(height: 10)), // Replaces the last SizedBox
-        ],
-      ),
-    );
+      );
   }
 }
 
