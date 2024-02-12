@@ -69,7 +69,7 @@ class _MainMenuState extends State<MainMenu> {
   Future<void> _fetchPage(int pageKey) async {
     logger.i('pageKey: $pageKey');
     try {
-      final pageSize = 20; // Define your page size
+      const pageSize = 20; // Define your page size
       final result = await fetchEntries(pageKey, pageSize);
       logger.i("result.\$1: ${result.$1}");
       final isLastPage = result.$1 < pageSize;
@@ -287,31 +287,31 @@ class _MainMenuState extends State<MainMenu> {
                             },
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
-                        Divider(
+                        const Divider(
                           height: 5,
                           thickness: 5,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
-                            padding: EdgeInsets.only(left: 10),
+                            padding: const EdgeInsets.only(left: 10),
                             child: Text(
                               AppLocalizations.of(context)?.library ??
                                   "Library",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                       ],
@@ -333,7 +333,7 @@ class _MainMenuState extends State<MainMenu> {
                               child: GridEntryWidget(entry),
                             )),
                   ),
-                  SliverToBoxAdapter(child: const SizedBox(height: 10)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -342,13 +342,13 @@ class _MainMenuState extends State<MainMenu> {
                 child: Center(
                   child: Text(
                     "Error: ${snapshot.error}",
-                    style: TextStyle(color: Colors.red),
+                    style: const TextStyle(color: Colors.red),
                   ),
                 ),
               );
             } else {
               // Handle null data state
-              return SliverToBoxAdapter(
+              return const SliverToBoxAdapter(
                 child: Center(
                   child: Text("No data found"),
                 ),
@@ -356,7 +356,7 @@ class _MainMenuState extends State<MainMenu> {
             }
           } else {
             // Handle loading state
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
