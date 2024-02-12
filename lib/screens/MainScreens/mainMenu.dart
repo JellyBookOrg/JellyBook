@@ -66,23 +66,28 @@ class _MainMenuState extends State<MainMenu> {
 
   bool force = false;
 
+  Future<void> _fetchPage(int pageKey) async {
+    logger.i('pageKey: $pageKey');
+    try {
+      final pageSize = 20; // Define your page size
+      final result = await fetchEntries(pageKey, pageSize);
+      logger.i("result.\$1: ${result.$1}");
+      final isLastPage = result.$1 < pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(result.$2);
+      } else {
+        final nextPageKey = pageKey + result.$1;
+        _pagingController.appendPage(result.$2, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
   @override
   void initState() {
-    _pagingController.addPageRequestListener((pageKey) async {
-      logger.i('pageKey: $pageKey');
-      try {
-        final pageSize = 20; // Define your page size
-        final result = await fetchEntries(pageKey, pageSize);
-        final isLastPage = result.$1 < pageSize;
-        if (isLastPage) {
-          _pagingController.appendLastPage(result.$2);
-        } else {
-          final nextPageKey = pageKey + result.$1;
-          _pagingController.appendPage(result.$2, nextPageKey);
-        }
-      } catch (error) {
-        _pagingController.error = error;
-      }
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
     });
     super.initState();
     // fetchCategories();
@@ -157,16 +162,16 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          const SliverToBoxAdapter(child: SizedBox(height: 10)),
-          FutureBuilder<(List<Entry>, List<Folder>)>(
-            future: getServerCategories(force: force),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  // Wrap Column in SliverToBoxAdapter for compatibility
-                  return SliverToBoxAdapter(
+      body: FutureBuilder<(List<Entry>, List<Folder>)>(
+        future: getServerCategories(force: force),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData && snapshot.data != null) {
+              // Wrap Column in SliverToBoxAdapter for compatibility
+              return CustomScrollView(
+                slivers: <Widget>[
+                  const SliverToBoxAdapter(child: SizedBox(height: 10)),
+                  SliverToBoxAdapter(
                     child: Column(
                       children: [
                         Align(
@@ -309,56 +314,51 @@ class _MainMenuState extends State<MainMenu> {
                         SizedBox(
                           height: 10,
                         ),
-                        PagedGridView<int, Entry>(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          pagingController: _pagingController,
-                          addRepaintBoundaries: true,
-                          addSemanticIndexes: true,
-                          addAutomaticKeepAlives: true,
-                          // shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 1,
-                          ),
-                          builderDelegate: PagedChildBuilderDelegate<Entry>(
-                              itemBuilder: (context, entry, index) => SizedBox(
-                                    child: GridEntryWidget(entry),
-                                  )),
-                        ),
                       ],
                     ),
-                  );
-                } else if (snapshot.hasError) {
-                  // Handle error state
-                  return SliverToBoxAdapter(
-                    child: Center(
-                      child: Text(
-                        "Error: ${snapshot.error}",
-                        style: TextStyle(color: Colors.red),
-                      ),
+                  ),
+                  PagedSliverGrid<int, Entry>(
+                    pagingController: _pagingController,
+                    addRepaintBoundaries: true,
+                    addSemanticIndexes: true,
+                    addAutomaticKeepAlives: true,
+                    // shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1,
                     ),
-                  );
-                } else {
-                  // Handle null data state
-                  return SliverToBoxAdapter(
-                    child: Center(
-                      child: Text("No data found"),
-                    ),
-                  );
-                }
-              } else {
-                // Handle loading state
-                return SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-            },
-          ),
-          SliverToBoxAdapter(
-              child: const SizedBox(height: 10)), // Replaces the last SizedBox
-        ],
+                    builderDelegate: PagedChildBuilderDelegate<Entry>(
+                        itemBuilder: (context, entry, index) => SizedBox(
+                              child: GridEntryWidget(entry),
+                            )),
+                  ),
+                  SliverToBoxAdapter(child: const SizedBox(height: 10)),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              // Handle error state
+              return SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
+                    "Error: ${snapshot.error}",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              );
+            } else {
+              // Handle null data state
+              return SliverToBoxAdapter(
+                child: Center(
+                  child: Text("No data found"),
+                ),
+              );
+            }
+          } else {
+            // Handle loading state
+            return Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
