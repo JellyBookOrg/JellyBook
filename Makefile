@@ -47,25 +47,25 @@ endif
 .PHONY: ios_release
 ios_release: create_output_dir
 	@echo "Building iOS release IPA..."
-	@flutter build ipa --release >/dev/null 2>&1
+	@flutter build ipa --release --dart-define-from-file=./sentry.json
 	@echo "Complete release IPA"
 	@mv build/ios/ipa/jellybook.ipa "$(OUTPUT_DIR)/JellyBook-Release.ipa"
 
 .PHONY: ios_debug
 ios_debug: create_output_dir
 	@echo "Building iOS debug IPA..."
-	@flutter build ipa --debug
+	@flutter build ipa --debug --dart-define-from-file=./sentry.json
 	@echo "Complete debug IPA"
 	@mv build/ios/ipa/jellybook.ipa "$(OUTPUT_DIR)/JellyBook-Debug.ipa"
 
 .PHONY: android_release
 android_release: create_output_dir
 	@echo "Building Android release APK..."
-	@flutter build apk --release
+	@flutter build apk --release --dart-define-from-file=./sentry.json
 	@echo "Complete release APK"
 	@mv build/app/outputs/flutter-apk/app-release.apk "$(OUTPUT_DIR)/JellyBook-Release.apk"
 	@echo "Building Android release APK (split by ABI)..."
-	@flutter build apk --split-per-abi --release
+	@flutter build apk --split-per-abi --release --dart-define-from-file=./sentry.json
 	@echo "Complete release APK (split by ABI)"
 	@mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk "$(OUTPUT_DIR)/JellyBook-Release-arm32.apk"
 	@mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk "$(OUTPUT_DIR)/JellyBook-Release-arm64.apk"
@@ -74,11 +74,11 @@ android_release: create_output_dir
 .PHONY: android_debug
 android_debug: create_output_dir
 	@echo "Building Android debug APK..."
-	@flutter build apk --debug
+	@flutter build apk --debug --dart-define-from-file=./sentry.json
 	@echo "Complete debug APK"
 	@mv build/app/outputs/flutter-apk/app-debug.apk "$(OUTPUT_DIR)/JellyBook-Debug.apk"
 	@echo "Building Android debug APK (split by ABI)..."
-	@flutter build apk --split-per-abi --debug
+	@flutter build apk --split-per-abi --debug --dart-define-from-file=./sentry.json
 	@echo "Complete debug APK (split by ABI)"
 	@mv build/app/outputs/flutter-apk/app-armeabi-v7a-debug.apk "$(OUTPUT_DIR)/JellyBook-Debug-arm32.apk"
 	@mv build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk "$(OUTPUT_DIR)/JellyBook-Debug-arm64.apk"
@@ -87,14 +87,14 @@ android_debug: create_output_dir
 .PHONY: app_bundle_release
 app_bundle_release: create_output_dir
 	@echo "Building Android release App Bundle..."
-	@flutter build appbundle --release
+	@flutter build appbundle --release --dart-define-from-file=./sentry.json
 	@echo "Complete release App Bundle"
 	@mv build/app/outputs/bundle/release/app-release.aab "$(OUTPUT_DIR)/JellyBook-Release.aab"
 
 .PHONY: app_bundle_debug
 app_bundle_debug: create_output_dir
 	@echo "Building Android debug App Bundle..."
-	@flutter build appbundle --debug
+	@flutter build appbundle --debug --dart-define-from-file=./sentry.json
 	@echo "Complete debug App Bundle"
 	@mv build/app/outputs/bundle/debug/app-debug.aab "$(OUTPUT_DIR)/JellyBook-Debug.aab"
 
