@@ -17,6 +17,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -79,8 +81,13 @@ class _MainMenuState extends State<MainMenu> {
         final nextPageKey = pageKey + result.$1;
         _pagingController.appendPage(result.$2, nextPageKey);
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
       _pagingController.error = error;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool useSentry = prefs.getBool('useSentry') ?? false;
+      if (useSentry) {
+        await Sentry.captureException(error, stackTrace: stackTrace);
+      }
     }
   }
 

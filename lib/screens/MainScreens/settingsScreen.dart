@@ -14,6 +14,7 @@ import 'package:jellybook/widgets/SimpleUserCard.dart';
 import 'package:jellybook/widgets/SettingsItem.dart';
 import 'package:jellybook/variables.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:sentry/sentry.dart';
 
 import 'package:openapi/openapi.dart';
 
@@ -312,8 +313,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (response != null && response.statusCode == 200) {
         image = response.data!;
       }
-    } catch (e) {
+    } catch (e, s) {
       logger.e(e.toString());
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+      );
     }
     if (image.isNotEmpty) {
       imageProvider = MemoryImage(image);
@@ -701,8 +706,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         mode: LaunchMode.externalApplication,
                       );
                     }
-                  } catch (e) {
+                  } catch (e, s) {
                     logger.e(e.toString());
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    bool useSentry = prefs.getBool('useSentry') ?? false;
+                    if (useSentry)
+                      await Sentry.captureException(e, stackTrace: s);
                   }
                 },
               ),

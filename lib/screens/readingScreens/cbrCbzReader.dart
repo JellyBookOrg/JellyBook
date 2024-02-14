@@ -17,6 +17,7 @@ import 'package:jellybook/screens/AudioPicker.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:jellybook/widgets/AudioPlayerWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 // cbr/cbz reader
 class CbrCbzReader extends StatefulWidget {
@@ -203,7 +204,10 @@ class _CbrCbzReaderState extends State<CbrCbzReader> {
         for (var file in files) {
           getChaptersFromDirectory(file);
         }
-      } catch (e) {
+      } catch (e, s) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        bool useSentry = prefs.getBool('useSentry') ?? false;
+        if (useSentry) await Sentry.captureException(e, stackTrace: s);
         logger.d(
           "Error: not a valid directory, its a file",
         );

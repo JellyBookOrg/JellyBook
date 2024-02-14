@@ -5,6 +5,8 @@ import 'package:xml/xml.dart' as xml;
 import 'package:jellybook/variables.dart';
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> parseXML(Entry entry) async {
   // find the ComicInfo.xml file
@@ -87,11 +89,15 @@ Future<void> parseXML(Entry entry) async {
 
   // save to database
   final isar = Isar.getInstance();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var useSentry = prefs.getBool('useSentry') ?? false;
   await isar!.writeTxn(() async {
     await isar.entrys.put(entry);
-  }).catchError((error) {
+  }).catchError((error, stackTrace) async {
+    if (useSentry) await Sentry.captureException(error, stackTrace: stackTrace);
     logger.e(error);
   }).onError((error, stackTrace) {
+    if (useSentry) Sentry.captureException(error, stackTrace: stackTrace);
     logger.e(error);
   });
 }

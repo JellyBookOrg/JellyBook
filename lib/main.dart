@@ -202,24 +202,11 @@ class MyApp extends StatelessWidget {
                   if (snapshot.data == ConnectivityResult.none) {
                     return OfflineBookReader(prefs: prefs);
                   } else {
-                    // try to ping 1.1.1.1 or 8.8.8.8 or whatever their dns is and if network is reachable go to login screen
-                    // if not, go to offline book reader
-                    // Socket.connect('1.1.1.1', 53).then((socket) {
-                    // socket.destroy();
                     return LoginScreen(
                       url: url,
                       username: username,
                       password: password,
                     );
-                    // }).catchError((e) {
-                    //   logger.e(e);
-                    //   return OfflineBookReader(prefs: prefs);
-                    // });
-                    // return LoginScreen(
-                    //   url: url,
-                    //   username: username,
-                    //   password: password,
-                    // );
                   }
                 } else {
                   return const CircularProgressIndicator();

@@ -14,6 +14,7 @@ import 'package:jellybook/models/login.dart';
 import 'package:openapi/openapi.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:jellybook/variables.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class LoginProvider {
   final String url;
@@ -110,7 +111,10 @@ class LoginProvider {
         headers: headers,
       );
       logger.d("Status Code: ${response.statusCode}");
-    } catch (e) {
+    } catch (e, s) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool useSentry = prefs.getBool('useSentry') ?? false;
+      if (useSentry) await Sentry.captureException(e, stackTrace: s);
       logger.e("Error:\n$e");
       return e.toString();
       // logger.e('Exception when calling UserApi->authenticateUserByName: $e\n');
