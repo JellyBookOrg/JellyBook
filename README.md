@@ -136,6 +136,8 @@
  - Thank you to [u/anekdotos](https://reddit.com/u/anekdotos) on Reddit for donating to the project so it could be published on iOS
  - Thank you to Weblate for hosting translation
  - Thank you to IzzyOnDroid for packaging and hosting the app on their repo
+ - Thank you to [Sentry](https://sentry.io) for providing error tracking (with their open source plan)
+ - And of course, thank you to all the contributors and users of the app
 
 ## 🤔 Why is Development so Slow?
 - I am a full time student and work part time. I recently had midterms come up which caused me to have to slow down on my working on this project. This project is really fun to work on for me but that being said, without making any money from it or receiving any donations my ability to work on this project is hindered. This is since I do need money to help pay for my education and living expenses. I would really love to be able to work on open source full time but unfortunately that is not possible at this current time to work on it like how I was previously.

@@ -17,6 +17,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:jellybook/screens/AudioPicker.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:jellybook/widgets/AudioPlayerWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PdfReader extends StatefulWidget {
   final String comicId;
@@ -56,11 +57,18 @@ class _PdfReaderState extends State<PdfReader> {
   // pages
   int _totalPages = 0;
   late PdfController pdfController;
+  late String direction;
 
   _PdfReaderState({
     required this.comicId,
     required this.title,
   });
+
+  void setDirection() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    direction = prefs.getString('readingDirection') ?? 'ltr';
+    logger.f("direction: $direction");
+  }
 
   // first, we want to see if the user has given us permission to access their files
   // if they have, we want to check if the comic has been downloaded
@@ -69,6 +77,7 @@ class _PdfReaderState extends State<PdfReader> {
   @override
   void initState() {
     super.initState();
+    setDirection();
   }
 
   @override
@@ -135,6 +144,10 @@ class _PdfReaderState extends State<PdfReader> {
               body: Center(
                 child: Container(
                   child: PdfView(
+                    scrollDirection: direction.toLowerCase() == 'vertical'
+                        ? Axis.vertical
+                        : Axis.horizontal,
+                    reverse: direction.toLowerCase() == 'rtl' ? true : false,
                     controller: pdfController,
                     onPageChanged: (page) {
                       saveProgress(page: page, comicId: comicId);

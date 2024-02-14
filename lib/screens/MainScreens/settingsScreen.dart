@@ -14,6 +14,7 @@ import 'package:jellybook/widgets/SimpleUserCard.dart';
 import 'package:jellybook/widgets/SettingsItem.dart';
 import 'package:jellybook/variables.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:sentry/sentry.dart';
 
 import 'package:openapi/openapi.dart';
 
@@ -173,6 +174,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(
               height: 20,
             ),
+            FutureBuilder(
+              future: useSentrySettings(),
+              builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                return snapshot.data ?? Container();
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
             // experimentalFeaturesSettings(),
             // button to show log file
             // logToFile(),
@@ -312,8 +322,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (response != null && response.statusCode == 200) {
         image = response.data!;
       }
-    } catch (e) {
+    } catch (e, s) {
       logger.e(e.toString());
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+      );
     }
     if (image.isNotEmpty) {
       imageProvider = MemoryImage(image);
@@ -701,13 +715,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         mode: LaunchMode.externalApplication,
                       );
                     }
-                  } catch (e) {
+                  } catch (e, s) {
                     logger.e(e.toString());
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    bool useSentry = prefs.getBool('useSentry') ?? false;
+                    if (useSentry)
+                      await Sentry.captureException(e, stackTrace: s);
                   }
                 },
               ),
             ],
           );
+        },
+      );
+
+  // useSentry settings
+  Future<Widget> useSentrySettings() async => SettingsItem(
+        // settingKey: 'useSentry',
+        title: AppLocalizations.of(context)?.useSentry ?? 'Use Sentry',
+        selected: prefs?.getBool('useSentry').toString() ?? 'false',
+        backgroundColor: Theme.of(context).splashColor,
+        icon: Icons.bug_report,
+        values: <String, String>{
+          'true': AppLocalizations.of(context)?.yes ?? 'Yes',
+          'false': AppLocalizations.of(context)?.no ?? 'No',
+        },
+        onChange: (value) async {
+          debugPrint(value);
+          prefs?.setBool('useSentry', value.toString() == 'true');
+          setState(() {});
         },
       );
 }

@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/providers/themeProvider.dart';
 import 'package:jellybook/variables.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<String> get _localPath async {
   // get the directory that normally is located at /storage/emulated/0/Documents/
@@ -90,6 +91,8 @@ Future<void> main() async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
+  bool useSentry = prefs.getBool("useSentry") ?? false;
+
   // dio allow self signed certificates
   HttpOverrides.global = MyHttpOverrides();
 
@@ -111,42 +114,23 @@ Future<void> main() async {
   // set the logStoragePath variable
   logStoragePath = "$localPath/Documents/";
 
-  // set language to english
-  // Settings.setValue<String>("localeString", "en");
-
-  // if (kDebugMode) {
-  //   try {
-  //     // delete all entries in the database
-  //     // get a list of all the entries ids
-  //     var entries = await isar.entrys.where().findAll();
-  //     var entryIds = entries.map((e) => e.isarId).toList();
-  //     await isar.writeTxn(() async {
-  //       isar.entrys.deleteAll(entryIds);
-  //       logger.d("deleted ${entryIds.length} entries");
-  //     });
-  //     // delete all folders in the database
-  //     // get a list of all the folders ids
-  //     var folders = await isar.folders.where().findAll();
-  //     var folderIds = folders.map((e) => e.isarId).toList();
-  //     await isar.writeTxn(() async {
-  //       isar.folders.deleteAll(folderIds);
-  //       logger.d("deleted ${folderIds.length} folders");
-  //     });
-  //   } catch (e) {
-  //     logger.e(e);
-  //   }
-  //   logger.d("cleared Isar boxes");
-  // }
-
   var logins = await isar.logins.where().findAll();
   if (logins.length != 0) {
-    logger.d("login username: ${logins[0].username}");
     prefs.setString("username", logins[0].username);
-    if (kDebugMode) {
-      logger.d("login url: ${logins[0].serverUrl}");
-      logger.d("login password: ${logins[0].password}");
+    if (useSentry) {
+      await SentryFlutter.init(
+        (options) {
+          options.dsn = const String.fromEnvironment('SENTRY_DSN');
+          options.tracesSampleRate = 1.0;
+        },
+        appRunner: () => runApp(MyApp(
+          url: logins[0].serverUrl,
+          username: logins[0].username,
+          password: logins[0].password,
+          prefs: prefs,
+        )),
+      );
     }
-    logger.d("login found");
     runApp(MyApp(
       url: logins[0].serverUrl,
       username: logins[0].username,
@@ -154,6 +138,15 @@ Future<void> main() async {
       prefs: prefs,
     ));
   } else {
+    if (useSentry) {
+      await SentryFlutter.init(
+        (options) {
+          options.dsn = const String.fromEnvironment('SENTRY_DSN');
+          options.tracesSampleRate = 1.0;
+        },
+        appRunner: () => runApp(MyApp(prefs: prefs)),
+      );
+    }
     runApp(MyApp(prefs: prefs));
   }
 }
@@ -209,24 +202,11 @@ class MyApp extends StatelessWidget {
                   if (snapshot.data == ConnectivityResult.none) {
                     return OfflineBookReader(prefs: prefs);
                   } else {
-                    // try to ping 1.1.1.1 or 8.8.8.8 or whatever their dns is and if network is reachable go to login screen
-                    // if not, go to offline book reader
-                    // Socket.connect('1.1.1.1', 53).then((socket) {
-                    // socket.destroy();
                     return LoginScreen(
                       url: url,
                       username: username,
                       password: password,
                     );
-                    // }).catchError((e) {
-                    //   logger.e(e);
-                    //   return OfflineBookReader(prefs: prefs);
-                    // });
-                    // return LoginScreen(
-                    //   url: url,
-                    //   username: username,
-                    //   password: password,
-                    // );
                   }
                 } else {
                   return const CircularProgressIndicator();
