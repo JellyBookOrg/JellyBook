@@ -203,5 +203,9 @@
   "useSentry": "Use Sentry",
   "@useSentry": {},
   "sentryExplanation": "Enable Sentry logging to quickly diagnose and fix issues! This provides us with real-time error tracking without compromising your privacy. Please help support JellyBook's development by turning on logging.",
-  "@sentryExplanation": {}
+  "@sentryExplanation": {},
+  "yes": "Yes",
+  "@yes": {},
+  "No": "no",
+  "@No": {}
 }
