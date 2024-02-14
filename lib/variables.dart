@@ -17,10 +17,10 @@ Logger logger = Logger(
   output: kDebugMode
       ? ConsoleOutput()
       : FileOutput(
-          file: File(localPath + "jellybook.log"),
+          file: File(localPath + "/jellybook.log"),
           overrideExisting: false,
           encoding: utf8,
-          sink: IOSink(File(localPath + "jellybook.log")
+          sink: IOSink(File(localPath + "/jellybook.log")
               .openWrite(mode: FileMode.writeOnlyAppend, encoding: utf8)),
         ),
   level: Level.debug,
