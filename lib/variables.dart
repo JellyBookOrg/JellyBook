@@ -17,15 +17,15 @@ Logger logger = Logger(
   output: kDebugMode
       ? ConsoleOutput()
       : FileOutput(
-          file: File(logStoragePath + "jellybook.log"),
-          overrideExisting: true,
+          file: File(localPath + "jellybook.log"),
+          overrideExisting: false,
           encoding: utf8,
-          sink: IOSink(File(logStoragePath + "jellybook.log")
+          sink: IOSink(File(localPath + "jellybook.log")
               .openWrite(mode: FileMode.writeOnlyAppend, encoding: utf8)),
         ),
   level: Level.debug,
   printer: kDebugMode
-      ? PrettyPrinter()
+      ? PrettyPrinter(printTime: true, printEmojis: true, colors: true)
       : PrettyPrinter(
           methodCount: 5,
           errorMethodCount: 8,

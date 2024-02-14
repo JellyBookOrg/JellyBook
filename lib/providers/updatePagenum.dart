@@ -3,6 +3,7 @@ import 'package:openapi/openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:jellybook/variables.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> updatePagenum(String id, int pagenum) async {
   pagenum *= 1000;
@@ -40,7 +41,10 @@ Future<void> updatePagenum(String id, int pagenum) async {
     );
     logger.d(response.statusCode);
     logger.d(response.realUri);
-  } catch (e) {
+  } catch (e, s) {
     logger.e(e.toString());
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool useSentry = prefs.getBool('useSentry') ?? false;
+    if (useSentry) await Sentry.captureException(e, stackTrace: s);
   }
 }

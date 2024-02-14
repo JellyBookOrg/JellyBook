@@ -55,3 +55,8 @@ flutter_jank_metrics_01.json
 
 # Docker related
 Jellyfin/
+linux/flutter/generated_plugin_registrant.cc
+linux/flutter/generated_plugins.cmake
+linux/flutter/generated_plugin_registrant.cc
+linux/flutter/generated_plugins.cmake
+sentry.json

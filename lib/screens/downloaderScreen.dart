@@ -25,6 +25,8 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
+import 'package:sentry_flutter/sentry_flutter.dart';
+
 class DownloadScreen extends StatefulWidget {
   Entry entry;
   DownloadScreen({
@@ -343,10 +345,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
     logger.d('Extracting file');
     downloadStatus = DownloadStatus.Decompressing;
     String fileName2 = await fileNameFromTitle(entry.title);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool useSentry = prefs.getBool('useSentry') ?? false;
     // make directory
     try {
       await Directory(dirLocation).create(recursive: true);
-    } catch (e) {
+    } catch (e, s) {
+      if (useSentry) await Sentry.captureException(e, stackTrace: s);
       logger.d(e.toString());
     }
     logger.d('Comic folder created');
@@ -354,7 +359,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
     try {
       await Directory(dirLocation + '/' + fileName2).create(recursive: true);
-    } catch (e) {
+    } catch (e, s) {
+      if (useSentry) await Sentry.captureException(e, stackTrace: s);
       logger.d(e.toString());
     }
     List<String> audioFileTypes = [
@@ -384,7 +390,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
           try {
             await Directory(dirLocation + '/' + fileName2 + '/' + filename)
                 .create(recursive: true);
-          } catch (e) {
+          } catch (e, s) {
+            if (useSentry) await Sentry.captureException(e, stackTrace: s);
             logger.d(e.toString());
           }
         }
@@ -407,7 +414,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         File(dirLocation + '/' + fileName).deleteSync();
         entry.downloaded = true;
         entry.folderPath = dirLocation + '/' + fileName2;
-      } catch (e) {
+      } catch (e, s) {
+        if (useSentry) await Sentry.captureException(e, stackTrace: s);
         logger.d(e.toString());
       }
       parseXML(entry);
@@ -418,7 +426,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         var file = File(dirLocation + '/' + fileName);
         try {
           await Directory('$dirLocation/$fileName2').create(recursive: true);
-        } catch (e) {
+        } catch (e, s) {
+          if (useSentry) await Sentry.captureException(e, stackTrace: s);
           logger.d(e.toString());
         }
         file.renameSync(comicFolder + '/' + fileName);
@@ -426,7 +435,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         entry.filePath = comicFolder + '/' + fileName;
         logger.d('PDF file moved');
         entry.downloaded = true;
-      } catch (e) {
+      } catch (e, s) {
+        if (useSentry) await Sentry.captureException(e, stackTrace: s);
         logger.d(e.toString());
       }
 
@@ -438,7 +448,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         var file = File(dirLocation + '/' + fileName);
         try {
           await Directory('$dirLocation/$fileName2').create(recursive: true);
-        } catch (e) {
+        } catch (e, s) {
+          if (useSentry) await Sentry.captureException(e, stackTrace: s);
           logger.d(e.toString());
         }
         file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
@@ -446,7 +457,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         entry.filePath = dirLocation + '/' + fileName2 + '/' + fileName;
         logger.d('EPUB file moved');
         entry.downloaded = true;
-      } catch (e) {
+      } catch (e, s) {
+        if (useSentry) await Sentry.captureException(e, stackTrace: s);
         logger.e(e.toString());
       }
 
@@ -461,7 +473,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         var file = File(dirLocation + '/' + await fileNameFromTitle(fileName));
         try {
           await Directory('$dirLocation/$fileName2').create(recursive: true);
-        } catch (e) {
+        } catch (e, s) {
+          if (useSentry) await Sentry.captureException(e, stackTrace: s);
           logger.d(e.toString());
         }
         file.renameSync(dirLocation + '/' + fileName2 + '/' + fileName);
@@ -470,7 +483,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         logger.d('Audio file moved');
         entry.downloaded = true;
         entry.folderPath = dirLocation + '/' + fileName2;
-      } catch (e) {
+      } catch (e, s) {
+        if (useSentry) await Sentry.captureException(e, stackTrace: s);
         logger.e(e.toString());
       }
     } else {

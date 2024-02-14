@@ -6,6 +6,7 @@ import 'package:openapi/openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:jellybook/variables.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> updateLike(String id) async {
   final isar = Isar.getInstance();
@@ -39,12 +40,14 @@ Future<void> updateLike(String id) async {
   };
   final api = Openapi(basePathOverride: server).getUserLibraryApi();
   logger.d(url);
+  bool useSentry = prefs.getBool('useSentry') ?? false;
   if (entries?.isFavorited == false) {
     try {
       final response = await api.unmarkFavoriteItem(
           userId: userId, itemId: id, headers: headers, url: server);
       logger.d(response.data.toString());
-    } catch (e) {
+    } catch (e, s) {
+      if (useSentry) await Sentry.captureException(e, stackTrace: s);
       logger.e(e.toString());
     }
   } else {
@@ -52,7 +55,8 @@ Future<void> updateLike(String id) async {
       final response = await api.markFavoriteItem(
           userId: userId, itemId: id, headers: headers, url: server);
       logger.d(response.data.toString());
-    } catch (e) {
+    } catch (e, s) {
+      if (useSentry) await Sentry.captureException(e, stackTrace: s);
       logger.e(e.toString());
     }
   }

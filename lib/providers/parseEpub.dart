@@ -4,9 +4,11 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:archive/archive.dart';
 import 'package:jellybook/variables.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart' as xml;
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> parseEpub(Entry entry) async {
   List<int> bytes = File(entry.filePath).readAsBytesSync();
@@ -38,11 +40,15 @@ Future<void> parseEpub(Entry entry) async {
   logger.d("all tags list: $allTagsList");
   entry2.tags = allTagsList;
 
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool useSentry = prefs.getBool('useSentry') ?? false;
   await isar!.writeTxn(() async {
     await isar.entrys.put(entry2);
-  }).catchError((error) {
+  }).catchError((error, stackTrace) {
+    if (useSentry) Sentry.captureException(error, stackTrace: stackTrace);
     logger.e(error);
   }).onError((error, stackTrace) {
+    if (useSentry) Sentry.captureException(error, stackTrace: stackTrace);
     logger.e(error);
   });
 }

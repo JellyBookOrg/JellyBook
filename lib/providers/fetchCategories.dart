@@ -9,6 +9,7 @@ import 'package:jellybook/models/folder.dart';
 import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:jellybook/variables.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 // have optional perameter to have the function return the list of folders
 Future<(List<Entry>, List<Folder>)> getServerCategories({
@@ -58,12 +59,14 @@ Future<(List<Entry>, List<Folder>)> getServerCategories({
       includeHidden: true,
     );
     // logger.d(response);
-  } catch (e) {
+  } catch (e, s) {
+    bool useSentry = prefs.getBool('useSentry') ?? false;
+    if (useSentry) await Sentry.captureException(e, stackTrace: s);
     logger.e(e);
   }
 
   logger.d("got response");
-  logger.d(response.statusCode.toString());
+  logger.d(response?.statusCode.toString());
   final data = response.data.items
       .where((element) => element.collectionType == 'books')
       .toList();
@@ -132,8 +135,29 @@ Future<(List<Entry>, List<Folder>)> getServerCategories({
     //   logger.d("${comics[i].title} : ${comics[i].isarId}");
     // }
 
+    // first 50 comics
+    comics = comics.take(50).toList();
+
     return (comics, folders);
   }
+}
+
+Future<(int, List<Entry>)> fetchEntries(int offset, int limit) async {
+  final isar = Isar.getInstance();
+  // group the favorites and list them first
+  QueryBuilder<Entry, Entry, QAfterFilterCondition> typeNotBook =
+      isar!.entrys.filter().not().typeEqualTo(EntryType.folder);
+  List<Entry> entries =
+      await typeNotBook.and().isFavoritedEqualTo(true).sortByTitle().findAll();
+  entries.addAll(await typeNotBook
+      .and()
+      .isFavoritedEqualTo(false)
+      .sortByTitle()
+      .findAll());
+  entries = entries.skip(offset).take(limit).toList();
+  int length = entries.length;
+  logger.f("entries: " + entries.length.toString());
+  return (length, entries);
 }
 
 // check to see if a folder isn't a subfolder of another folder

@@ -17,6 +17,9 @@ import 'package:jellybook/screens/readingScreens/audiobookReader.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class ReadingScreen extends StatefulWidget {
   final String title;
   final String comicId;
@@ -74,7 +77,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
       var entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
 
       logger.i("entry of checkPermission: $entry");
-    } catch (e) {
+    } catch (e, s) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool useSentry = prefs.getBool('useSentry') ?? false;
+      if (useSentry) await Sentry.captureException(e, stackTrace: s);
       logger.e("entry in checkPermission: $e");
     }
   }
@@ -128,7 +134,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
     try {
       fileExtension = entry.filePath.split('.').last;
       logger.i("fileExtension: $fileExtension");
-    } catch (e) {
+    } catch (e, s) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool useSentry = prefs.getBool('useSentry') ?? false;
+      if (useSentry) await Sentry.captureException(e, stackTrace: s);
       logger.e("error getting file extension: $e");
     }
 
