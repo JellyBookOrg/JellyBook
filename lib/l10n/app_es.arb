@@ -199,5 +199,13 @@
   "rating": "Valoración: ",
   "@rating": {},
   "saveToDevice": "Guardar en el dispositivo",
-  "@saveToDevice": {}
+  "@saveToDevice": {},
+  "useSentry": "Utilizar Sentry",
+  "@useSentry": {},
+  "sentryExplanation": "Active el registro Sentry para diagnosticar y solucionar problemas rápidamente. Esto nos proporciona un seguimiento de errores en tiempo real sin comprometer su privacidad. Por favor, ayuda al desarrollo de JellyBook activando el registro.",
+  "@sentryExplanation": {},
+  "yes": "Sí",
+  "@yes": {},
+  "no": "No",
+  "@no": {}
 }
