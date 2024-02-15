@@ -199,5 +199,13 @@
   "rating": "评分： ",
   "@rating": {},
   "saveToDevice": "保存到设备",
-  "@saveToDevice": {}
+  "@saveToDevice": {},
+  "useSentry": "使用 Sentry",
+  "@useSentry": {},
+  "sentryExplanation": "启用 Sentry 日志记录以快速诊断和修复问题！这为我们提供了实时错误跟踪，而不会损害您的隐私。请通过打开日志记录来帮助支持 JellyBook 的开发。",
+  "@sentryExplanation": {},
+  "yes": "是",
+  "@yes": {},
+  "no": "否",
+  "@no": {}
 }
