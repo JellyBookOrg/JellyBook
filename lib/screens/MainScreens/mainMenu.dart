@@ -131,8 +131,6 @@ class _MainMenuState extends State<MainMenu> {
                 onPressed: () {
                   prefs?.setBool("useSentry", true);
                   Navigator.of(context).pop();
-                  // crash app
-                  throw Exception('Test Sentry');
                 },
                 child: Text(
                   AppLocalizations.of(context)?.yes ?? "Yes",
