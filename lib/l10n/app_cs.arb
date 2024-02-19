@@ -199,5 +199,13 @@
   "rating": "Hodnocení: ",
   "@rating": {},
   "saveToDevice": "Uložit na zařízení",
-  "@saveToDevice": {}
+  "@saveToDevice": {},
+  "useSentry": "Použít Sentry",
+  "@useSentry": {},
+  "sentryExplanation": "Povolte protokolování Sentry pro rychlou diagnózu a opravu chyb! Tím nám poskytnete sledování chyb v reálném čase bez narušení vašeho soukromí. Pomozte prosím s vývojem aplikace JellyBook povolením protokolování.",
+  "@sentryExplanation": {},
+  "yes": "Ano",
+  "@yes": {},
+  "no": "Ne",
+  "@no": {}
 }

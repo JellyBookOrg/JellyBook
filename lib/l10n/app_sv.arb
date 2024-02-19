@@ -199,5 +199,13 @@
   "editor": "Redaktör",
   "@editor": {},
   "credits": "Tack till",
-  "@credits": {}
+  "@credits": {},
+  "useSentry": "Använd Sentry",
+  "@useSentry": {},
+  "sentryExplanation": "Aktivera Sentry-loggning för att snabbt diagnostisera och åtgärda problem! Detta ger oss felspårning i realtid utan att äventyra din integritet. Hjälp till att stödja JellyBooks utveckling genom att aktivera loggning.",
+  "@sentryExplanation": {},
+  "yes": "Ja",
+  "@yes": {},
+  "no": "Nej",
+  "@no": {}
 }
