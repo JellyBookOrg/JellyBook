@@ -56,7 +56,6 @@ dependencies:
   jellybook_epub_view:
     git: https://github.com/Kara-Zor-El/jellybook_epub_view.git
     # path: ./submodules/jellybook_epub_view
-  flutter_html_to_pdf: ^0.7.0
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
   pdfx: ^2.6.0
