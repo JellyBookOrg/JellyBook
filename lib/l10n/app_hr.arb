@@ -199,5 +199,11 @@
   "rating": "Ocjena: ",
   "@rating": {},
   "saveToDevice": "Spremi na uređaj",
-  "@saveToDevice": {}
+  "@saveToDevice": {},
+  "useSentry": "Koristi Sentry",
+  "@useSentry": {},
+  "yes": "Da",
+  "@yes": {},
+  "no": "Ne",
+  "@no": {}
 }
