@@ -174,6 +174,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(
               height: 20,
             ),
+            FutureBuilder(
+              future: useSentrySettings(),
+              builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                return snapshot.data ?? Container();
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
             // experimentalFeaturesSettings(),
             // button to show log file
             // logToFile(),
@@ -718,6 +727,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ],
           );
+        },
+      );
+
+  // useSentry settings
+  Future<Widget> useSentrySettings() async => SettingsItem(
+        // settingKey: 'useSentry',
+        title: AppLocalizations.of(context)?.useSentry ?? 'Use Sentry',
+        selected: prefs?.getBool('useSentry').toString() ?? 'false',
+        backgroundColor: Theme.of(context).splashColor,
+        icon: Icons.bug_report,
+        values: <String, String>{
+          'true': AppLocalizations.of(context)?.yes ?? 'Yes',
+          'false': AppLocalizations.of(context)?.no ?? 'No',
+        },
+        onChange: (value) async {
+          debugPrint(value);
+          prefs?.setBool('useSentry', value.toString() == 'true');
+          setState(() {});
         },
       );
 }

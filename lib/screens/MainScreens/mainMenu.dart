@@ -67,6 +67,7 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   bool force = false;
+  SharedPreferences? prefs;
 
   Future<void> _fetchPage(int pageKey) async {
     logger.i('pageKey: $pageKey');
@@ -91,19 +92,64 @@ class _MainMenuState extends State<MainMenu> {
     }
   }
 
+  Future<void> getSharedPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
   @override
   void initState() {
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
     super.initState();
-    // fetchCategories();
+    getSharedPrefs().then((value) => setUseSentry());
   }
 
   // dispose
   @override
   void dispose() {
     super.dispose();
+  }
+
+  bool useSentryNull() {
+    return prefs?.getBool("useSentry") == null;
+  }
+
+  Future<void> setUseSentry() async {
+    if (useSentryNull()) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              AppLocalizations.of(context)?.useSentry ?? "Use Sentry",
+            ),
+            content: Text(AppLocalizations.of(context)?.sentryExplanation ??
+                "Enable Sentry logging to quickly diagnose and fix issues! This provides us with real-time error tracking without compromising your privacy. Please help support JellyBook's development by turning on logging."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  prefs?.setBool("useSentry", true);
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  AppLocalizations.of(context)?.yes ?? "Yes",
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  prefs?.setBool("useSentry", false);
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  AppLocalizations.of(context)?.no ?? "No",
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
 // should be a futureBuilder
