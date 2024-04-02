@@ -67,7 +67,7 @@ dependencies:
   openapi:
     git: https://github.com/Kara-Zor-El/jellyfin_api.git
   string_similarity: ^2.0.0
-  connectivity_plus: ^5.0.1
+  connectivity_plus: ^6.0.1
 
   # Translations
   flutter_localizations:

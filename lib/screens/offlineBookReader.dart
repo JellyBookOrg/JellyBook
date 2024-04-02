@@ -41,12 +41,13 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
 
   @override
   void initState() {
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      var status = result;
+    Connectivity()
+        .onConnectivityChanged
+        .listen((List<ConnectivityResult> status) {
       // if the user is online
-      if (status == ConnectivityResult.wifi ||
-          status == ConnectivityResult.mobile ||
-          status == ConnectivityResult.ethernet) {
+      if (status.contains(ConnectivityResult.wifi) ||
+          status.contains(ConnectivityResult.mobile) ||
+          status.contains(ConnectivityResult.ethernet)) {
         final isar = Isar.getInstance();
         final login = isar!.logins.where().findFirstSync();
         if (login!.serverUrl.isNotEmpty && login.username.isNotEmpty) {
@@ -84,7 +85,7 @@ class _OfflineBookReaderState extends State<OfflineBookReader> {
   // create a listener to see if the user is online or offline
   Future<bool> checkConnectivity() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
+    if (connectivityResult.contains(ConnectivityResult.none)) {
       return false;
     } else {
       return true;
