@@ -1,6 +1,3 @@
-[submodule "submodules/jellyfin_api"]
-	path = submodules/jellyfin_api
-	url = https://github.com/Kara-Zor-El/jellyfin_api
 [submodule "submodules/jellybook_epub_view"]
 	path = submodules/jellybook_epub_view
 	url = https://github.com/Kara-Zor-El/jellybook_epub_view
