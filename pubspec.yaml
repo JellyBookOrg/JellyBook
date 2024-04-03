@@ -64,8 +64,8 @@ dependencies:
   google_nav_bar: ^5.0.6
   cached_network_image: ^3.2.3
   fancy_shimmer_image: ^2.0.2
-  openapi:
-    git: https://github.com/Kara-Zor-El/jellyfin_api.git
+  tentacle:
+    path: ./submodules/tentacle
   string_similarity: ^2.0.0
   connectivity_plus: ^6.0.1
 
