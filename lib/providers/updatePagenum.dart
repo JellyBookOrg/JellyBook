@@ -1,5 +1,5 @@
 // the purpose of this file is to update the page number of the current page on jellyfin
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:jellybook/variables.dart';
@@ -31,7 +31,7 @@ Future<void> updatePagenum(String id, int pagenum) async {
     'Host': server.substring(server.indexOf("//") + 2, server.length),
     'Content-Length': '0',
   };
-  final api = Openapi(basePathOverride: server).getPlaystateApi();
+  final api = Tentacle(basePathOverride: server).getPlaystateApi();
   try {
     final response = await api.onPlaybackProgress(
       userId: userId,

@@ -16,7 +16,7 @@ import 'package:jellybook/variables.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:sentry/sentry.dart';
 
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -309,7 +309,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'Host': server.substring(server.indexOf("//") + 2, server.length),
       'Content-Length': '0',
     };
-    final api = Openapi(basePathOverride: server).getImageApi();
+    final api = Tentacle(basePathOverride: server).getImageApi();
     Uint8List image = Uint8List(0);
     ImageProvider imageProvider = Image.asset('assets/images/Logo.png').image;
     try {

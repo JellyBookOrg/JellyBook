@@ -2,7 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -46,7 +46,7 @@ Future<void> getComics(String comicsId) async {
   ]);
 
   // turn into built list
-  final api = Openapi(basePathOverride: url).getItemsApi();
+  final api = Tentacle(basePathOverride: url).getItemsApi();
   Response<BaseItemDtoQueryResult>? response;
   bool useSentry = prefs.getBool('useSentry') ?? false;
   try {
