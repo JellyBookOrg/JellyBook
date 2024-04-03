@@ -18,7 +18,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:built_collection/built_collection.dart';
@@ -185,7 +185,7 @@ class _EditScreenState extends State<EditScreen> {
       'Origin': server,
       'Host': server.substring(server.indexOf("//") + 2, server.length),
     };
-    final api = Openapi(basePathOverride: server).getItemUpdateApi();
+    final api = Tentacle(basePathOverride: server).getItemUpdateApi();
     DateTime? dateTime;
     bool useSentry = prefs.getBool('useSentry') ?? false;
     try {
@@ -245,7 +245,7 @@ class _EditScreenState extends State<EditScreen> {
       );
     }
     if (imageChanged) {
-      final api2 = Openapi(basePathOverride: server).getImageApi();
+      final api2 = Tentacle(basePathOverride: server).getImageApi();
       // get the image encoded in base64
       File imagefile = File(entry.imagePath);
       MultipartFile file = await MultipartFile.fromFile(

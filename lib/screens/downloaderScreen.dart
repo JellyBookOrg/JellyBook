@@ -15,7 +15,7 @@ import 'package:unrar_file/unrar_file.dart';
 import 'package:jellybook/providers/fileNameFromTitle.dart';
 import 'package:jellybook/providers/parseEpub.dart';
 import 'package:jellybook/providers/ComicInfoXML.dart';
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 
 // import the database
 import 'package:jellybook/models/entry.dart';
@@ -153,7 +153,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
     entry.filePath = dir;
     logger.d('Directory created');
     logger.d('Attempting to download file');
-    final api = Openapi(basePathOverride: entry.url).getLibraryApi();
+    final api = Tentacle(basePathOverride: entry.url).getLibraryApi();
     Response<Uint8List> download;
     downloading = true;
     download = await api

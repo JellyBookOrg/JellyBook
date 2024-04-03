@@ -11,7 +11,7 @@ import 'package:package_info_plus/package_info_plus.dart' as package_info;
 import 'package:isar/isar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/models/login.dart';
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:jellybook/variables.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -95,12 +95,12 @@ class LoginProvider {
           "URL is not valid. Please check the URL and try again.";
     }
 
-    final api = Openapi(basePathOverride: _url);
+    final api = Tentacle(basePathOverride: _url);
     final apiInstance = api.getUserApi();
     Response<AuthenticationResult> response;
 
     try {
-      // use the authenticateUserByNameRequest from openapi/lib/src/model/authenticate_user_by_name_request.g.dart
+      // use the authenticateUserByNameRequest from tentacle/lib/src/model/authenticate_user_by_name_request.g.dart
       var authenticateUserByNameRequest = AuthenticateUserByNameRequest((b) => b
         ..username = username
         ..pw = password);
