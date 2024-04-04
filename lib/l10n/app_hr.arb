@@ -207,5 +207,7 @@
   "no": "Ne",
   "@no": {},
   "sentryExplanation": "Aktiviraj zapisivanje pomoću Sentry platforme za brzo dijagnosticiranje i rješavanje problema! To nam omogućuje praćenje grešaka u stvarnom vremenu bez ugrožavanja tvoje privatnosti. Pomogni podržati razvoj JellyBooka uključivanjem zapisivanja.",
-  "@sentryExplanation": {}
+  "@sentryExplanation": {},
+  "giveFeedback": "Pošalji povratnu informaciju",
+  "@giveFeedback": {}
 }
