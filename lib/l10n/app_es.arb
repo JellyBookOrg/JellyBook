@@ -207,5 +207,7 @@
   "yes": "Sí",
   "@yes": {},
   "no": "No",
-  "@no": {}
+  "@no": {},
+  "giveFeedback": "Opinar",
+  "@giveFeedback": {}
 }
