@@ -835,11 +835,9 @@ packages:
   jellybook_epub_view:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: e7eac4b6ad357c498ff7b204891db33b7935b22c
-      url: "https://github.com/Kara-Zor-El/jellybook_epub_view.git"
-    source: git
+      path: "submodules/jellybook_epub_view"
+      relative: true
+    source: path
     version: "3.0.0"
   js:
     dependency: transitive
