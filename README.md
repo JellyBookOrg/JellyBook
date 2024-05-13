@@ -39,7 +39,7 @@
 | :------: | :--: |
 | **iOS** | <a href="https://testflight.apple.com/join/lEXKY4Dl"><img width='180' alt='Download on TestFlight' src='assets/githubImages/testflight-badge.png'/></a> |
 | **Google Play and Galaxy Store** | Download the latest release for your current platform from the releases. It will at some point be added to the Google Play store and may be added to the Galaxy Store |
-| **F-Droid** | <a href="https://apt.izzysoft.de/fdroid/index/apk/com.KaraWilson.JellyBook/"><img width='180' alt='Get it on IzzyOnDroid' src='assets/githubImages/IzzyOnDroid.png'/></a><a href="https://www.openapk.net/jellybook/com.KaraWilson.JellyBook/"><img width=180, alt="Get it on OpenAPK" src='https://www.openapk.net/images/openapk-badge.png'/></a> <p>Soon to be submitted to the F-Droid store</p> |
+| **F-Droid** | <a href="https://apt.izzysoft.de/fdroid/index/apk/com.KaraWilson.JellyBook/"><img width='180' alt='Get it on IzzyOnDroid' src='assets/githubImages/IzzyOnDroid.png'/></a><p>Soon to be submitted to the F-Droid store</p> |
 | **Other Platforms** | If you would like to see this app on your platform, please open an issue and I will see what I can do. |
 
 </br>
