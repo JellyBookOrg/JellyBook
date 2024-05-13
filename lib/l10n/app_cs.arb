@@ -207,5 +207,7 @@
   "yes": "Ano",
   "@yes": {},
   "no": "Ne",
-  "@no": {}
+  "@no": {},
+  "giveFeedback": "Zpětná vazba",
+  "@giveFeedback": {}
 }
