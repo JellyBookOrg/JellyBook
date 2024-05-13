@@ -4,8 +4,10 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
+  file_selector_linux
   flutter_secure_storage_linux
   isar_flutter_libs
+  sentry_flutter
   url_launcher_linux
 )
 
