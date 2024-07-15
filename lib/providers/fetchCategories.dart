@@ -1,7 +1,7 @@
 // The purpose of this file is to fetch the categories from the database
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 import 'package:jellybook/providers/fetchBooks.dart';
 import 'package:jellybook/providers/folderProvider.dart';
 import 'package:jellybook/models/entry.dart';
@@ -50,7 +50,7 @@ Future<(List<Entry>, List<Folder>)> getServerCategories({
   logger.d("got prefs");
   Map<String, String> headers =
       getHeaders(url, client, device, deviceId, version, token);
-  final api = Openapi(basePathOverride: url).getUserViewsApi();
+  final api = Tentacle(basePathOverride: url).getUserViewsApi();
   var response;
   try {
     response = await api.getUserViews(

@@ -3,7 +3,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 // import 'package:epub_view_enhanced/epub_view_enhanced.dart';
-import 'package:jellybook_epub_view/epub_view.dart';
+import 'package:jellybook_epub_view/jellybook_epub_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';

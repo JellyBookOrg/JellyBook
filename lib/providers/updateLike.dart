@@ -2,7 +2,7 @@
 
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:jellybook/variables.dart';
@@ -38,7 +38,7 @@ Future<void> updateLike(String id) async {
     'Host': server.substring(server.indexOf("//") + 2, server.length),
     'Content-Length': '0',
   };
-  final api = Openapi(basePathOverride: server).getUserLibraryApi();
+  final api = Tentacle(basePathOverride: server).getUserLibraryApi();
   logger.d(url);
   bool useSentry = prefs.getBool('useSentry') ?? false;
   if (entries?.isFavorited == false) {

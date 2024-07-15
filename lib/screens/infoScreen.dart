@@ -19,7 +19,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
-import 'package:openapi/openapi.dart';
+import 'package:tentacle/tentacle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jellybook/providers/Author.dart';
 
@@ -274,7 +274,7 @@ class _InfoScreenState extends State<InfoScreen> {
       'Content-Length': '0',
     };
 
-    final api = Openapi(basePathOverride: server).getPersonsApi();
+    final api = Tentacle(basePathOverride: server).getPersonsApi();
     final person = await api.getPerson(name: author, headers: headers);
     if (person.data!.imageTags == null || person.data!.imageTags!.isEmpty) {
       return "asset";

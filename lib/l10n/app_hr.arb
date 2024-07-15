@@ -136,7 +136,7 @@
   "@dontBrewCoffee": {},
   "refresh": "Aktualiziraj",
   "@refresh": {},
-  "lightTheme": "Svjetla",
+  "lightTheme": "Svijetla",
   "@lightTheme": {},
   "downloadingFile": "Preuzimanje datoteke:",
   "@downloadingFile": {},
@@ -205,5 +205,9 @@
   "yes": "Da",
   "@yes": {},
   "no": "Ne",
-  "@no": {}
+  "@no": {},
+  "sentryExplanation": "Aktiviraj zapisivanje pomoću Sentry platforme za brzo dijagnosticiranje i rješavanje problema! To nam omogućuje praćenje grešaka u stvarnom vremenu bez ugrožavanja tvoje privatnosti. Pomogni podržati razvoj JellyBooka uključivanjem zapisivanja.",
+  "@sentryExplanation": {},
+  "giveFeedback": "Pošalji povratnu informaciju",
+  "@giveFeedback": {}
 }

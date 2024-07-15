@@ -207,5 +207,7 @@
   "yes": "是",
   "@yes": {},
   "no": "否",
-  "@no": {}
+  "@no": {},
+  "giveFeedback": "给予反馈",
+  "@giveFeedback": {}
 }
