@@ -1,3 +1,7 @@
 {
-  "@@locale": "sk"
+  "@@locale": "sk",
+  "appName": "JellyBook",
+  "@appName": {},
+  "pageLoginAddress": "Webová adresa",
+  "@pageLoginAddress": {}
 }
