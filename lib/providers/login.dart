@@ -101,13 +101,13 @@ class LoginProvider {
 
     try {
       // use the authenticateUserByNameRequest from tentacle/lib/src/model/authenticate_user_by_name_request.g.dart
-      var authenticateUserByNameRequest = AuthenticateUserByNameRequest((b) => b
+      var authenticateUserByNameRequest = AuthenticateUserByName((b) => b
         ..username = username
         ..pw = password);
       // set the headers
       final headers = getHeaders(url, _client, _device, _deviceId, _version);
       response = await apiInstance.authenticateUserByName(
-        authenticateUserByNameRequest: authenticateUserByNameRequest,
+        authenticateUserByName: authenticateUserByNameRequest,
         headers: headers,
       );
       logger.d("Status Code: ${response.statusCode}");

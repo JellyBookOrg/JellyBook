@@ -85,7 +85,7 @@ dependencies:
 
   # Logging
   logger: ^2.0.1
-  sentry_flutter: ^7.16.0
+  sentry_flutter: ^8.7.0
 
 dev_dependencies:
   # flutter_test:

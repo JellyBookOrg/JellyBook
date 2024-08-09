@@ -44,7 +44,7 @@ Future<void> updateLike(String id) async {
   if (entries?.isFavorited == false) {
     try {
       final response = await api.unmarkFavoriteItem(
-          userId: userId, itemId: id, headers: headers, url: server);
+          userId: userId, itemId: id, headers: headers);
       logger.d(response.data.toString());
     } catch (e, s) {
       if (useSentry) await Sentry.captureException(e, stackTrace: s);
@@ -53,7 +53,7 @@ Future<void> updateLike(String id) async {
   } else {
     try {
       final response = await api.markFavoriteItem(
-          userId: userId, itemId: id, headers: headers, url: server);
+          userId: userId, itemId: id, headers: headers);
       logger.d(response.data.toString());
     } catch (e, s) {
       if (useSentry) await Sentry.captureException(e, stackTrace: s);
