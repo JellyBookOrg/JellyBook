@@ -59,7 +59,7 @@ dependencies:
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
   pdfx: ^2.6.0
-  package_info_plus: ^5.0.1
+  package_info_plus: ^8.0.1
   auto_size_text: ^3.0.0
   google_nav_bar: ^5.0.6
   cached_network_image: ^3.2.3
@@ -74,12 +74,12 @@ dependencies:
     sdk: flutter
   intl: ^0.19.0
   device_info_plus: ^9.0.3
-  audioplayers: ^5.1.0
+  audioplayers: ^6.0.0
   flutter_background_service: ^5.0.0
   palette_generator: ^0.3.3+2
   xml: ^6.3.0
   flutter_html: ^3.0.0-beta.2
-  flutter_markdown: ^0.6.15
+  flutter_markdown: ^0.7.3+1
   image_picker: ^1.0.4
   infinite_scroll_pagination: ^4.0.0
 
@@ -96,13 +96,13 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
   # flutter_launcher_icons: ^0.13.1
   icons_launcher: any
   # hive_generator: ^2.0.0
   build_runner: ^2.3.2
   isar_generator: ^3.0.5
-  sentry_dart_plugin: ^1.7.0
+  sentry_dart_plugin: ^2.1.0
   analyzer: ^5.13.0
   # test: ^1.24.3
   # dart_code_linter: ^1.1.1
