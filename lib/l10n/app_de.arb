@@ -189,5 +189,21 @@
   "useSentry": "Sentry nutzen",
   "@useSentry": {},
   "yes": "Ja",
-  "@yes": {}
+  "@yes": {},
+  "offlineBookReader": "Offline Buch Leser",
+  "@offlineBookReader": {},
+  "editor": "Editor*in",
+  "@editor": {},
+  "penciller": "Zeichner*in",
+  "@penciller": {},
+  "coverArtist": "Titelbildkünstler*in",
+  "@coverArtist": {},
+  "colorist": "Kolorist*in",
+  "@colorist": {},
+  "giveFeedback": "Rückmeldung geben",
+  "@giveFeedback": {},
+  "verticalSeamless": "nahtloses vertikales Scrollen",
+  "@verticalSeamless": {},
+  "sentryExplanation": "Aktiviere Sentry-Logging, um Probleme schnell zu diagnostizieren und zu beheben! Dies bietet uns eine Echtzeit-Fehlerverfolgung, ohne deine Privatsphäre zu beeinträchtigen. Bitte unterstütze die Entwicklung von JellyBook, indem du das Logging einschaltest.",
+  "@sentryExplanation": {}
 }
