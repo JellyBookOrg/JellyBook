@@ -1,6 +1,0 @@
-[submodule "submodules/jellybook_epub_view"]
-	path = submodules/jellybook_epub_view
-	url = https://github.com/Kara-Zor-El/jellybook_epub_view
-[submodule "submodules/tentacle"]
-	path = submodules/tentacle
-	url = https://github.com/TentacleOrg/Tentacle

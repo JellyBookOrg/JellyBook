@@ -14,6 +14,8 @@
   <img src='./assets/images/Logo.png' width='30%' height='30%' />
 </p>
 
+# WARNING: This is an experimental branch for using Expo/React Native. Information may not be accurate or up to date
+
 <p align="center">
   Hi, this is a passion project I am working on.
   Its an app that's meant to allow you to read ebooks, comics, and listen to audiobooks from your Jellyfin server.
