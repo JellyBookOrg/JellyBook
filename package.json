@@ -4,17 +4,21 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.0",
+    "@jellyfin/sdk": "^0.11.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@rneui/base": "^4.0.0-rc.7",
     "@rneui/themed": "^4.0.0-rc.8",
-    "expo": "~52.0.20",
+    "babel-preset-expo": "~12.0.0",
+    "expo": "^52.0.0",
     "expo-constants": "~17.0.3",
     "expo-dev-client": "~5.0.6",
+    "expo-image": "~2.0.3",
     "expo-linking": "~7.0.3",
     "expo-router": "~4.0.14",
     "expo-screen-orientation": "~8.0.2",
@@ -25,11 +29,12 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.5",
     "react-native-reanimated": "~3.16.1",
+    "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "4.12.0",
+    "react-native-screens": "~4.1.0",
     "react-native-web": "~0.19.13",
     "tailwindcss": "^3.4.17",
-    "zod": "^3.24.1",
-    "babel-preset-expo": "~12.0.0"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
