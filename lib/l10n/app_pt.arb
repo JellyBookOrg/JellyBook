@@ -207,5 +207,7 @@
   "no": "Não",
   "@no": {},
   "sentryExplanation": "Ative o registro do Sentinela para diagnosticar e corrigir problemas rapidamente! Isso nos fornece rastreamento de erros em tempo real sem comprometer sua privacidade. Por favor, ajude a apoiar o desenvolvimento do JellyBook ativando o registro.",
-  "@sentryExplanation": {}
+  "@sentryExplanation": {},
+  "giveFeedback": "Dar feedback",
+  "@giveFeedback": {}
 }
