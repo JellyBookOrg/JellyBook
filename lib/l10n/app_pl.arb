@@ -183,5 +183,21 @@
   "yes": "Tak",
   "@yes": {},
   "no": "Nie",
-  "@no": {}
+  "@no": {},
+  "dontBrewCoffee": "Nie parz mną kawy. Jestem czajnikiem do herbaty",
+  "@dontBrewCoffee": {},
+  "imprint": "Imprint",
+  "@imprint": {},
+  "editor": "Redaktor",
+  "@editor": {},
+  "writer": "Pisarz",
+  "@writer": {},
+  "colorist": "Kolorysta",
+  "@colorist": {},
+  "coverArtist": "Twórca okładki",
+  "@coverArtist": {},
+  "publisher": "Wydawca",
+  "@publisher": {},
+  "lookupMissingImages": "Wyszukaj brakujące obrazy",
+  "@lookupMissingImages": {}
 }
