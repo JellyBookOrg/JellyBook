@@ -97,6 +97,24 @@ class _EpubReaderState extends State<EpubReader> {
     }
   }
 
+  Future<void> saveChapterIndex(int index) async {
+    final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+    if (entry == null) return;
+
+    await isar!.writeTxn(() async {
+      entry.pageNum = index;
+      await isar!.entrys.put(entry);
+    });
+
+    logger.d("Saved chapter index: $index");
+  }
+
+  Future<int?> loadChapterIndex() async {
+    final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+    if (entry == null) return null;
+    return entry.pageNum;
+  }
+
   Future<void> openController() async {
     final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
     final filePath = entry!.filePath;
@@ -286,29 +304,47 @@ class _EpubReaderState extends State<EpubReader> {
                 ),
               ),
               body: EpubView(
-                (url) {
-                  logger.d("External link pressed: $url");
-                  // open url in browser
-                  launchUrl(Uri.parse(url));
-                },
-                controller: _epubController,
-                onDocumentLoaded: (document) {
-                  logger.d("Document loaded: ${document.Title}");
-                  // wait 5 seconds and then go to the chapter
-                  Future.delayed(Duration(seconds: 5), () {
+                  (url) {
+                    logger.d("External link pressed: $url");
+                    // open url in browser
+                    launchUrl(Uri.parse(url));
+                  },
+                  controller: _epubController,
+                  onDocumentLoaded: (document) async {
                     logger.d("Document loaded: ${document.Title}");
-                    goToChapter(_epubController);
-                  });
-                  // goToChapter(_epubController);
-                },
-                onChapterChanged: (chapter) {
-                  // only do it every 5th time
 
-                  // logger.d("Chapter changed: $chapter");
-                  // logger.d(chapter!.position);
-                  updateChapter(_epubController.generateEpubCfi() ?? "error");
-                },
-              ),
+                    final savedIndex = await loadChapterIndex();
+                    if (savedIndex != null) {
+                      logger.d("Restoring chapter index: $savedIndex");
+                      Future.delayed(Duration(milliseconds: 500), () {
+                        _epubController.jumpTo(index: savedIndex);
+                      });
+                    }
+                  },
+                  // onDocumentLoaded: (document) {
+                  //   logger.d("Document loaded: ${document.Title}");
+                  //   // wait 5 seconds and then go to the chapter
+                  //   Future.delayed(Duration(seconds: 5), () {
+                  //     logger.d("Document loaded: ${document.Title}");
+                  //     goToChapter(_epubController);
+                  //   });
+                  //   // goToChapter(_epubController);
+                  // },
+                  onChapterChanged: (chapterValue) {
+                    final index = chapterValue?.position.index;
+                    if (index != null) {
+                      logger.d("Saving chapter index: $index");
+                      saveChapterIndex(index);
+                    }
+                  }
+                  // onChapterChanged: (chapter) {
+                  //   // only do it every 5th time
+                  //
+                  //   // logger.d("Chapter changed: $chapter");
+                  //   // logger.d(chapter!.position);
+                  //   updateChapter(_epubController.generateEpubCfi() ?? "error");
+                  // },
+                  ),
             );
           } else {
             return Scaffold(
