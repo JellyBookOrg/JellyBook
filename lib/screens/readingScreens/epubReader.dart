@@ -202,6 +202,22 @@ class _EpubReaderState extends State<EpubReader> {
     });
   }
 
+  Future<void> onBookLoaded() async {
+    // Restore saved chapter index
+    final savedIndex = await loadChapterIndex();
+    if (savedIndex != null) {
+      logger.d("Restoring chapter index: $savedIndex");
+
+      // Wait for frame to fully load
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _epubController.jumpTo(index: savedIndex);
+      });
+    }
+
+    // Add other book loaded tasks here
+    logger.d("Book is fully loaded");
+  }
+
   Future<void> savePosition() async {
     Isar? isar = Isar.getInstance();
     if (isar != null) {
@@ -313,38 +329,15 @@ class _EpubReaderState extends State<EpubReader> {
                   onDocumentLoaded: (document) async {
                     logger.d("Document loaded: ${document.Title}");
 
-                    final savedIndex = await loadChapterIndex();
-                    if (savedIndex != null) {
-                      logger.d("Restoring chapter index: $savedIndex");
-                      Future.delayed(Duration(milliseconds: 500), () {
-                        _epubController.jumpTo(index: savedIndex);
-                      });
-                    }
+                    await onBookLoaded();
                   },
-                  // onDocumentLoaded: (document) {
-                  //   logger.d("Document loaded: ${document.Title}");
-                  //   // wait 5 seconds and then go to the chapter
-                  //   Future.delayed(Duration(seconds: 5), () {
-                  //     logger.d("Document loaded: ${document.Title}");
-                  //     goToChapter(_epubController);
-                  //   });
-                  //   // goToChapter(_epubController);
-                  // },
                   onChapterChanged: (chapterValue) {
                     final index = chapterValue?.position.index;
                     if (index != null) {
                       logger.d("Saving chapter index: $index");
                       saveChapterIndex(index);
                     }
-                  }
-                  // onChapterChanged: (chapter) {
-                  //   // only do it every 5th time
-                  //
-                  //   // logger.d("Chapter changed: $chapter");
-                  //   // logger.d(chapter!.position);
-                  //   updateChapter(_epubController.generateEpubCfi() ?? "error");
-                  // },
-                  ),
+                  }),
             );
           } else {
             return Scaffold(
