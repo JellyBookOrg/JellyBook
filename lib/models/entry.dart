@@ -37,6 +37,20 @@ class Entry {
   String epubCfi = "";
   bool isFavorited = false;
 
+  // Used to sort entries
+  String sortName;
+  double communityRating = 0.0;
+  // critic rating missing or N/A for books
+  String dateCreated = "";
+  String lastPlayedDate = "";
+  String officialRating = "";
+  int playCount;
+  String premiereDate = "";
+  int runTimeTicks = 0;
+  int indexNumber = 0;
+  String seriesName;
+  // int productionYear = 0; //identical to releaseDate
+
   /// ComicInfoXML fields (for comics)
   String? writer;
   String? penciller;
@@ -68,6 +82,16 @@ class Entry {
     this.parentId = '',
     this.epubCfi = '',
     this.isFavorited = false,
+    required this.sortName,
+    this.communityRating = 0.0,
+    this.dateCreated = '',
+    this.lastPlayedDate = '',
+    this.officialRating = '',
+    required this.playCount,
+    this.premiereDate = '',
+    this.runTimeTicks = 0,
+    this.indexNumber = 0,
+    required this.seriesName,
     this.writer,
     this.penciller,
     this.inker,
@@ -105,6 +129,16 @@ class Entry {
       parentId: json['parentId'] ?? '',
       epubCfi: json['epubCfi'] ?? '',
       isFavorited: json['isFavorited'] ?? false,
+      sortName: json['sortName'],
+      communityRating: json['communityRating'] ?? 0.0,
+      dateCreated: json['dateCreated'] ?? '',
+      lastPlayedDate: json['lastPlayedDate'] ?? '',
+      officialRating: json['officialRating'] ?? '',
+      playCount: json['playCount'],
+      premiereDate: json['premiereDate'] ?? '',
+      runTimeTicks: json['runTimeTicks'] ?? 0,
+      indexNumber: json['indexNumber'] ?? 0,
+      seriesName: json['seriesName'],
       writer: json['writer'],
       penciller: json['penciller'],
       inker: json['inker'],
@@ -121,6 +155,6 @@ class Entry {
   // toString
   @override
   String toString() {
-    return 'Entry{\n\tid: $id,\n\ttitle: $title,\n\tdescription: $description,\n\timagePath: $imagePath,\n\treleaseDate: $releaseDate,\n\tdownloaded: $downloaded,\n\tpath: $path,\n\turl: $url,\n\ttags: $tags,\n\trating: $rating,\n\tprogress: $progress,\n\tpageNum: $pageNum,\n\tfolderPath: $folderPath,\n\tfilePath: $filePath,\n\ttype: $type,\n\tparentId: $parentId,\n\tepubCfi: $epubCfi,\n\tisFavorited: $isFavorited,\n\twriter: $writer,\n\tpenciller: $penciller,\n\tinker: $inker,\n\tcolorist: $colorist,\n\tletterer: $letterer,\n\tcoverArtist: $coverArtist,\n\teditor: $editor,\n\ttranslator: $translator,\n\tpublisher: $publisher,\n\timprint: $imprint,\n}';
+    return 'Entry{\n\tid: $id,\n\ttitle: $title,\n\tdescription: $description,\n\timagePath: $imagePath,\n\treleaseDate: $releaseDate,\n\tdownloaded: $downloaded,\n\tpath: $path,\n\turl: $url,\n\ttags: $tags,\n\trating: $rating,\n\tprogress: $progress,\n\tpageNum: $pageNum,\n\tfolderPath: $folderPath,\n\tfilePath: $filePath,\n\ttype: $type,\n\tparentId: $parentId,\n\tepubCfi: $epubCfi,\n\tisFavorited: $isFavorited,\n\tsortName: $sortName,\n\tcommunityRating: $communityRating,\n\tdateCreated: $dateCreated,\n\tlastPlayedDate: $lastPlayedDate,\n\tofficialRating: $officialRating,\n\tplayCount: $playCount,\n\tpremiereDate: $premiereDate,\n\trunTimeTicks: $runTimeTicks,\n\tindexNumber: $indexNumber,\n\tseriesName: $seriesName,\n\twriter: $writer,\n\tpenciller: $penciller,\n\tinker: $inker,\n\tcolorist: $colorist,\n\tletterer: $letterer,\n\tcoverArtist: $coverArtist,\n\teditor: $editor,\n\ttranslator: $translator,\n\tpublisher: $publisher,\n\timprint: $imprint,\n}';
   }
 }
