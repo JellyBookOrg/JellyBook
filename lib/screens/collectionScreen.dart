@@ -1,6 +1,7 @@
 // The purpose of this file is to create a list of entries from a selected folder
 
 // import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:jellybook/widgets/SortByWidget.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -49,8 +50,9 @@ class _collectionScreenState extends State<collectionScreen> {
     required this.bookIds,
   });
 
-  SortOption sortMethod = SortOption.name;
-  SortOrder sortDirection = SortOrder.ascending;
+  final Completer _isSortPrefsLoaded = Completer();
+  SortMethod? sortMethod;
+  SortOrder? sortDirection;
 
   final isar = Isar.getInstance();
   // make a list of entries from the the list of bookIds
@@ -71,6 +73,7 @@ class _collectionScreenState extends State<collectionScreen> {
   }
 
   Future<List<Entry>> get entries async {
+    await _isSortPrefsLoaded.future;
     return await getEntries();
   }
 
@@ -81,13 +84,19 @@ class _collectionScreenState extends State<collectionScreen> {
         title: Text(name),
         actions: <Widget>[
           SortByWidget(
-              defaultSortMethod: sortMethod,
-              defaultSortOrder: sortDirection,
+              defaultSortMethod: SortMethod.sortName,
+              defaultSortOrder: SortOrder.ascending,
+              sharedPrefsKey: "${name}CollectionScreen",
               onChanged: (newSortMethod, newSortOrder) async {
-                setState(() {
-                  sortMethod = newSortMethod;
-                  sortDirection = newSortOrder;
-                });
+                WidgetsBinding.instance.addPostFrameCallback((_) =>
+                  setState(() {
+                      sortMethod = newSortMethod;
+                      sortDirection = newSortOrder;
+                      if (!_isSortPrefsLoaded.isCompleted) {
+                        _isSortPrefsLoaded.complete();
+                      }
+                  })
+                );
               }
           )
         ],
@@ -100,7 +109,7 @@ class _collectionScreenState extends State<collectionScreen> {
               snapshot.connectionState == ConnectionState.done) {
             List<Entry> snapshotList = snapshot.data;
             snapshotList.sort(
-              (a, b) => SortByWidget.compareEntries(a, b, sortMethod, sortDirection)
+              (a, b) => SortByWidget.compareEntries(a, b, sortMethod!, sortDirection!)
             );
             return ListView.builder(
               itemCount: snapshotList.length,

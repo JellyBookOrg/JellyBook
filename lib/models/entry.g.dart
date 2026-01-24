@@ -22,189 +22,184 @@ const EntrySchema = CollectionSchema(
       name: r'colorist',
       type: IsarType.string,
     ),
-    r'communityRating': PropertySchema(
-      id: 1,
-      name: r'communityRating',
-      type: IsarType.double,
-    ),
     r'coverArtist': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'coverArtist',
       type: IsarType.string,
     ),
     r'dateCreated': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'dateCreated',
       type: IsarType.string,
     ),
     r'description': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'description',
       type: IsarType.string,
     ),
     r'downloaded': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'downloaded',
       type: IsarType.bool,
     ),
     r'editor': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'editor',
       type: IsarType.string,
     ),
     r'epubCfi': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'epubCfi',
       type: IsarType.string,
     ),
     r'filePath': PropertySchema(
-      id: 8,
+      id: 7,
       name: r'filePath',
       type: IsarType.string,
     ),
     r'folderPath': PropertySchema(
-      id: 9,
+      id: 8,
       name: r'folderPath',
       type: IsarType.string,
     ),
     r'id': PropertySchema(
-      id: 10,
+      id: 9,
       name: r'id',
       type: IsarType.string,
     ),
     r'imagePath': PropertySchema(
-      id: 11,
+      id: 10,
       name: r'imagePath',
       type: IsarType.string,
     ),
     r'imprint': PropertySchema(
-      id: 12,
+      id: 11,
       name: r'imprint',
       type: IsarType.string,
     ),
     r'indexNumber': PropertySchema(
-      id: 13,
+      id: 12,
       name: r'indexNumber',
       type: IsarType.long,
     ),
     r'inker': PropertySchema(
-      id: 14,
+      id: 13,
       name: r'inker',
       type: IsarType.string,
     ),
     r'isFavorited': PropertySchema(
-      id: 15,
+      id: 14,
       name: r'isFavorited',
       type: IsarType.bool,
     ),
     r'lastPlayedDate': PropertySchema(
-      id: 16,
+      id: 15,
       name: r'lastPlayedDate',
       type: IsarType.string,
     ),
     r'letterer': PropertySchema(
-      id: 17,
+      id: 16,
       name: r'letterer',
       type: IsarType.string,
     ),
     r'officialRating': PropertySchema(
-      id: 18,
+      id: 17,
       name: r'officialRating',
       type: IsarType.string,
     ),
     r'pageNum': PropertySchema(
-      id: 19,
+      id: 18,
       name: r'pageNum',
       type: IsarType.long,
     ),
     r'parentId': PropertySchema(
-      id: 20,
+      id: 19,
       name: r'parentId',
       type: IsarType.string,
     ),
     r'path': PropertySchema(
-      id: 21,
+      id: 20,
       name: r'path',
       type: IsarType.string,
     ),
     r'penciller': PropertySchema(
-      id: 22,
+      id: 21,
       name: r'penciller',
       type: IsarType.string,
     ),
     r'playCount': PropertySchema(
-      id: 23,
+      id: 22,
       name: r'playCount',
       type: IsarType.long,
     ),
     r'premiereDate': PropertySchema(
-      id: 24,
+      id: 23,
       name: r'premiereDate',
       type: IsarType.string,
     ),
     r'progress': PropertySchema(
-      id: 25,
+      id: 24,
       name: r'progress',
       type: IsarType.double,
     ),
     r'publisher': PropertySchema(
-      id: 26,
+      id: 25,
       name: r'publisher',
       type: IsarType.string,
     ),
     r'rating': PropertySchema(
-      id: 27,
+      id: 26,
       name: r'rating',
       type: IsarType.double,
     ),
     r'releaseDate': PropertySchema(
-      id: 28,
+      id: 27,
       name: r'releaseDate',
       type: IsarType.string,
     ),
     r'runTimeTicks': PropertySchema(
-      id: 29,
+      id: 28,
       name: r'runTimeTicks',
       type: IsarType.long,
     ),
     r'seriesName': PropertySchema(
-      id: 30,
+      id: 29,
       name: r'seriesName',
       type: IsarType.string,
     ),
     r'sortName': PropertySchema(
-      id: 31,
+      id: 30,
       name: r'sortName',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 32,
+      id: 31,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'title': PropertySchema(
-      id: 33,
+      id: 32,
       name: r'title',
       type: IsarType.string,
     ),
     r'translator': PropertySchema(
-      id: 34,
+      id: 33,
       name: r'translator',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 35,
+      id: 34,
       name: r'type',
       type: IsarType.byte,
       enumMap: _EntrytypeEnumValueMap,
     ),
     r'url': PropertySchema(
-      id: 36,
+      id: 35,
       name: r'url',
       type: IsarType.string,
     ),
     r'writer': PropertySchema(
-      id: 37,
+      id: 36,
       name: r'writer',
       type: IsarType.string,
     )
@@ -337,43 +332,42 @@ void _entrySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.colorist);
-  writer.writeDouble(offsets[1], object.communityRating);
-  writer.writeString(offsets[2], object.coverArtist);
-  writer.writeString(offsets[3], object.dateCreated);
-  writer.writeString(offsets[4], object.description);
-  writer.writeBool(offsets[5], object.downloaded);
-  writer.writeString(offsets[6], object.editor);
-  writer.writeString(offsets[7], object.epubCfi);
-  writer.writeString(offsets[8], object.filePath);
-  writer.writeString(offsets[9], object.folderPath);
-  writer.writeString(offsets[10], object.id);
-  writer.writeString(offsets[11], object.imagePath);
-  writer.writeString(offsets[12], object.imprint);
-  writer.writeLong(offsets[13], object.indexNumber);
-  writer.writeString(offsets[14], object.inker);
-  writer.writeBool(offsets[15], object.isFavorited);
-  writer.writeString(offsets[16], object.lastPlayedDate);
-  writer.writeString(offsets[17], object.letterer);
-  writer.writeString(offsets[18], object.officialRating);
-  writer.writeLong(offsets[19], object.pageNum);
-  writer.writeString(offsets[20], object.parentId);
-  writer.writeString(offsets[21], object.path);
-  writer.writeString(offsets[22], object.penciller);
-  writer.writeLong(offsets[23], object.playCount);
-  writer.writeString(offsets[24], object.premiereDate);
-  writer.writeDouble(offsets[25], object.progress);
-  writer.writeString(offsets[26], object.publisher);
-  writer.writeDouble(offsets[27], object.rating);
-  writer.writeString(offsets[28], object.releaseDate);
-  writer.writeLong(offsets[29], object.runTimeTicks);
-  writer.writeString(offsets[30], object.seriesName);
-  writer.writeString(offsets[31], object.sortName);
-  writer.writeStringList(offsets[32], object.tags);
-  writer.writeString(offsets[33], object.title);
-  writer.writeString(offsets[34], object.translator);
-  writer.writeByte(offsets[35], object.type.index);
-  writer.writeString(offsets[36], object.url);
-  writer.writeString(offsets[37], object.writer);
+  writer.writeString(offsets[1], object.coverArtist);
+  writer.writeString(offsets[2], object.dateCreated);
+  writer.writeString(offsets[3], object.description);
+  writer.writeBool(offsets[4], object.downloaded);
+  writer.writeString(offsets[5], object.editor);
+  writer.writeString(offsets[6], object.epubCfi);
+  writer.writeString(offsets[7], object.filePath);
+  writer.writeString(offsets[8], object.folderPath);
+  writer.writeString(offsets[9], object.id);
+  writer.writeString(offsets[10], object.imagePath);
+  writer.writeString(offsets[11], object.imprint);
+  writer.writeLong(offsets[12], object.indexNumber);
+  writer.writeString(offsets[13], object.inker);
+  writer.writeBool(offsets[14], object.isFavorited);
+  writer.writeString(offsets[15], object.lastPlayedDate);
+  writer.writeString(offsets[16], object.letterer);
+  writer.writeString(offsets[17], object.officialRating);
+  writer.writeLong(offsets[18], object.pageNum);
+  writer.writeString(offsets[19], object.parentId);
+  writer.writeString(offsets[20], object.path);
+  writer.writeString(offsets[21], object.penciller);
+  writer.writeLong(offsets[22], object.playCount);
+  writer.writeString(offsets[23], object.premiereDate);
+  writer.writeDouble(offsets[24], object.progress);
+  writer.writeString(offsets[25], object.publisher);
+  writer.writeDouble(offsets[26], object.rating);
+  writer.writeString(offsets[27], object.releaseDate);
+  writer.writeLong(offsets[28], object.runTimeTicks);
+  writer.writeString(offsets[29], object.seriesName);
+  writer.writeString(offsets[30], object.sortName);
+  writer.writeStringList(offsets[31], object.tags);
+  writer.writeString(offsets[32], object.title);
+  writer.writeString(offsets[33], object.translator);
+  writer.writeByte(offsets[34], object.type.index);
+  writer.writeString(offsets[35], object.url);
+  writer.writeString(offsets[36], object.writer);
 }
 
 Entry _entryDeserialize(
@@ -384,45 +378,44 @@ Entry _entryDeserialize(
 ) {
   final object = Entry(
     colorist: reader.readStringOrNull(offsets[0]),
-    communityRating: reader.readDoubleOrNull(offsets[1]) ?? 0.0,
-    coverArtist: reader.readStringOrNull(offsets[2]),
-    dateCreated: reader.readStringOrNull(offsets[3]) ?? '',
-    description: reader.readString(offsets[4]),
-    downloaded: reader.readBoolOrNull(offsets[5]) ?? false,
-    editor: reader.readStringOrNull(offsets[6]),
-    epubCfi: reader.readStringOrNull(offsets[7]) ?? '',
-    filePath: reader.readStringOrNull(offsets[8]) ?? '',
-    folderPath: reader.readStringOrNull(offsets[9]) ?? '',
-    id: reader.readString(offsets[10]),
-    imagePath: reader.readString(offsets[11]),
-    imprint: reader.readStringOrNull(offsets[12]),
-    indexNumber: reader.readLongOrNull(offsets[13]) ?? 0,
-    inker: reader.readStringOrNull(offsets[14]),
-    isFavorited: reader.readBoolOrNull(offsets[15]) ?? false,
+    coverArtist: reader.readStringOrNull(offsets[1]),
+    dateCreated: reader.readStringOrNull(offsets[2]) ?? '',
+    description: reader.readString(offsets[3]),
+    downloaded: reader.readBoolOrNull(offsets[4]) ?? false,
+    editor: reader.readStringOrNull(offsets[5]),
+    epubCfi: reader.readStringOrNull(offsets[6]) ?? '',
+    filePath: reader.readStringOrNull(offsets[7]) ?? '',
+    folderPath: reader.readStringOrNull(offsets[8]) ?? '',
+    id: reader.readString(offsets[9]),
+    imagePath: reader.readString(offsets[10]),
+    imprint: reader.readStringOrNull(offsets[11]),
+    indexNumber: reader.readLongOrNull(offsets[12]) ?? 0,
+    inker: reader.readStringOrNull(offsets[13]),
+    isFavorited: reader.readBoolOrNull(offsets[14]) ?? false,
     isarId: id,
-    lastPlayedDate: reader.readStringOrNull(offsets[16]) ?? '',
-    letterer: reader.readStringOrNull(offsets[17]),
-    officialRating: reader.readStringOrNull(offsets[18]) ?? '',
-    pageNum: reader.readLongOrNull(offsets[19]) ?? 0,
-    parentId: reader.readStringOrNull(offsets[20]) ?? '',
-    path: reader.readString(offsets[21]),
-    penciller: reader.readStringOrNull(offsets[22]),
-    playCount: reader.readLong(offsets[23]),
-    premiereDate: reader.readStringOrNull(offsets[24]) ?? '',
-    progress: reader.readDoubleOrNull(offsets[25]) ?? 0.0,
-    publisher: reader.readStringOrNull(offsets[26]),
-    rating: reader.readDouble(offsets[27]),
-    releaseDate: reader.readString(offsets[28]),
-    runTimeTicks: reader.readLongOrNull(offsets[29]) ?? 0,
-    seriesName: reader.readString(offsets[30]),
-    sortName: reader.readString(offsets[31]),
-    tags: reader.readStringList(offsets[32]) ?? [],
-    title: reader.readString(offsets[33]),
-    translator: reader.readStringOrNull(offsets[34]),
-    type: _EntrytypeValueEnumMap[reader.readByteOrNull(offsets[35])] ??
+    lastPlayedDate: reader.readStringOrNull(offsets[15]) ?? '',
+    letterer: reader.readStringOrNull(offsets[16]),
+    officialRating: reader.readStringOrNull(offsets[17]) ?? '',
+    pageNum: reader.readLongOrNull(offsets[18]) ?? 0,
+    parentId: reader.readStringOrNull(offsets[19]) ?? '',
+    path: reader.readString(offsets[20]),
+    penciller: reader.readStringOrNull(offsets[21]),
+    playCount: reader.readLong(offsets[22]),
+    premiereDate: reader.readStringOrNull(offsets[23]) ?? '',
+    progress: reader.readDoubleOrNull(offsets[24]) ?? 0.0,
+    publisher: reader.readStringOrNull(offsets[25]),
+    rating: reader.readDouble(offsets[26]),
+    releaseDate: reader.readString(offsets[27]),
+    runTimeTicks: reader.readLongOrNull(offsets[28]) ?? 0,
+    seriesName: reader.readString(offsets[29]),
+    sortName: reader.readString(offsets[30]),
+    tags: reader.readStringList(offsets[31]) ?? [],
+    title: reader.readString(offsets[32]),
+    translator: reader.readStringOrNull(offsets[33]),
+    type: _EntrytypeValueEnumMap[reader.readByteOrNull(offsets[34])] ??
         EntryType.book,
-    url: reader.readString(offsets[36]),
-    writer: reader.readStringOrNull(offsets[37]),
+    url: reader.readString(offsets[35]),
+    writer: reader.readStringOrNull(offsets[36]),
   );
   return object;
 }
@@ -437,79 +430,77 @@ P _entryDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readStringOrNull(offset)) as P;
-    case 3:
       return (reader.readStringOrNull(offset) ?? '') as P;
-    case 4:
+    case 3:
       return (reader.readString(offset)) as P;
-    case 5:
+    case 4:
       return (reader.readBoolOrNull(offset) ?? false) as P;
-    case 6:
+    case 5:
       return (reader.readStringOrNull(offset)) as P;
+    case 6:
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 7:
       return (reader.readStringOrNull(offset) ?? '') as P;
     case 8:
       return (reader.readStringOrNull(offset) ?? '') as P;
     case 9:
-      return (reader.readStringOrNull(offset) ?? '') as P;
+      return (reader.readString(offset)) as P;
     case 10:
       return (reader.readString(offset)) as P;
     case 11:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 12:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 13:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 14:
-      return (reader.readStringOrNull(offset)) as P;
-    case 15:
       return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 15:
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 16:
-      return (reader.readStringOrNull(offset) ?? '') as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 17:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 18:
-      return (reader.readStringOrNull(offset) ?? '') as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 19:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 20:
-      return (reader.readStringOrNull(offset) ?? '') as P;
+      return (reader.readString(offset)) as P;
     case 21:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 22:
-      return (reader.readStringOrNull(offset)) as P;
-    case 23:
       return (reader.readLong(offset)) as P;
-    case 24:
+    case 23:
       return (reader.readStringOrNull(offset) ?? '') as P;
-    case 25:
+    case 24:
       return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
-    case 26:
+    case 25:
       return (reader.readStringOrNull(offset)) as P;
-    case 27:
+    case 26:
       return (reader.readDouble(offset)) as P;
-    case 28:
+    case 27:
       return (reader.readString(offset)) as P;
-    case 29:
+    case 28:
       return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 29:
+      return (reader.readString(offset)) as P;
     case 30:
       return (reader.readString(offset)) as P;
     case 31:
-      return (reader.readString(offset)) as P;
-    case 32:
       return (reader.readStringList(offset) ?? []) as P;
-    case 33:
+    case 32:
       return (reader.readString(offset)) as P;
-    case 34:
+    case 33:
       return (reader.readStringOrNull(offset)) as P;
-    case 35:
+    case 34:
       return (_EntrytypeValueEnumMap[reader.readByteOrNull(offset)] ??
           EntryType.book) as P;
-    case 36:
+    case 35:
       return (reader.readString(offset)) as P;
-    case 37:
+    case 36:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -802,68 +793,6 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'colorist',
         value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> communityRatingEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'communityRating',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> communityRatingGreaterThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'communityRating',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> communityRatingLessThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'communityRating',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> communityRatingBetween(
-    double lower,
-    double upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'communityRating',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
       ));
     });
   }
@@ -5072,18 +5001,6 @@ extension EntryQuerySortBy on QueryBuilder<Entry, Entry, QSortBy> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByCommunityRating() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'communityRating', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByCommunityRatingDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'communityRating', Sort.desc);
-    });
-  }
-
   QueryBuilder<Entry, Entry, QAfterSortBy> sortByCoverArtist() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'coverArtist', Sort.asc);
@@ -5515,18 +5432,6 @@ extension EntryQuerySortThenBy on QueryBuilder<Entry, Entry, QSortThenBy> {
   QueryBuilder<Entry, Entry, QAfterSortBy> thenByColoristDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'colorist', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByCommunityRating() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'communityRating', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByCommunityRatingDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'communityRating', Sort.desc);
     });
   }
 
@@ -5971,12 +5876,6 @@ extension EntryQueryWhereDistinct on QueryBuilder<Entry, Entry, QDistinct> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByCommunityRating() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'communityRating');
-    });
-  }
-
   QueryBuilder<Entry, Entry, QDistinct> distinctByCoverArtist(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -6232,12 +6131,6 @@ extension EntryQueryProperty on QueryBuilder<Entry, Entry, QQueryProperty> {
   QueryBuilder<Entry, String?, QQueryOperations> coloristProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'colorist');
-    });
-  }
-
-  QueryBuilder<Entry, double, QQueryOperations> communityRatingProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'communityRating');
     });
   }
 

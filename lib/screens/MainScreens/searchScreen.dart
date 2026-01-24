@@ -36,7 +36,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Entry> searchResults = [];
   // List<Map<String, dynamic>> searchResults = [];
 
-  SortOption sortMethod = SortOption.name;
+  SortMethod sortMethod = SortMethod.sortName;
   SortOrder sortDirection = SortOrder.ascending;
 
   @override

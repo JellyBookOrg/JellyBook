@@ -146,6 +146,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   // choose how to read the file
   Future<void> readComic(String id) async {
+    Entry entry = await isar!.entrys.filter().idEqualTo(id).findFirst() as Entry;
+    await isar!.writeTxn(() async {
+      entry.playCount += 1;
+      entry.lastPlayedDate = DateTime.now().toIso8601String();
+      isar!.entrys.put(entry);
+    });
     // get the file extension
     var fileExtension = await checkFileExtension(id);
 

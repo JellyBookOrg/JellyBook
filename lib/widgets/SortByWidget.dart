@@ -1,24 +1,25 @@
 // Purpose: This file contains the SortByWidget widget, which is a stateful drop-down menu used to choose how to sort books.
 
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:jellybook/models/entry.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tentacle/tentacle.dart';
 import 'package:collection/collection.dart';
 
-enum SortOption {
-  name("Name"),
-  communityRating("Community Rating"),
+enum SortMethod {
+  sortName("Name"),
+  rating("Rating"),
   //criticsRating("Critics Rating"), //mising or N/A for books
   dateAdded("Date Added"),
   datePlayed("Date Played"),
-  parentalRating("Parental Rating"),
+  //parentalRating("Parental Rating"), //too lazy to do this
   playCount("Play Count"),
   releaseDate("Release Date"),
   runtime("Runtime"),
   indexNum("Index Number");
 
-  const SortOption(this.label);
+  const SortMethod(this.label);
   final String label;
 }
 
@@ -28,54 +29,52 @@ class SortByWidget extends StatefulWidget {
     this.child,
     required this.defaultSortMethod,
     required this.defaultSortOrder,
+    this.sharedPrefsKey,
     required this.onChanged,
   });
 
   final Widget? child;
-  final SortOption defaultSortMethod;
+  final SortMethod defaultSortMethod;
   final SortOrder defaultSortOrder;
-  final Future<void> Function(SortOption sortMethod, SortOrder sortDirection) onChanged;
+  final String? sharedPrefsKey;
+  final Future<void> Function(SortMethod sortMethod, SortOrder sortDirection) onChanged;
 
   @override
   State<SortByWidget> createState() => _SortByState();
 
-  static int compareEntries(Entry a, Entry b, SortOption sortMethod, SortOrder sortDirection) {
-    String aString = a.sortName;
-    String bString = b.sortName;
+  static int compareEntries(Entry a, Entry b, SortMethod sortMethod, SortOrder sortDirection) {
+    String aString = a.sortName.toLowerCase();
+    String bString = b.sortName.toLowerCase();
     switch (sortMethod) {
-      case SortOption.name: //seriesSortName + sortName
-        aString = '${a.seriesName},$aString';
-        bString = '${b.seriesName},$bString';
+      case SortMethod.sortName: //seriesSortName + sortName
+        aString = '${a.seriesName.toLowerCase()},$aString';
+        bString = '${b.seriesName.toLowerCase()},$bString';
         break;
-      case SortOption.communityRating: //communityRating + sortName
-        aString = '${a.communityRating},$aString';
-        bString = '${b.communityRating},$bString';
+      case SortMethod.rating: //communityRating + sortName
+        aString = '${a.rating},$aString';
+        bString = '${b.rating},$bString';
         break;
-      case SortOption.dateAdded: //dateCreated + sortName
+      case SortMethod.dateAdded: //dateCreated + sortName
         aString = '${a.dateCreated},$aString';
         bString = '${b.dateCreated},$bString';
         break;
-      case SortOption.datePlayed: //datePlayed + sortName
+      case SortMethod.datePlayed: //datePlayed + sortName
         aString = '${a.lastPlayedDate},$aString';
         bString = '${b.lastPlayedDate},$bString';
         break;
-      case SortOption.parentalRating: //officialRating + sortName
-        aString = '${a.officialRating},$aString';
-        bString = '${b.officialRating},$bString';
-        break;
-      case SortOption.playCount: //playCount + sortName
+      case SortMethod.playCount: //playCount + sortName
         aString = '${a.playCount},$aString';
         bString = '${b.playCount},$bString';
         break;
-      case SortOption.releaseDate: //productionYear + premiereDate + sortName
+      case SortMethod.releaseDate: //productionYear + premiereDate + sortName
         aString = '${a.releaseDate},${a.premiereDate},$aString';
         bString = '${b.releaseDate},${b.premiereDate},$bString';
         break;
-      case SortOption.runtime: //runtime + sortName
+      case SortMethod.runtime: //runtime + sortName
         aString = '${a.runTimeTicks},$aString';
         bString = '${b.runTimeTicks},$bString';
         break;
-      case SortOption.indexNum: //indexNumber + sortName
+      case SortMethod.indexNum: //indexNumber + sortName
         aString = '${a.indexNumber},$aString';
         bString = '${b.indexNumber},$bString';
         break;
@@ -92,66 +91,94 @@ class SortByWidget extends StatefulWidget {
 }
 
 class _SortByState extends State<SortByWidget> {
-  late SortOption _sortMethod;
-  late SortOrder _sortDirection;
+  final Completer _prefsLoaded = Completer();
+  SortMethod? _sortMethod;
+  SortOrder? _sortDirection;
+  SharedPreferences? _preferences;
 
   @override
   void initState() {
     super.initState();
-    _sortMethod = widget.defaultSortMethod;
-    _sortDirection = widget.defaultSortOrder;
+    loadPrefs().then((_) {
+      _sortMethod ??= widget.defaultSortMethod;
+      _sortDirection ??= widget.defaultSortOrder;
+      _prefsLoaded.complete();
+      widget.onChanged.call(_sortMethod!, _sortDirection!);
+    });
+  }
+
+  Future<void> loadPrefs() async {
+    if (widget.sharedPrefsKey != null) {
+      _preferences = await SharedPreferences.getInstance();
+      String? sortMethodString = _preferences!.getString("${widget.sharedPrefsKey!}.sortMethod");
+      String? sortDirectionString = _preferences!.getString("${widget.sharedPrefsKey!}.sortDirection");
+      if (sortMethodString != null && sortDirectionString != null) {
+        _sortMethod = SortMethod.values.byName(sortMethodString);
+        _sortDirection = SortOrder.valueOf(sortDirectionString);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<SortOption>(
-      initialValue: _sortMethod,
-      onSelected: (SortOption sortMethod) {
-        SortOrder sortDirection = _sortDirection;
-        if (sortMethod == _sortMethod) {
-          if (sortDirection == SortOrder.ascending) {
-            sortDirection = SortOrder.descending;
+    return FutureBuilder(
+      future: _prefsLoaded.future,
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        return PopupMenuButton<SortMethod>(
+        initialValue: _sortMethod,
+        onSelected: (SortMethod sortMethod) {
+          SortOrder sortDirection = _sortDirection!;
+          if (sortMethod == _sortMethod) {
+            if (sortDirection == SortOrder.ascending) {
+              sortDirection = SortOrder.descending;
+            } else {
+              sortDirection = SortOrder.ascending;
+            }
           } else {
             sortDirection = SortOrder.ascending;
           }
-        } else {
-          sortDirection = SortOrder.ascending;
-        }
-        setState(() {
-          _sortMethod = sortMethod;
-          _sortDirection = sortDirection;
-        });
-        widget.onChanged.call(_sortMethod, _sortDirection);
-      },
-      itemBuilder: (BuildContext context) {
-        List<PopupMenuItem<SortOption>> itemList = [];
-        for (SortOption option in SortOption.values) {
-          if (_sortMethod == option) {
-            IconData directionIcon;
-            if (_sortDirection == SortOrder.ascending) {
-              directionIcon = Icons.arrow_upward;
-            } else {
-              directionIcon = Icons.arrow_downward;
-            }
-            itemList.add(PopupMenuItem<SortOption>(
-                value: option,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(option.label),
-                    Icon(directionIcon),
-                  ],
-            )));
-          } else {
-            itemList.add(PopupMenuItem<SortOption>(
-                value: option,
-                child: Text(option.label),
-            ));
+          setState(() {
+            _sortMethod = sortMethod;
+            _sortDirection = sortDirection;
+          });
+          if (widget.sharedPrefsKey != null) {
+            _preferences!.setString(
+              "${widget.sharedPrefsKey!}.sortMethod", _sortMethod!.name);
+            _preferences!.setString(
+              "${widget.sharedPrefsKey!}.sortDirection", _sortDirection!.name);
           }
-        }
-        return itemList;
-      },
-      icon: const Icon(Icons.sort),
+          widget.onChanged.call(_sortMethod!, _sortDirection!);
+        },
+        itemBuilder: (BuildContext context) {
+          List<PopupMenuItem<SortMethod>> itemList = [];
+          for (SortMethod option in SortMethod.values) {
+            if (_sortMethod == option) {
+              IconData directionIcon;
+              if (_sortDirection == SortOrder.ascending) {
+                directionIcon = Icons.arrow_upward;
+              } else {
+                directionIcon = Icons.arrow_downward;
+              }
+              itemList.add(PopupMenuItem<SortMethod>(
+                  value: option,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(option.label),
+                      Icon(directionIcon),
+                    ],
+              )));
+            } else {
+              itemList.add(PopupMenuItem<SortMethod>(
+                  value: option,
+                  child: Text(option.label),
+              ));
+            }
+          }
+          return itemList;
+        },
+        icon: const Icon(Icons.sort),
+      );}
     );
   }
 }

@@ -105,7 +105,6 @@ Future<void> getComics(String comicsId) async {
       parentId: element.parentId ?? '',
       isFavorited: element.userData?.isFavorite ?? false,
       sortName: (element.forcedSortName ?? element.sortName) ?? '',
-      communityRating: element.communityRating ?? 0.0,
       dateCreated: element.dateCreated?.toIso8601String() ?? '',
       lastPlayedDate: element.userData?.lastPlayedDate?.toIso8601String() ?? '',
       officialRating: element.officialRating ?? '',

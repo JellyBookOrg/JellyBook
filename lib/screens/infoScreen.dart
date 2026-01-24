@@ -65,8 +65,11 @@ class _InfoScreenState extends State<InfoScreen> {
   Future<void> setRead() async {
     if (entry.progress < 100) {
       entry.progress = 100;
+      entry.playCount += 1;
     } else {
       entry.progress = 0;
+      entry.playCount = 0;
+      entry.lastPlayedDate = '';
     }
     final isar = Isar.getInstance();
     await isar?.writeTxn(() async {
