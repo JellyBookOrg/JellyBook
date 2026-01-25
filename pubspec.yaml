@@ -68,6 +68,7 @@ dependencies:
     path: ./submodules/tentacle/
   string_similarity: ^2.0.0
   connectivity_plus: ^6.0.1
+  collection: any
 
   # Translations
   flutter_localizations:

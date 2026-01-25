@@ -6,6 +6,7 @@ import 'package:flutter_star/flutter_star.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:jellybook/providers/deleteComic.dart';
 import 'package:jellybook/providers/fixRichText.dart';
+import 'package:jellybook/providers/updateLastPlayInfo.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/screens/EditScreen.dart';
 import 'package:jellybook/screens/readingScreen.dart';
@@ -63,15 +64,20 @@ class _InfoScreenState extends State<InfoScreen> {
   }
 
   Future<void> setRead() async {
+    if (entry.playCount < 0) {entry.playCount = 0;}
     if (entry.progress < 100) {
       entry.progress = 100;
+      entry.playCount += 1;
     } else {
       entry.progress = 0;
+      entry.playCount = 0;
+      entry.lastPlayedDate = '';
     }
     final isar = Isar.getInstance();
     await isar?.writeTxn(() async {
       await isar.entrys.put(entry);
     });
+    await updateLastPlayInfo(entry.id, entry.playCount, entry.lastPlayedDate);
   }
 
   Future<Set<Author>> getAuthors() async {

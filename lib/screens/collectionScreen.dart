@@ -1,7 +1,9 @@
 // The purpose of this file is to create a list of entries from a selected folder
 
 // import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:jellybook/widgets/SortByWidget.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
@@ -15,6 +17,7 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
+import 'package:tentacle/tentacle.dart';
 
 class collectionScreen extends StatefulWidget {
   final String folderId;
@@ -47,6 +50,10 @@ class _collectionScreenState extends State<collectionScreen> {
     required this.bookIds,
   });
 
+  final Completer _isSortPrefsLoaded = Completer();
+  SortMethod sortMethod = SortMethod.sortName;
+  SortOrder sortDirection = SortOrder.ascending;
+
   final isar = Isar.getInstance();
   // make a list of entries from the the list of bookIds
   Future<List<Entry>> getEntries() async {
@@ -65,7 +72,8 @@ class _collectionScreenState extends State<collectionScreen> {
     // checkeach field of the entry to make sure it is not null
   }
 
-  Future<List<Entry>> get entries async {
+  Future<List<Entry>> resolveWaitsForBuild() async {
+    await _isSortPrefsLoaded.future;
     return await getEntries();
   }
 
@@ -74,41 +82,63 @@ class _collectionScreenState extends State<collectionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(name),
+        actions: <Widget>[
+          SortByWidget(
+              defaultSortMethod: sortMethod,
+              defaultSortDirection: sortDirection,
+              sharedPrefsKey: "${folderId}CollectionScreenSort",
+              onChanged: (newSortMethod, newSortDirection) async {
+                WidgetsBinding.instance.addPostFrameCallback((_) =>
+                  setState(() {
+                      sortMethod = newSortMethod;
+                      sortDirection = newSortDirection;
+                      if (!_isSortPrefsLoaded.isCompleted) {
+                        _isSortPrefsLoaded.complete();
+                      }
+                  })
+                );
+              }
+          )
+        ],
       ),
       body: FutureBuilder(
-        future: entries,
+        future: resolveWaitsForBuild(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData &&
               snapshot.data.length > 0 &&
               snapshot.connectionState == ConnectionState.done) {
+            List<Entry> snapshotList = snapshot.data;
+            snapshotList.sort(
+              (a, b) => SortFunctions.compareEntries(a, b, sortMethod, sortDirection)
+            );
             return ListView.builder(
-              itemCount: snapshot.data.length,
+              itemCount: snapshotList.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   onTap: () async {
-                    if (snapshot.data[index].type != EntryType.folder) {
+                    if (snapshotList[index].type != EntryType.folder) {
                       var result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => InfoScreen(
-                            entry: snapshot.data[index],
+                            entry: snapshotList[index],
                           ),
                         ),
                       );
                       if (result != null) {
-                        snapshot.data[index].isFavorited =
-                            result.$1 ?? snapshot.data[index].isFavorited;
-                        snapshot.data[index].downloaded =
-                            result.$2 ?? snapshot.data[index].downloaded;
+                        snapshotList[index].isFavorited =
+                            result.$1 ?? snapshotList[index].isFavorited;
+                        snapshotList[index].downloaded =
+                            result.$2 ?? snapshotList[index].downloaded;
                         await isar?.writeTxn(() async {
-                          await isar?.entrys.put(snapshot.data[index]);
+                          await isar?.entrys.put(snapshotList[index]);
                         });
                       }
                     } else {
                       var folder = isar!.folders
                           .where()
                           .filter()
-                          .idEqualTo(snapshot.data[index].id)
+                          .idEqualTo(snapshotList[index].id)
                           .findFirstSync();
                       Navigator.push(
                         context,
@@ -123,15 +153,15 @@ class _collectionScreenState extends State<collectionScreen> {
                       );
                     }
                   },
-                  title: Text(snapshot.data[index].title),
+                  title: Text(snapshotList[index].title),
                   leading: RoundedImageWithShadow(
-                    imageUrl: snapshot.data[index].imagePath,
+                    imageUrl: snapshotList[index].imagePath,
                     radius: 5,
                   ),
                   subtitle: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      if (snapshot.data[index].rating >= 0)
+                      if (snapshotList[index].rating >= 0)
                         IgnorePointer(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -140,12 +170,12 @@ class _collectionScreenState extends State<collectionScreen> {
                                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                                 child: CustomRating(
                                   max: 5,
-                                  score: snapshot.data[index].rating / 2,
+                                  score: snapshotList[index].rating / 2,
                                   star: Star(
                                     fillColor: Color.lerp(
                                         Colors.red,
                                         Colors.yellow,
-                                        snapshot.data[index].rating / 10)!,
+                                        snapshotList[index].rating / 10)!,
                                     emptyColor: Colors.grey.withOpacity(0.5),
                                   ),
                                   onRating: (double score) {},
@@ -154,7 +184,7 @@ class _collectionScreenState extends State<collectionScreen> {
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                                 child: Text(
-                                  "${(snapshot.data[index].rating / 2).toStringAsFixed(2)} / 5.00",
+                                  "${(snapshotList[index].rating / 2).toStringAsFixed(2)} / 5.00",
                                   style: const TextStyle(
                                     fontStyle: FontStyle.italic,
                                     fontSize: 15,
@@ -164,11 +194,11 @@ class _collectionScreenState extends State<collectionScreen> {
                             ],
                           ),
                         ),
-                      if (snapshot.data[index].rating < 0 &&
-                          snapshot.data[index].description != '')
+                      if (snapshotList[index].rating < 0 &&
+                          snapshotList[index].description != '')
                         Flexible(
                           child: MarkdownBody(
-                            data: fixRichText(snapshot.data[index].description),
+                            data: fixRichText(snapshotList[index].description),
                             extensionSet: md.ExtensionSet(
                               md.ExtensionSet.gitHubFlavored.blockSyntaxes,
                               <md.InlineSyntax>[

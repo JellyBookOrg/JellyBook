@@ -14,6 +14,8 @@ import 'package:string_similarity/string_similarity.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
+import 'package:jellybook/widgets/SortByWidget.dart';
+import 'package:tentacle/tentacle.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -34,6 +36,9 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Entry> searchResults = [];
   // List<Map<String, dynamic>> searchResults = [];
 
+  SortMethod sortMethod = SortMethod.sortName;
+  SortOrder sortDirection = SortOrder.ascending;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,12 +56,29 @@ class _SearchScreenState extends State<SearchScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    searchResults = [];
-                    _searchController.clear();
-                  },
+                suffixIcon: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        searchResults = [];
+                        _searchController.clear();
+                      },
+                    ),
+                    SortByWidget(
+                      defaultSortMethod: sortMethod,
+                      defaultSortDirection: sortDirection,
+                      onChanged: (newSortMethod, newSortDirection) async {
+                        setState(() {
+                          sortMethod = newSortMethod;
+                          sortDirection = newSortDirection;
+                          getSearchResults(_searchController.text.toString());
+                        });
+                      }
+                    ),
+                  ],
                 ),
                 // only have suffix icon when the search bar is selected
                 hintText:
@@ -204,6 +226,7 @@ class _SearchScreenState extends State<SearchScreen> {
         .findAll();
 
     books = diceCoefficientRankings(searchQuery, books);
+    books.sort((Entry a, Entry b) => SortFunctions.compareEntries(a, b, sortMethod, sortDirection));
 
     // convert the results to a list of maps
     // List<Map<String, dynamic>> results = [];
