@@ -64,6 +64,7 @@ class _InfoScreenState extends State<InfoScreen> {
   }
 
   Future<void> setRead() async {
+    if (entry.playCount < 0) {entry.playCount = 0;}
     if (entry.progress < 100) {
       entry.progress = 100;
       entry.playCount += 1;

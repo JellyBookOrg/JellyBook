@@ -69,11 +69,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     SortByWidget(
                       defaultSortMethod: sortMethod,
-                      defaultSortOrder: sortDirection,
-                      onChanged: (newSortMethod, newSortOrder) async {
+                      defaultSortDirection: sortDirection,
+                      onChanged: (newSortMethod, newSortDirection) async {
                         setState(() {
                           sortMethod = newSortMethod;
-                          sortDirection = newSortOrder;
+                          sortDirection = newSortDirection;
                           getSearchResults(_searchController.text.toString());
                         });
                       }
@@ -226,7 +226,7 @@ class _SearchScreenState extends State<SearchScreen> {
         .findAll();
 
     books = diceCoefficientRankings(searchQuery, books);
-    books.sort((Entry a, Entry b) => SortByWidget.compareEntries(a, b, sortMethod, sortDirection));
+    books.sort((Entry a, Entry b) => SortFunctions.compareEntries(a, b, sortMethod, sortDirection));
 
     // convert the results to a list of maps
     // List<Map<String, dynamic>> results = [];

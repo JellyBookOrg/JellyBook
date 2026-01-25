@@ -51,8 +51,8 @@ class _collectionScreenState extends State<collectionScreen> {
   });
 
   final Completer _isSortPrefsLoaded = Completer();
-  SortMethod? sortMethod;
-  SortOrder? sortDirection;
+  SortMethod sortMethod = SortMethod.sortName;
+  SortOrder sortDirection = SortOrder.ascending;
 
   final isar = Isar.getInstance();
   // make a list of entries from the the list of bookIds
@@ -72,7 +72,7 @@ class _collectionScreenState extends State<collectionScreen> {
     // checkeach field of the entry to make sure it is not null
   }
 
-  Future<List<Entry>> get entries async {
+  Future<List<Entry>> resolveWaitsForBuild() async {
     await _isSortPrefsLoaded.future;
     return await getEntries();
   }
@@ -84,14 +84,14 @@ class _collectionScreenState extends State<collectionScreen> {
         title: Text(name),
         actions: <Widget>[
           SortByWidget(
-              defaultSortMethod: SortMethod.sortName,
-              defaultSortOrder: SortOrder.ascending,
-              sharedPrefsKey: "${name}CollectionScreen",
-              onChanged: (newSortMethod, newSortOrder) async {
+              defaultSortMethod: sortMethod,
+              defaultSortDirection: sortDirection,
+              sharedPrefsKey: "${folderId}CollectionScreenSort",
+              onChanged: (newSortMethod, newSortDirection) async {
                 WidgetsBinding.instance.addPostFrameCallback((_) =>
                   setState(() {
                       sortMethod = newSortMethod;
-                      sortDirection = newSortOrder;
+                      sortDirection = newSortDirection;
                       if (!_isSortPrefsLoaded.isCompleted) {
                         _isSortPrefsLoaded.complete();
                       }
@@ -102,14 +102,14 @@ class _collectionScreenState extends State<collectionScreen> {
         ],
       ),
       body: FutureBuilder(
-        future: entries,
+        future: resolveWaitsForBuild(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData &&
               snapshot.data.length > 0 &&
               snapshot.connectionState == ConnectionState.done) {
             List<Entry> snapshotList = snapshot.data;
             snapshotList.sort(
-              (a, b) => SortByWidget.compareEntries(a, b, sortMethod!, sortDirection!)
+              (a, b) => SortFunctions.compareEntries(a, b, sortMethod, sortDirection)
             );
             return ListView.builder(
               itemCount: snapshotList.length,

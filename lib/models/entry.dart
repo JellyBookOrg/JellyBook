@@ -40,9 +40,9 @@ class Entry {
   // Used to sort entries
   String sortName;
   String dateCreated = "";
-  String lastPlayedDate = ""; //TODO: send to server
+  String lastPlayedDate = "";
   String officialRating = "";
-  int playCount; //TODO: send to server
+  int playCount;
   String premiereDate = "";
   int runTimeTicks = 0;
   int indexNumber = 0;

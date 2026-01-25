@@ -149,6 +149,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   Future<void> readComic(String id) async {
     Entry entry = await isar!.entrys.filter().idEqualTo(id).findFirst() as Entry;
     await isar!.writeTxn(() async {
+      if (entry.playCount < 0) {entry.playCount = 0;}
       entry.playCount += 1;
       entry.lastPlayedDate = DateTime.now().toIso8601String();
       isar!.entrys.put(entry);
