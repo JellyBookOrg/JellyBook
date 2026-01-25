@@ -6,6 +6,7 @@ import 'package:flutter_star/flutter_star.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:jellybook/providers/deleteComic.dart';
 import 'package:jellybook/providers/fixRichText.dart';
+import 'package:jellybook/providers/updateLastPlayInfo.dart';
 import 'package:jellybook/screens/downloaderScreen.dart';
 import 'package:jellybook/screens/EditScreen.dart';
 import 'package:jellybook/screens/readingScreen.dart';
@@ -75,6 +76,7 @@ class _InfoScreenState extends State<InfoScreen> {
     await isar?.writeTxn(() async {
       await isar.entrys.put(entry);
     });
+    await updateLastPlayInfo(entry.id, entry.playCount, entry.lastPlayedDate);
   }
 
   Future<Set<Author>> getAuthors() async {

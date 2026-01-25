@@ -3,6 +3,7 @@
 
 // import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:jellybook/providers/updateLastPlayInfo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
@@ -152,6 +153,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
       entry.lastPlayedDate = DateTime.now().toIso8601String();
       isar!.entrys.put(entry);
     });
+    await updateLastPlayInfo(id, entry.playCount, entry.lastPlayedDate);
     // get the file extension
     var fileExtension = await checkFileExtension(id);
 
