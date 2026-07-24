@@ -12,7 +12,7 @@ import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 

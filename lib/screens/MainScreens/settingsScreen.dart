@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/widgets/SimpleUserCard.dart';
 import 'package:jellybook/widgets/SettingsItem.dart';
@@ -302,7 +302,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'Accept-Language': 'en-US,en;q=0.5',
       'Accept-Encoding': 'gzip, deflate',
       'Content-Type': 'application/json',
-      "X-Emby-Authorization":
+      "Authorization":
           "MediaBrowser Client=\"$_client\", Device=\"$_device\", DeviceId=\"$_deviceId\", Version=\"$version\", Token=\"$token\"",
       'Connection': 'keep-alive',
       'Origin': server,

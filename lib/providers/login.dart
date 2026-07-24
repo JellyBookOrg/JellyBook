@@ -9,7 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart' as package_info;
 import 'package:isar/isar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:tentacle/tentacle.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -29,7 +29,7 @@ class LoginProvider {
 
   // a curl request to the server would look like this:
   /*
-     curl 'http://[REDACTED]/Users/authenticatebyname' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'X-Emby-Authorization: MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="[REDACTED]", Version="10.8.5"' -H 'Content-Type: application/json' -H 'Origin: [REDACTED]' -H 'Connection: keep-alive' --data-raw '{"Username":"example","Pw":""}' > output
+     curl 'http://[REDACTED]/Users/authenticatebyname' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'Authorization: MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="[REDACTED]", Version="10.8.5"' -H 'Content-Type: application/json' -H 'Origin: [REDACTED]' -H 'Connection: keep-alive' --data-raw '{"Username":"example","Pw":""}' > output
      */
 
   // make a static version of the above class
@@ -96,7 +96,7 @@ class LoginProvider {
     }
 
     final api = Tentacle(basePathOverride: _url);
-    final apiInstance = api.getUserApi();
+    final apiInstance = api.getAuthenticationApi();
     Response<AuthenticationResult> response;
 
     try {
@@ -248,7 +248,7 @@ Map<String, String> getHeaders(
       "Origin": url,
       "Connection": "keep-alive",
       "TE": "Trailers",
-      "X-Emby-Authorization":
+      "Authorization":
           "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
     };
   }
@@ -257,7 +257,7 @@ Map<String, String> getHeaders(
     "Accept": "application/json",
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate",
-    "X-Emby-Authorization":
+    "Authorization":
         "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
     "Content-Type": "application/json",
     "Origin": url,

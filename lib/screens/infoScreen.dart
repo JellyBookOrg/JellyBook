@@ -16,7 +16,7 @@ import 'package:isar/isar.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:jellybook/models/entry.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:package_info_plus/package_info_plus.dart' as p_info;
 import 'package:tentacle/tentacle.dart';
@@ -265,7 +265,7 @@ class _InfoScreenState extends State<InfoScreen> {
       'Accept-Language': 'en-US,en;q=0.5',
       'Accept-Encoding': 'gzip, deflate',
       'Content-Type': 'application/json',
-      "X-Emby-Authorization":
+      "Authorization":
           "MediaBrowser Client=\"$_client\", Device=\"$_device\", DeviceId=\"$_deviceId\", Version=\"$version\", Token=\"$token\"",
       'Connection': 'keep-alive',
       'enableImageTypes': 'Primary,Backdrop,Banner,Thumb,Logo',
@@ -274,7 +274,7 @@ class _InfoScreenState extends State<InfoScreen> {
       'Content-Length': '0',
     };
 
-    final api = Tentacle(basePathOverride: server).getPersonsApi();
+    final api = Tentacle(basePathOverride: server).getPersonApi();
     final person = await api.getPerson(name: author, headers: headers);
     if (person.data!.imageTags == null || person.data!.imageTags!.isEmpty) {
       return "asset";

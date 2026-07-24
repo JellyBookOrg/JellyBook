@@ -30,7 +30,7 @@ Future<void> getComics(String comicsId) async {
     'Connection': 'keep-alive',
     'Accept-Language': 'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate',
-    'X-Emby-Authorization':
+    'Authorization':
         'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
   };
   // make a built list of the fields
@@ -46,7 +46,7 @@ Future<void> getComics(String comicsId) async {
   ]);
 
   // turn into built list
-  final api = Tentacle(basePathOverride: url).getItemsApi();
+  final api = Tentacle(basePathOverride: url).getLibraryApi();
   Response<BaseItemDtoQueryResult>? response;
   bool useSentry = prefs.getBool('useSentry') ?? false;
   try {
@@ -210,7 +210,7 @@ Map<String, String> getHeaders(
     'Accept': 'application/json',
     'Accept-Language': 'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate',
-    'X-Emby-Authorization':
+    'Authorization':
         'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
     'Connection': 'keep-alive',
   };

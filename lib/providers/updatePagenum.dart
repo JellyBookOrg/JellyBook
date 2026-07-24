@@ -23,20 +23,21 @@ Future<void> updatePagenum(String id, int pagenum) async {
     'Accept-Language': 'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate',
     'Content-Type': 'application/json',
-    "X-Emby-Authorization":
+    "Authorization":
         "MediaBrowser Client=\"$_client\", Device=\"$_device\", DeviceId=\"$_deviceId\", Version=\"$version\", Token=\"$token\"",
     'Connection': 'keep-alive',
     'Origin': server,
     'Host': server.substring(server.indexOf("//") + 2, server.length),
     'Content-Length': '0',
   };
-  final api = Tentacle(basePathOverride: server).getPlaystateApi();
+  final api = Tentacle(basePathOverride: server).getSessionApi();
   try {
-    final response = await api.onPlaybackProgress(
+    final response = await api.reportPlaybackProgress(
+      playbackProgressInfo: PlaybackProgressInfo((b) => b
+        ..itemId = id
+        ..positionTicks = pagenum),
       //userId: userId,
-      itemId: id,
       headers: headers,
-      positionTicks: pagenum,
     );
     logger.d(response.statusCode);
     logger.d(response.realUri);

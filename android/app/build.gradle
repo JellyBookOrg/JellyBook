@@ -1,14 +1,15 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader('UTF-8') { reader ->
         localProperties.load(reader)
     }
-}
-
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
@@ -26,10 +27,6 @@ def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion flutter.compileSdkVersion
@@ -54,8 +51,9 @@ android {
 
     defaultConfig {
         applicationId "com.KaraWilson.JellyBook"
-        minSdkVersion 19 
+        minSdkVersion flutter.minSdkVersion 
         targetSdkVersion flutter.targetSdkVersion
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         manifestPlaceholders['foregroundServiceType'] = 'mediaPlayback';
@@ -76,7 +74,12 @@ android {
             // minifyEnabled false
             // shrinkResources false
         }
+        debug {
+            applicationIdSuffix '.debug'
+            resValue "string", "app_name", "JellyBook Debug"
+        }
     }
+    namespace 'com.KaraWilson.JellyBook'
 
     dependenciesInfo {
         // Disables dependency metadata when building APKs.
@@ -84,6 +87,7 @@ android {
         // Disables dependency metadata when building Android App Bundles.
         includeInBundle = false
     }
+    buildToolsVersion '36.0.0'
 }
 
 flutter {
@@ -91,5 +95,5 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.multidex:multidex:2.0.1'
 }

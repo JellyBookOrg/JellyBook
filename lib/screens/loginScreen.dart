@@ -7,7 +7,7 @@ import 'package:jellybook/screens/homeScreen.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
 import 'package:jellybook/providers/languageProvider.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jellybook/variables.dart';
