@@ -73,8 +73,8 @@ dependencies:
   cached_network_image: ^3.4.1
   fancy_shimmer_image: ^2.0.2
   tentacle:
-    path: ./submodules/tentacle/
-  string_similarity: ^2.2.0
+    path: ./submodules/tentacle
+  string_similarity: ^2.0.0
   connectivity_plus: ^6.0.1
 
   # Translations
