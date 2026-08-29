@@ -12,7 +12,6 @@ Future<void> updatePagenum(String id, int pagenum) async {
   p_info.PackageInfo packageInfo = await p_info.PackageInfo.fromPlatform();
   final prefs = await SharedPreferences.getInstance();
   final server = prefs.getString('server')!;
-  final userId = prefs.getString('UserId')!;
   final token = prefs.getString('accessToken')!;
   final version = packageInfo.version;
   const _client = "JellyBook";
@@ -34,7 +33,7 @@ Future<void> updatePagenum(String id, int pagenum) async {
   final api = Tentacle(basePathOverride: server).getPlaystateApi();
   try {
     final response = await api.onPlaybackProgress(
-      userId: userId,
+      //userId: userId,
       itemId: id,
       headers: headers,
       positionTicks: pagenum,

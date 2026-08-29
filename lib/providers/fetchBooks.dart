@@ -50,7 +50,7 @@ Future<void> getComics(String comicsId) async {
   Response<BaseItemDtoQueryResult>? response;
   bool useSentry = prefs.getBool('useSentry') ?? false;
   try {
-    response = await api.getItemsByUserId(
+    response = await api.getItems(
       userId: userId!,
       headers: headers,
       startIndex: 0,
@@ -58,7 +58,7 @@ Future<void> getComics(String comicsId) async {
       imageTypeLimit: 1,
       parentId: comicsId,
       recursive: true,
-      sortBy: BuiltList<String>(["IsFolder", "SortName"]),
+      sortBy: BuiltList<ItemSortBy>([ItemSortBy.isFolder, ItemSortBy.sortName]),
       sortOrder: BuiltList<SortOrder>([SortOrder.ascending]),
     );
   } catch (e, s) {

@@ -68,7 +68,7 @@ Future<(List<Entry>, List<Folder>)> getServerCategories({
   logger.d("got response");
   logger.d(response?.statusCode.toString());
   final data = response.data.items
-      .where((element) => element.collectionType == 'books')
+      .where((element) => element.collectionType == CollectionType.books)
       .toList();
 
   bool hasComics = true;

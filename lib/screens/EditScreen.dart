@@ -203,16 +203,21 @@ class _EditScreenState extends State<EditScreen> {
     }
     // body of the request
     try {
+      BaseItemDtoBuilder builder = BaseItemDtoBuilder();
+      builder.name = entry.title;
+      builder.overview = entry.description;
+      if (dateTime != null) builder.premiereDate = dateTime;
+      builder.tags = ListBuilder<String>(tags);
+      BaseItemDto baseItemDto = builder.build();
+      //(b) => {
+      //  b.name = entry.title,
+      //  b.overview = entry.description,
+      //  if (dateTime != null) b.premiereDate = dateTime,
+      //  b.tags = ListBuilder<String>(tags),
+      //},
       final response = await api.updateItem(
         itemId: entry.id,
-        updateItemRequest: UpdateItemRequest(
-          (b) => {
-            b.name = entry.title,
-            b.overview = entry.description,
-            if (dateTime != null) b.premiereDate = dateTime,
-            b.tags = ListBuilder<String>(tags),
-          },
-        ),
+        baseItemDto: baseItemDto,
         headers: headers,
       );
       logger.d(response.toString());

@@ -315,7 +315,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       var response = await api.getUserImage(
         userId: userId,
-        imageType: ImageType.primary,
         headers: headers,
       );
       logger.i(response.statusCode);

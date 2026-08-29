@@ -96,8 +96,10 @@ class _collectionScreenState extends State<collectionScreen> {
                         ),
                       );
                       if (result != null) {
-                        snapshot.data[index].isFavorited = result.$1;
-                        snapshot.data[index].downloaded = result.$2;
+                        snapshot.data[index].isFavorited =
+                            result.$1 ?? snapshot.data[index].isFavorited;
+                        snapshot.data[index].downloaded =
+                            result.$2 ?? snapshot.data[index].downloaded;
                         await isar?.writeTxn(() async {
                           await isar?.entrys.put(snapshot.data[index]);
                         });
