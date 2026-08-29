@@ -25,16 +25,6 @@ subprojects {
                 buildToolsVersion "36.0.0"
             }
         }
-
-        // sentry_flutter 8.7.0 hardcodes Kotlin languageVersion=1.4,
-        // which is rejected by Kotlin 2.x compilers.
-        if (project.name == "sentry_flutter") {
-            project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-                kotlinOptions {
-                    languageVersion = "2.0"
-                }
-            }
-        }
     }
 }
 subprojects {
