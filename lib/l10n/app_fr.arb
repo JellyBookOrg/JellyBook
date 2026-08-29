@@ -190,7 +190,7 @@
   "@releaseDate": {},
   "description": "Description ",
   "@description": {},
-  "rating": "Note : ",
+  "rating": "Note  : ",
   "@rating": {},
   "saveToDevice": "Sauvegarder vers l'appareil",
   "@saveToDevice": {},
@@ -201,5 +201,13 @@
   "yes": "Oui",
   "@yes": {},
   "no": "Non",
-  "@no": {}
+  "@no": {},
+  "sentryExplanation": "Activer les journaux Sentry pour voir et régler les problèmes rapidement  ! Cela nous envoie les erreurs en temps réel sans compromettre votre vie privée. Supportez le développement de JellyBook en activant les journaux.",
+  "@sentryExplanation": {},
+  "giveFeedback": "Donnez votre avis",
+  "@giveFeedback": {},
+  "verticalSeamless": "Scrolling vertical sans coupure",
+  "@verticalSeamless": {},
+  "useSentry": "Utiliser Sentry",
+  "@useSentry": {}
 }

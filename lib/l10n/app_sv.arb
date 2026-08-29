@@ -207,5 +207,7 @@
   "yes": "Ja",
   "@yes": {},
   "no": "Nej",
-  "@no": {}
+  "@no": {},
+  "giveFeedback": "Ge feedback",
+  "@giveFeedback": {}
 }
