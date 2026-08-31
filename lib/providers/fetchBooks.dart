@@ -43,6 +43,7 @@ Future<void> getComics(String comicsId) async {
     ItemFields.tags,
     ItemFields.overview,
     ItemFields.parentId,
+    ItemFields.dateCreated,
   ]);
 
   // turn into built list
@@ -103,6 +104,15 @@ Future<void> getComics(String comicsId) async {
       tags: element.tags != null ? element.tags!.toList() : [],
       parentId: element.parentId ?? '',
       isFavorited: element.userData?.isFavorite ?? false,
+      sortName: (element.forcedSortName ?? element.sortName) ?? '',
+      dateCreated: element.dateCreated?.toIso8601String() ?? '',
+      lastPlayedDate: element.userData?.lastPlayedDate?.toIso8601String() ?? '',
+      officialRating: element.officialRating ?? '',
+      playCount: element.userData?.playCount ?? 0,
+      premiereDate: element.premiereDate?.toIso8601String() ?? '',
+      runTimeTicks: element.runTimeTicks ?? 0,
+      indexNumber: element.indexNumber ?? 0,
+      seriesName: element.seriesName ?? '',
       downloaded: false,
     );
     List<String> bookFileTypes = ['pdf', 'epub', 'mobi', 'azw3', 'kpf'];
