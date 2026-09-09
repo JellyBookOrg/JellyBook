@@ -245,7 +245,7 @@ Map<String, String> getHeaders(
       "Origin": url,
       "Connection": "keep-alive",
       "TE": "Trailers",
-      "X-Emby-Authorization":
+      "Authorization":
           "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
     };
   }
@@ -254,7 +254,7 @@ Map<String, String> getHeaders(
     "Accept": "application/json",
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate",
-    "X-Emby-Authorization":
+    "Authorization":
         "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
     "Content-Type": "application/json",
     "Origin": url,
