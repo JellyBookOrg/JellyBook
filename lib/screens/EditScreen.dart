@@ -12,7 +12,7 @@ import 'package:jellybook/widgets/ToggleEditPreviewButton.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 import 'package:jellybook/providers/updateLike.dart';
 import 'package:isar/isar.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:jellybook/models/entry.dart';
 import 'package:jellybook/l10n/app_localizations.dart';

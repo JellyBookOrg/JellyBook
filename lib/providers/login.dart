@@ -29,7 +29,7 @@ class LoginProvider {
 
   // a curl request to the server would look like this:
   /*
-     curl 'http://[REDACTED]/Users/authenticatebyname' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'Authorization: MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="[REDACTED]", Version="10.8.5"' -H 'Content-Type: application/json' -H 'Origin: [REDACTED]' -H 'Connection: keep-alive' --data-raw '{"Username":"example","Pw":""}' > output
+     curl 'http://[REDACTED]/Users/authenticatebyname' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'X-Emby-Authorization: MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="[REDACTED]", Version="10.8.5"' -H 'Content-Type: application/json' -H 'Origin: [REDACTED]' -H 'Connection: keep-alive' --data-raw '{"Username":"example","Pw":""}' > output
      */
 
   // make a static version of the above class
@@ -100,12 +100,10 @@ class LoginProvider {
     Response<AuthenticationResult> response;
 
     try {
-      // use the authenticateUserByNameRequest from tentacle/lib/src/model/authenticate_user_by_name_request.g.dart
       var authenticateUserByNameRequest = AuthenticateUserByName((b) => b
         ..username = username
         ..pw = password);
-      // set the headers
-      final headers = getHeaders(url, _client, _device, _deviceId, _version);
+      final headers = getHeaders(_url, _client, _device, _deviceId, _version);
       response = await apiInstance.authenticateUserByName(
         authenticateUserByName: authenticateUserByNameRequest,
         headers: headers,
@@ -117,7 +115,6 @@ class LoginProvider {
       if (useSentry) await Sentry.captureException(e, stackTrace: s);
       logger.e("Error:\n$e");
       return e.toString();
-      // logger.e('Exception when calling UserApi->authenticateUserByName: $e\n');
     }
 
     logger.d("Response: ${response.statusCode}");
@@ -126,7 +123,7 @@ class LoginProvider {
     if (response.statusCode == 200) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       logger.d("saving data to cache");
-      prefs.setString("server", url);
+      prefs.setString("server", _url);
       prefs.setString("accessToken", response.data?.accessToken ?? "");
       prefs.setString("UserId", response.data?.user?.id ?? "");
       prefs.setString("ServerId", response.data?.serverId ?? "");
@@ -140,7 +137,7 @@ class LoginProvider {
 
       // now save the username and password to the secure storage
       logger.d("saving data part 3");
-      await storage.write(key: "server", value: url);
+      await storage.write(key: "server", value: _url);
       await storage.write(key: "username", value: username);
       await storage.write(key: "password", value: password);
       await storage.write(
@@ -162,13 +159,13 @@ class LoginProvider {
       final isar = Isar.getInstance();
       // check if the user already exists
       final entry =
-          await isar!.logins.where().serverUrlEqualTo(url).findFirst();
+          await isar!.logins.where().serverUrlEqualTo(_url).findFirst();
       if (entry == null) {
         // if the user does not exist but a different user does, delete the different user
         List<Login> entry2 = await isar.logins.where().findAll();
         List<int> entry2Ids = [];
         for (var i = 0; i < entry2.length; i++) {
-          if (entry2[i].serverUrl != url) {
+          if (entry2[i].serverUrl != _url) {
             entry2Ids.add(entry2[i].isarId);
           }
         }
@@ -178,7 +175,7 @@ class LoginProvider {
         });
 
         Login login = Login(
-          serverUrl: url,
+          serverUrl: _url,
           username: username,
           password: password,
         );
@@ -248,7 +245,7 @@ Map<String, String> getHeaders(
       "Origin": url,
       "Connection": "keep-alive",
       "TE": "Trailers",
-      "Authorization":
+      "X-Emby-Authorization":
           "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
     };
   }
@@ -257,7 +254,7 @@ Map<String, String> getHeaders(
     "Accept": "application/json",
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate",
-    "Authorization":
+    "X-Emby-Authorization":
         "MediaBrowser Client=\"$client\", Device=\"$device\", DeviceId=\"$deviceId\", Version=\"$version\"",
     "Content-Type": "application/json",
     "Origin": url,

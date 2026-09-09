@@ -22,7 +22,7 @@ subprojects {
                 project.plugins.hasPlugin("com.android.library")) {
             project.android {
                 compileSdkVersion flutter.compileSdkVersion
-                buildToolsVersion "36.0.0"
+                buildToolsVersion "37.0.0"
             }
         }
     }

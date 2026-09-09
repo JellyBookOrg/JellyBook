@@ -13,7 +13,7 @@ import 'package:jellybook/providers/languageProvider.dart';
 import 'package:jellybook/widgets/SimpleUserCard.dart';
 import 'package:jellybook/widgets/SettingsItem.dart';
 import 'package:jellybook/variables.dart';
-import 'package:palette_generator/palette_generator.dart';
+import 'package:palette_generator_master/palette_generator_master.dart';
 import 'package:sentry/sentry.dart';
 
 import 'package:tentacle/tentacle.dart';
@@ -257,7 +257,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<Color> getComplementaryColor(ImageProvider ip) async {
-    PaletteGenerator pg = await PaletteGenerator.fromImageProvider(ip);
+    PaletteGeneratorMaster pg = await PaletteGeneratorMaster.fromImageProvider(ip);
     Color color = pg.lightMutedColor?.color ?? Colors.white;
     double hue = HSVColor.fromColor(color).hue;
     double saturation = HSVColor.fromColor(color).saturation;
