@@ -11,7 +11,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 // import 'package:jellybook/providers/fixRichText.dart';
 import 'package:flutter_star/flutter_star.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 class ContinueReadingScreen extends StatefulWidget {

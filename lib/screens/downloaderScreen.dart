@@ -22,7 +22,7 @@ import 'package:jellybook/models/entry.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -134,7 +134,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       'Accept-Language': 'en-US,en;q=0.5',
       'Connection': 'keep-alive',
       'Upgrade-Insecure-Requests': '1',
-      'X-Emby-Authorization':
+      'Authorization':
           'MediaBrowser Client="$client", Device="$device", DeviceId="$deviceId", Version="$version", Token="$token"',
     };
     // url = url + '/Items/' + comicId + '/Download?api_key=' + token;

@@ -14,7 +14,7 @@ import 'package:jellybook/screens/readingScreens/cbrCbzReader.dart';
 import 'package:jellybook/screens/readingScreens/epubReader.dart';
 import 'package:jellybook/screens/readingScreens/audiobookReader.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 
 import 'package:sentry_flutter/sentry_flutter.dart';

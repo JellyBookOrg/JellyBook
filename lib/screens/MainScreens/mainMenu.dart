@@ -13,7 +13,7 @@ import 'package:isar_flutter_libs/isar_flutter_libs.dart';
 import 'package:jellybook/models/entry.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -42,8 +42,17 @@ class _MainMenuState extends State<MainMenu> {
                 - a settings section
         */
   static const _pageSize = 20;
-  final PagingController<int, Entry> _pagingController =
-      PagingController(firstPageKey: 0);
+  late final PagingController<int, Entry> _pagingController =
+      PagingController<int, Entry>(
+    getNextPageKey: (state) {
+      if (state.pages == null) return 0;
+      final lastPage = state.pages!.last;
+      if (lastPage.length < _pageSize) return null;
+      return state.keys!.last + lastPage.length;
+    },
+    fetchPage: _fetchPage,
+  );
+
   Future<void> logout() async {
     final isar = Isar.getInstance();
     List<Login> logins = await isar!.logins.where().findAll();
@@ -69,26 +78,19 @@ class _MainMenuState extends State<MainMenu> {
   bool force = false;
   SharedPreferences? prefs;
 
-  Future<void> _fetchPage(int pageKey) async {
+  Future<List<Entry>> _fetchPage(int pageKey) async {
     logger.i('pageKey: $pageKey');
     try {
-      const pageSize = 20; // Define your page size
-      final result = await fetchEntries(pageKey, pageSize);
+      final result = await fetchEntries(pageKey, _pageSize);
       logger.i("result.\$1: ${result.$1}");
-      final isLastPage = result.$1 < pageSize;
-      if (isLastPage) {
-        _pagingController.appendLastPage(result.$2);
-      } else {
-        final nextPageKey = pageKey + result.$1;
-        _pagingController.appendPage(result.$2, nextPageKey);
-      }
+      return result.$2;
     } catch (error, stackTrace) {
-      _pagingController.error = error;
       SharedPreferences prefs = await SharedPreferences.getInstance();
       bool useSentry = prefs.getBool('useSentry') ?? false;
       if (useSentry) {
         await Sentry.captureException(error, stackTrace: stackTrace);
       }
+      rethrow;
     }
   }
 
@@ -98,16 +100,13 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   void initState() {
-    _pagingController.addPageRequestListener((pageKey) {
-      _fetchPage(pageKey);
-    });
     super.initState();
     getSharedPrefs().then((value) => setUseSentry());
   }
 
-  // dispose
   @override
   void dispose() {
+    _pagingController.dispose();
     super.dispose();
   }
 
@@ -162,6 +161,7 @@ class _MainMenuState extends State<MainMenu> {
           icon: const Icon(Icons.refresh_rounded),
           tooltip: AppLocalizations.of(context)?.refresh ?? 'Refresh',
           onPressed: () {
+            _pagingController.refresh();
             setState(
               () {
                 force = true;
@@ -370,21 +370,26 @@ class _MainMenuState extends State<MainMenu> {
                       ],
                     ),
                   ),
-                  PagedSliverGrid<int, Entry>(
-                    pagingController: _pagingController,
-                    addRepaintBoundaries: true,
-                    addSemanticIndexes: true,
-                    addAutomaticKeepAlives: true,
-                    // shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1,
-                    ),
-                    builderDelegate: PagedChildBuilderDelegate<Entry>(
+                  PagingListener<int, Entry>(
+                    controller: _pagingController,
+                    builder: (context, state, fetchNextPage) =>
+                        PagedSliverGrid<int, Entry>(
+                      state: state,
+                      fetchNextPage: fetchNextPage,
+                      addRepaintBoundaries: true,
+                      addSemanticIndexes: true,
+                      addAutomaticKeepAlives: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1,
+                      ),
+                      builderDelegate: PagedChildBuilderDelegate<Entry>(
                         itemBuilder: (context, entry, index) => SizedBox(
-                              child: GridEntryWidget(entry),
-                            )),
+                          child: GridEntryWidget(entry),
+                        ),
+                      ),
+                    ),
                   ),
                   const SliverToBoxAdapter(child: SizedBox(height: 80)),
                 ],

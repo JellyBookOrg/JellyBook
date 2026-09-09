@@ -50,7 +50,7 @@ Future<(List<Entry>, List<Folder>)> getServerCategories({
   logger.d("got prefs");
   Map<String, String> headers =
       getHeaders(url, client, device, deviceId, version, token);
-  final api = Tentacle(basePathOverride: url).getUserViewsApi();
+  final api = Tentacle(basePathOverride: url).getUserViewApi();
   var response;
   try {
     response = await api.getUserViews(

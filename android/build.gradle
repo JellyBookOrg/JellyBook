@@ -1,16 +1,3 @@
-buildscript {
-    ext.kotlin_version = '1.9.21'
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 allprojects {
     repositories {
         google()
@@ -23,9 +10,22 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
+def rootBuildDir = rootProject.layout.buildDirectory.get().dir('../../build')
+rootProject.layout.buildDirectory.value(rootBuildDir)
 subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    def subProjectBuildDir = rootBuildDir.dir(project.name)
+    project.layout.buildDirectory.value(subProjectBuildDir)
+}
+subprojects {
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin("com.android.application") ||
+                project.plugins.hasPlugin("com.android.library")) {
+            project.android {
+                compileSdkVersion flutter.compileSdkVersion
+                buildToolsVersion "37.0.0"
+            }
+        }
+    }
 }
 subprojects {
     project.evaluationDependsOn(':app')

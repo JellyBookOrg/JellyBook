@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:jellybook/models/entry.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'dart:io';
 import 'package:jellybook/variables.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';

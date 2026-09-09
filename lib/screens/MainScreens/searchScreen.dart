@@ -11,7 +11,7 @@ import 'package:jellybook/screens/infoScreen.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:string_similarity/string_similarity.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 

@@ -1,7 +1,7 @@
 // The purpose of this file is to create a list of entries from a selected folder
 
 // import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:isar/isar.dart';
 import 'package:isar_flutter_libs/isar_flutter_libs.dart';
@@ -12,7 +12,7 @@ import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/screens/infoScreen.dart';
 import 'package:jellybook/providers/fixRichText.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:jellybook/widgets/roundedImageWithShadow.dart';
 

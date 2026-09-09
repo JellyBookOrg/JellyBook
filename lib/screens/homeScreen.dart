@@ -15,7 +15,7 @@ import 'package:jellybook/screens/MainScreens/downloadsScreen.dart';
 import 'package:jellybook/screens/MainScreens/continueReadingScreen.dart';
 import 'package:jellybook/screens/loginScreen.dart';
 import 'package:jellybook/screens/offlineBookReader.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:jellybook/variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

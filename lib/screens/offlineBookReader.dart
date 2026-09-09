@@ -20,7 +20,7 @@ import 'package:jellybook/models/folder.dart';
 import 'package:jellybook/models/login.dart';
 import 'package:jellybook/main.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jellybook/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jellybook/providers/languageProvider.dart';

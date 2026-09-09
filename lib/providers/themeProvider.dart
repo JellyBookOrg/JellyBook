@@ -95,7 +95,7 @@ class ThemeChangeNotifier extends ChangeNotifier {
       displayMedium: TextStyle(color: Colors.white),
       displaySmall: TextStyle(color: Colors.white),
     ),
-    cardTheme: const CardTheme(
+    cardTheme: const CardThemeData(
       color: Colors.black,
       shadowColor: Colors.white,
     ),

@@ -30,6 +30,11 @@ linter:
 # https://dart.dev/guides/language/analysis-options
 
 analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - linux/**
   plugins:
     - dart_code_linter
 
