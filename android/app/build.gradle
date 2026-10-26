@@ -44,6 +44,12 @@ android {
         compileSdkVersion 34
     }
 
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -70,8 +76,11 @@ android {
         release {
             signingConfig signingConfigs.release
             // signingConfig signingConfigs.debug
-            // minifyEnabled false
-            // shrinkResources false
+            minifyEnabled true
+            shrinkResources true
+            optimization {
+                enable = true
+              }
         }
         debug {
             applicationIdSuffix '.debug'
