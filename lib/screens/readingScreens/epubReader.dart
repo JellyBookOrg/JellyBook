@@ -97,6 +97,24 @@ class _EpubReaderState extends State<EpubReader> {
     }
   }
 
+  Future<void> saveChapterIndex(int index) async {
+    final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+    if (entry == null) return;
+
+    await isar!.writeTxn(() async {
+      entry.pageNum = index;
+      await isar!.entrys.put(entry);
+    });
+
+    logger.d("Saved chapter index: $index");
+  }
+
+  Future<int?> loadChapterIndex() async {
+    final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
+    if (entry == null) return null;
+    return entry.pageNum;
+  }
+
   Future<void> openController() async {
     final entry = await isar!.entrys.where().idEqualTo(comicId).findFirst();
     final filePath = entry!.filePath;
@@ -182,6 +200,22 @@ class _EpubReaderState extends State<EpubReader> {
     audioPlayer.onPositionChanged.listen((Duration newPosition) {
       audioPosition = newPosition;
     });
+  }
+
+  Future<void> onBookLoaded() async {
+    // Restore saved chapter index
+    final savedIndex = await loadChapterIndex();
+    if (savedIndex != null) {
+      logger.d("Restoring chapter index: $savedIndex");
+
+      // Wait for frame to fully load
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _epubController.jumpTo(index: savedIndex);
+      });
+    }
+
+    // Add other book loaded tasks here
+    logger.d("Book is fully loaded");
   }
 
   Future<void> savePosition() async {
@@ -286,29 +320,24 @@ class _EpubReaderState extends State<EpubReader> {
                 ),
               ),
               body: EpubView(
-                (url) {
-                  logger.d("External link pressed: $url");
-                  // open url in browser
-                  launchUrl(Uri.parse(url));
-                },
-                controller: _epubController,
-                onDocumentLoaded: (document) {
-                  logger.d("Document loaded: ${document.Title}");
-                  // wait 5 seconds and then go to the chapter
-                  Future.delayed(Duration(seconds: 5), () {
+                  (url) {
+                    logger.d("External link pressed: $url");
+                    // open url in browser
+                    launchUrl(Uri.parse(url));
+                  },
+                  controller: _epubController,
+                  onDocumentLoaded: (document) async {
                     logger.d("Document loaded: ${document.Title}");
-                    goToChapter(_epubController);
-                  });
-                  // goToChapter(_epubController);
-                },
-                onChapterChanged: (chapter) {
-                  // only do it every 5th time
 
-                  // logger.d("Chapter changed: $chapter");
-                  // logger.d(chapter!.position);
-                  updateChapter(_epubController.generateEpubCfi() ?? "error");
-                },
-              ),
+                    await onBookLoaded();
+                  },
+                  onChapterChanged: (chapterValue) {
+                    final index = chapterValue?.position.index;
+                    if (index != null) {
+                      logger.d("Saving chapter index: $index");
+                      saveChapterIndex(index);
+                    }
+                  }),
             );
           } else {
             return Scaffold(
